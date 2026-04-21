@@ -49,6 +49,7 @@ export interface TeamSuggestion {
 
 export class TeamBuilder {
   private data: DataLoader;
+  public state: { bannedHeroes: number[] } = { bannedHeroes: [] };
 
   constructor(dataLoader: DataLoader) {
     this.data = dataLoader;
@@ -91,7 +92,9 @@ export class TeamBuilder {
       return { mode: 'balanced', label: `Set ${setNumber}`, slots: [], totalScore: 0, coverage: 0 };
     }
 
-    const allHeroes = this.data.getAllHeroes().filter(h => !excludeIds.has(h.id));
+    const allHeroes = this.data.getAllHeroes().filter(h => 
+      !excludeIds.has(h.id) && !this.state.bannedHeroes.includes(h.id)
+    );
 
     const scored = allHeroes.map(hero => {
       const { weightedScore, breakdown } = calculateHeroScore(this.data, hero, enemyIds);
@@ -164,7 +167,25 @@ export class TeamBuilder {
 
         const result = recursiveBuild(depth + 1, [...currentSlots, newSlot], nextUsed);
         if (result) {
-          const branchScore = result.reduce((sum, s) => sum + s.score, 0);
+          let branchScore = result.reduce((sum, s) => sum + s.score, 0);
+          
+          // The Damage-Type Monopoly Fix: Penalize compositions skewed heavily to one damage type
+          if (depth === 0 && result.length === 5) {
+            let magicCount = 0;
+            let physCount = 0;
+            const magicNonMages = ['Guinevere', 'Gusion', 'Silvanna', 'Kimmy', 'Natan', 'Aamon', 'Karina', 'Joy', 'Mathilda', 'Carmilla', 'Kaja', 'Esmeralda', 'Alice', 'Bane', 'Gatotkaca', 'Gloo', 'Johnson', 'Edith', 'Pharsa', 'Harith', 'Lunox', 'Kagura', 'Valentina', 'Yve', 'Xavier'];
+            for (const slot of result) {
+               if (slot.hero.roles.includes('Mage') || magicNonMages.includes(slot.hero.name)) {
+                 magicCount++;
+               } else {
+                 physCount++;
+               }
+            }
+            if (magicCount > 3 || physCount > 3) {
+               branchScore -= 25.0; // Heavy penalty for bad damage spread
+            }
+          }
+
           if (branchScore > bestScore) {
             bestScore = branchScore;
             bestBranch = result;
@@ -197,12 +218,14 @@ export class TeamBuilder {
     enemyIds: number[],
     excludeIds: number[] = []
   ): TeamSuggestion {
-    if (enemyIds.length === 0) {
+    if (enemyIds.length > 5) { // Removed empty check to allow first pick blind draft
       return { mode: 'max_counter', label: 'Best Counters', slots: [], totalScore: 0, coverage: 0 };
     }
 
     const excludeSet = new Set([...excludeIds, ...enemyIds]);
-    const allHeroes = this.data.getAllHeroes().filter(h => !excludeSet.has(h.id));
+    const allHeroes = this.data.getAllHeroes().filter(h => 
+      !excludeSet.has(h.id) && !this.state.bannedHeroes.includes(h.id)
+    );
 
     const allScored = allHeroes
       .map(hero => {

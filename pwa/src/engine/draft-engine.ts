@@ -76,6 +76,27 @@ export function calculateHeroScore(
     weightedScore -= (minScore * minScore);
   }
 
+  // Blind-Pick Vulnerability (Turn-Order Ignorance)
+  if (enemyIds.length <= 1) { // 0 or 1 enemy showing (Turns 1 and 2)
+    let counterCount = 0;
+    const allHeroes = data.getAllHeroes();
+    for (const h of allHeroes) {
+      if (h.id === hero.id) continue;
+      // If an enemy has a strong matchup (+3.0 or more) against this hero, they counter it.
+      if (data.getMatchupScore(h.id, hero.id) >= 3.0) {
+        counterCount++;
+      }
+    }
+    // Heavy penalty for highly counterable heroes during early draft
+    const safetyPenalty = counterCount * 1.5;
+    weightedScore -= safetyPenalty;
+    
+    // Add base WR boost to differentiate heroes when enemyIds is 0
+    if (enemyIds.length === 0) {
+       weightedScore += (hero.base_wr - 50); // Usually around -5 to +5
+    }
+  }
+
   return {
     rawScore,
     weightedScore: Math.round(weightedScore * 100) / 100,
@@ -102,7 +123,7 @@ export class DraftEngine {
    * @returns Sorted array of ScoredHero, best counters first
    */
   getCounterPicks(enemyIds: number[], allyIds: number[] = [], filter?: CounterFilter): ScoredHero[] {
-    if (enemyIds.length === 0 || enemyIds.length > 5) {
+    if (enemyIds.length > 5) { // Allow length 0 for Turn 1 blind picks
       return [];
     }
 
@@ -140,7 +161,7 @@ export class DraftEngine {
    * Useful for "don't pick these" warnings.
    */
   getWeakPicks(enemyIds: number[], limit: number = 5): ScoredHero[] {
-    if (enemyIds.length === 0) return [];
+    if (enemyIds.length === 0 || enemyIds.length > 5) return [];
 
     const enemySet = new Set(enemyIds);
     const candidates = this.data.getAllHeroes();
