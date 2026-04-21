@@ -190,14 +190,15 @@ export class TeamBuilder {
     const excludeSet = new Set([...excludeIds, ...enemyIds]);
     const allHeroes = this.data.getAllHeroes().filter(h => !excludeSet.has(h.id));
 
-    const scored = allHeroes
+    const allScored = allHeroes
       .map(hero => ({
         hero,
         score: this.scoreHero(hero, enemyIds),
         breakdown: this.getBreakdown(hero, enemyIds),
       }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 10);
+      .sort((a, b) => b.score - a.score);
+
+    const scored = allScored.slice(0, 10);
 
     const usedPositions = new Set<Position>();
     const slots: TeamSlot[] = [];
@@ -224,7 +225,7 @@ export class TeamBuilder {
 
     // If we couldn't find 5 valid lane matches from the top counters, pad with best available flex picks
     if (slots.length < 5) {
-       for (const s of scored) {
+       for (const s of allScored) {
           if (slots.length >= 5) break;
           const anyPos = POSITIONS.find(p => !usedPositions.has(p));
           if (anyPos && !slots.some(slot => slot.hero.id === s.hero.id)) {
@@ -238,7 +239,6 @@ export class TeamBuilder {
             });
           }
        }
-    }
     }
 
     const posIndex: Record<Position, number> = { exp: 0, gold: 1, mid: 2, roam: 3, jungle: 4 };
