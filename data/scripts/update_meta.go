@@ -137,17 +137,34 @@ func main() {
 					newScore := apiMatch.Score
 
 					// A. The Circuit Breaker (Z-Score Anomaly Detection)
-					// Formula: Z = |X - Mean| / StdDev
-					if baseRules.RollingStd > 0 {
-						zScore := math.Abs(newScore - baseRules.RollingMean) / baseRules.RollingStd
-						if zScore > zScoreThreshold {
-							log.Printf("[CIRCUIT BREAKER] %s vs %s shifted by %.2f StdDevs! Dropping anomaly.", heroID, enemyID, zScore)
-							newScore = baseRules.BaseScore // Fallback to safe known value
-							anomaliesDropped++
-						}
+					// Prevent +Inf division-by-zero on highly stable stats
+					std := baseRules.RollingStd
+					if std < 0.25 {
+						std = 0.25 // Epsilon threshold for minimum variance
 					}
 
-					// B. The Sandbox (Clamping to Absolute Limits)
+					zScore := math.Abs(newScore - baseRules.RollingMean) / std
+					if zScore > zScoreThreshold {
+						log.Printf("[CIRCUIT BREAKER] %s vs %s shifted by %.2f StdDevs! Dropping anomaly.", heroID, enemyID, zScore)
+						newScore = baseRules.BaseScore // Fallback
+						anomaliesDropped++
+					} else {
+						// B. Iterative State Update (Welford's Online EMA / EMV Approximation)
+						// We only update the ledger if the data wasn't anomalous.
+						// N = 7 days -> Alpha = 2 / (7 + 1) = 0.25
+						alpha := 0.25
+						diff := newScore - baseRules.RollingMean
+						
+						// Update Mean
+						baseRules.RollingMean += alpha * diff
+						
+						// Update Variance and Std
+						oldVar := baseRules.RollingStd * baseRules.RollingStd
+						newVar := (1.0 - alpha) * (oldVar + alpha*diff*diff)
+						baseRules.RollingStd = math.Sqrt(newVar)
+					}
+
+					// C. The Sandbox (Clamping to Absolute Limits)
 					if newScore > baseRules.MaxAllowed {
 						log.Printf("[SANDBOX] Clamping %s vs %s from %.2f down to %.2f limit.", heroID, enemyID, newScore, baseRules.MaxAllowed)
 						newScore = baseRules.MaxAllowed
@@ -158,6 +175,8 @@ func main() {
 						scoresClamped++
 					}
 
+					// Write the updated stats back into the baseline memory map
+					enemies[enemyID] = baseRules
 					finalScore = newScore
 				}
 			}
@@ -169,7 +188,18 @@ func main() {
 	log.Printf("[REFINERY] Complete. Anomalies Dropped: %d | Scores Clamped: %d", anomaliesDropped, scoresClamped)
 
 	// ==========================================
-	// 4. The Compiler (JSON Output)
+	// 4. Memory Persistence (The Ledger Update)
+	// ==========================================
+	if apiErr == nil {
+		log.Println("[LEDGER] Saving updated Rolling Means & Stds back to baseline.json...")
+		baseBytes, err := json.MarshalIndent(baseline, "", "  ")
+		if err == nil {
+			os.WriteFile(baselinePath, baseBytes, 0644)
+		}
+	}
+
+	// ==========================================
+	// 5. The Compiler (JSON Output)
 	// ==========================================
 	log.Println("[COMPILER] Generating final v2 schema...")
 	output := V2Schema{
