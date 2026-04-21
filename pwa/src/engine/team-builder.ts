@@ -114,25 +114,46 @@ export class TeamBuilder {
       lanePool[pos].sort((a, b) => b.score - a.score);
     }
 
-    const usedIds = new Set<number>();
-    const slots: TeamSlot[] = [];
     const posOrder = [...POSITIONS].sort(
       (a, b) => lanePool[a].length - lanePool[b].length
     );
 
-    for (const pos of posOrder) {
-      const candidate = lanePool[pos].find(s => !usedIds.has(s.hero.id));
-      if (candidate) {
-        usedIds.add(candidate.hero.id);
-        slots.push({
+    // Bounded Beam Search: Max Width 3, Depth 5 (O(3^5) = 243 operations)
+    function recursiveBuild(depth: number, currentSlots: TeamSlot[], currentUsed: Set<number>): TeamSlot[] | null {
+      if (depth === 5) return currentSlots;
+
+      const pos = posOrder[depth];
+      const candidates = lanePool[pos].filter(s => !currentUsed.has(s.hero.id)).slice(0, 3);
+      if (candidates.length === 0) return null; // Dead end
+
+      let bestBranch: TeamSlot[] | null = null;
+      let bestScore = -Infinity;
+
+      for (const candidate of candidates) {
+        const nextUsed = new Set(currentUsed);
+        nextUsed.add(candidate.hero.id);
+
+        const newSlot: TeamSlot = {
           position: pos,
           positionLabel: POSITION_LABELS[pos],
           hero: candidate.hero,
           score: candidate.score,
           breakdown: candidate.breakdown,
-        });
+        };
+
+        const result = recursiveBuild(depth + 1, [...currentSlots, newSlot], nextUsed);
+        if (result) {
+          const branchScore = result.reduce((sum, s) => sum + s.score, 0);
+          if (branchScore > bestScore) {
+            bestScore = branchScore;
+            bestBranch = result;
+          }
+        }
       }
+      return bestBranch;
     }
+
+    let slots = recursiveBuild(0, [], new Set<number>()) || [];
 
     const posIndex: Record<Position, number> = { exp: 0, gold: 1, mid: 2, roam: 3, jungle: 4 };
     slots.sort((a, b) => posIndex[a.position] - posIndex[b.position]);

@@ -72,10 +72,14 @@ export class DraftEngine {
       // Score this hero against all enemies
       const breakdown: MatchupBreakdown[] = [];
       let rawScore = 0;
+      let minScore = 0;
 
       for (const enemyId of enemyIds) {
         const score = this.data.getMatchupScore(hero.id, enemyId);
         rawScore += score;
+        if (score < minScore) {
+          minScore = score;
+        }
 
         const enemy = this.data.getHero(enemyId);
         breakdown.push({
@@ -86,7 +90,12 @@ export class DraftEngine {
       }
 
       const tierWeight = TIER_WEIGHT[hero.tier] ?? 1.0;
-      const weightedScore = rawScore * tierWeight;
+      let weightedScore = rawScore * tierWeight;
+
+      // The Esmeralda-Aldous Rule: Exponential Penalty for Hard Counters
+      if (minScore <= -3) {
+        weightedScore -= (minScore * minScore);
+      }
 
       results.push({
         hero,

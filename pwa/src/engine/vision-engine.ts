@@ -8,15 +8,15 @@ import type { Hero } from './types';
 import portraitMap from '../../../data/processed/v1_portraits.json';
 import { DataLoader } from './data-loader';
 
-// For speed, we downscale all comparisons to a tiny 16x16 matrix.
-const HASH_SIZE = 16;
+// dHash uses an 8x8 grid = 64 pixels (fits in a 64-bit BigInt)
+const HASH_SIZE = 8;
 const PIXEL_COUNT = HASH_SIZE * HASH_SIZE;
 
 export class VisionEngine {
   private loader: DataLoader;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  private templates: Map<number, Uint8ClampedArray> = new Map();
+  private templates: Map<number, bigint> = new Map();
   private loaded = false;
 
   constructor(loader: DataLoader) {
@@ -43,11 +43,18 @@ export class VisionEngine {
         const img = new Image();
         img.crossOrigin = 'Anonymous';
         img.onload = () => {
-          // Draw image to our 16x16 canvas
-          this.ctx.drawImage(img, 0, 0, HASH_SIZE, HASH_SIZE);
+          // Safe Zone: Top-Center 40% (sx=15%, sy=5%, sw=70%, sh=40%)
+          const sx = img.width * 0.15;
+          const sy = img.height * 0.05;
+          const sw = img.width * 0.70;
+          const sh = img.height * 0.40;
+
+          // Draw cropped Safe Zone down to 8x8 canvas
+          this.ctx.drawImage(img, sx, sy, sw, sh, 0, 0, HASH_SIZE, HASH_SIZE);
           const imageData = this.ctx.getImageData(0, 0, HASH_SIZE, HASH_SIZE);
           const grayscale = this.toGrayscale(imageData.data);
-          this.templates.set(hero.id, grayscale);
+          const hash = this.calculateDHash(grayscale);
+          this.templates.set(hero.id, hash);
           resolve();
         };
         img.onerror = () => resolve();
@@ -66,25 +73,31 @@ export class VisionEngine {
   identifyHero(image: HTMLImageElement | HTMLCanvasElement): number | null {
     if (!this.loaded || this.templates.size === 0) return null;
 
-    this.ctx.drawImage(image, 0, 0, HASH_SIZE, HASH_SIZE);
+    // Safe Zone: Top-Center 40%
+    const sx = image.width * 0.15;
+    const sy = image.height * 0.05;
+    const sw = image.width * 0.70;
+    const sh = image.height * 0.40;
+
+    this.ctx.drawImage(image, sx, sy, sw, sh, 0, 0, HASH_SIZE, HASH_SIZE);
     const imageData = this.ctx.getImageData(0, 0, HASH_SIZE, HASH_SIZE);
     const targetGrayscale = this.toGrayscale(imageData.data);
+    const targetHash = this.calculateDHash(targetGrayscale);
 
     let bestMatchId: number | null = null;
-    let lowestError = Infinity;
+    let lowestDistance = Infinity;
 
     // Compare against all loaded templates
-    for (const [heroId, templatePixels] of this.templates.entries()) {
-      const error = this.calculateMSE(targetGrayscale, templatePixels);
-      if (error < lowestError) {
-        lowestError = error;
+    for (const [heroId, templateHash] of this.templates.entries()) {
+      const distance = this.getHammingDistance(targetHash, templateHash);
+      if (distance < lowestDistance) {
+        lowestDistance = distance;
         bestMatchId = heroId;
       }
     }
 
-    // Threshold logic: If lowest error is too high, it's not a valid hero icon (e.g. empty slot)
-    const ERROR_THRESHOLD = 5000; 
-    if (lowestError > ERROR_THRESHOLD) {
+    // Threshold: <= 8 bits difference out of 64
+    if (lowestDistance > 8) {
       return null;
     }
 
@@ -107,15 +120,30 @@ export class VisionEngine {
   }
 
   /**
-   * Calculates Mean Squared Error between two pixel arrays of the same length.
-   * Lower score = more identical.
+   * Generates a 64-bit Difference Hash (dHash) from grayscale pixels.
    */
-  private calculateMSE(a: Uint8ClampedArray, b: Uint8ClampedArray): number {
-    let sum = 0;
-    for (let i = 0; i < PIXEL_COUNT; i++) {
-      const diff = a[i] - b[i];
-      sum += (diff * diff);
+  private calculateDHash(pixels: Uint8ClampedArray): bigint {
+    let hash = 0n;
+    for (let i = 0; i < 64; i++) {
+      const current = pixels[i];
+      const next = (i === 63) ? pixels[0] : pixels[i + 1];
+      if (current > next) {
+        hash |= (1n << BigInt(i));
+      }
     }
-    return sum / PIXEL_COUNT;
+    return hash;
+  }
+
+  /**
+   * Calculates Hamming Distance (number of differing bits) between two BigInts.
+   */
+  private getHammingDistance(hash1: bigint, hash2: bigint): number {
+    let xor = hash1 ^ hash2;
+    let distance = 0;
+    while (xor > 0n) {
+      distance += Number(xor & 1n);
+      xor >>= 1n;
+    }
+    return distance;
   }
 }
