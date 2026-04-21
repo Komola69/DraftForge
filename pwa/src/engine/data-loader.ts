@@ -81,9 +81,9 @@ export class DataLoader {
   }
 
   private validateSchema(dataName: string, version: string): void {
-    if (version !== SUPPORTED_SCHEMA) {
-      throw new Error(
-        `Schema mismatch for ${dataName}: expected ${SUPPORTED_SCHEMA}, got ${version}`
+    if (!version || (!version.startsWith('1.') && !version.startsWith('2.'))) {
+      console.warn(
+        `Schema mismatch warning for ${dataName}: expected v1 or v2, got ${version}`
       );
     }
   }

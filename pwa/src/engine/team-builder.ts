@@ -121,9 +121,12 @@ export class TeamBuilder {
       lanePool[pos].sort((a, b) => b.score - a.score);
     }
 
-    const posOrder = [...POSITIONS].sort(
-      (a, b) => lanePool[a].length - lanePool[b].length
-    );
+    // Sort by most constrained lane first, ignoring flex-pick padding
+    const posOrder = [...POSITIONS].sort((a, b) => {
+      const aNativeCount = lanePool[a].filter(s => s.hero.lanes.includes(a)).length;
+      const bNativeCount = lanePool[b].filter(s => s.hero.lanes.includes(b)).length;
+      return aNativeCount - bNativeCount;
+    });
 
     // Bounded Beam Search: Max Width 3, Depth 5 (O(3^5) = 243 operations)
     function recursiveBuild(depth: number, currentSlots: TeamSlot[], currentUsed: Set<number>): TeamSlot[] | null {
@@ -257,11 +260,23 @@ export class TeamBuilder {
 
   private scoreHero(hero: Hero, enemyIds: number[]): number {
     let raw = 0;
+    let minScore = 0;
     for (const eid of enemyIds) {
-      raw += this.data.getMatchupScore(hero.id, eid);
+      const score = this.data.getMatchupScore(hero.id, eid);
+      raw += score;
+      if (score < minScore) {
+        minScore = score;
+      }
     }
     const weight = TIER_WEIGHT[hero.tier] ?? 1.0;
-    return Math.round(raw * weight * 100) / 100;
+    let weightedScore = raw * weight;
+
+    // The Esmeralda-Aldous Rule: Exponential Penalty for Hard Counters
+    if (minScore <= -3) {
+      weightedScore -= (minScore * minScore);
+    }
+    
+    return Math.round(weightedScore * 100) / 100;
   }
 
   private getBreakdown(hero: Hero, enemyIds: number[]): MatchupBreakdown[] {

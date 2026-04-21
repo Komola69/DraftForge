@@ -41,7 +41,6 @@ export class BanAdvisor {
 
   constructor(dataLoader: DataLoader) {
     this.data = dataLoader;
-    this.buildCounterCountCache();
   }
 
   /**
@@ -49,6 +48,7 @@ export class BanAdvisor {
    * A hero with few counters is more ban-worthy.
    */
   private buildCounterCountCache(): void {
+    if (this.counterCountCache.size > 0) return; // Already built
     const allHeroes = this.data.getAllHeroes();
 
     for (const target of allHeroes) {
@@ -72,6 +72,7 @@ export class BanAdvisor {
     alreadyUnavailable: number[] = [],
     limit: number = 5
   ): BanSuggestion[] {
+    this.buildCounterCountCache(); // Lazy eval to avoid race conditions
     const unavailable = new Set(alreadyUnavailable);
     const allHeroes = this.data.getAllHeroes().filter(h => !unavailable.has(h.id));
 
