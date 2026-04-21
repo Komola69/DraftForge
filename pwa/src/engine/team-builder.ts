@@ -103,9 +103,16 @@ export class TeamBuilder {
     };
 
     for (const s of scored) {
-      for (const lane of s.hero.lanes) {
-        if (lane in lanePool) {
-          lanePool[lane as Position].push(s);
+      for (const pos of POSITIONS) {
+        if (s.hero.lanes.includes(pos)) {
+          lanePool[pos].push(s);
+        } else {
+          // The Flex-Pick Fix: Allow off-role but apply a strict mathematical penalty
+          // This allows top-tier counters to flex if necessary, without breaking the lane structure.
+          lanePool[pos].push({
+            ...s,
+            score: s.score - 7.5 
+          });
         }
       }
     }
@@ -124,11 +131,7 @@ export class TeamBuilder {
 
       const pos = posOrder[depth];
       const candidates = lanePool[pos].filter(s => !currentUsed.has(s.hero.id)).slice(0, 3);
-      if (candidates.length === 0) {
-        // Graceful degradation: skip position, continue building a 4-man board
-        const branches = recursiveBuild(depth + 1, [...currentSlots], currentUsed);
-        return branches;
-      }
+      if (candidates.length === 0) return null; // Dead end (forces backtracking, no illegal 4-man teams)
 
       let bestBranch: TeamSlot[] | null = null;
       let bestScore = -Infinity;
@@ -215,19 +218,27 @@ export class TeamBuilder {
           score: s.score,
           breakdown: s.breakdown,
         });
-      } else {
-        const anyPos = POSITIONS.find(p => !usedPositions.has(p));
-        if (anyPos) {
-          usedPositions.add(anyPos);
-          slots.push({
-            position: anyPos,
-            positionLabel: POSITION_LABELS[anyPos] + ' ⚡',
-            hero: s.hero,
-            score: s.score,
-            breakdown: s.breakdown,
-          });
-        }
       }
+      // If no valid lane is left, skip this hero instead of forcing them into an illegal role.
+    }
+
+    // If we couldn't find 5 valid lane matches from the top counters, pad with best available flex picks
+    if (slots.length < 5) {
+       for (const s of scored) {
+          if (slots.length >= 5) break;
+          const anyPos = POSITIONS.find(p => !usedPositions.has(p));
+          if (anyPos && !slots.some(slot => slot.hero.id === s.hero.id)) {
+            usedPositions.add(anyPos);
+            slots.push({
+              position: anyPos,
+              positionLabel: POSITION_LABELS[anyPos] + ' ⚡',
+              hero: s.hero,
+              score: s.score - 7.5,
+              breakdown: s.breakdown,
+            });
+          }
+       }
+    }
     }
 
     const posIndex: Record<Position, number> = { exp: 0, gold: 1, mid: 2, roam: 3, jungle: 4 };

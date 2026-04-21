@@ -91,9 +91,9 @@ export class DraftEngine {
 
       // Add synergy scores from allies
       for (const allyId of allyIds) {
-        // Synergy is represented as a positive score against allies
-        const synScore = this.data.getMatchupScore(hero.id, allyId); 
-        // In reality we should have getSynergyScore, using matchupScore as placeholder logic
+        // FIXED: Do not use getMatchupScore for synergy! That measures how much they counter each other.
+        // We will call a dedicated getSynergyScore method (which returns 0 if no data is available).
+        const synScore = (this.data as any).getSynergyScore ? (this.data as any).getSynergyScore(hero.id, allyId) : 0; 
         if (synScore > 0) {
           rawScore += (synScore * 0.5); // Weight synergy slightly less than direct counters
         }

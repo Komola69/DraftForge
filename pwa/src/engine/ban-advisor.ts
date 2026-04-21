@@ -80,8 +80,8 @@ export class BanAdvisor {
       const counterCount = this.counterCountCache.get(hero.id) ?? 0;
 
       // Inverse counter accessibility: fewer counters = higher ban value
-      // Add 1 to avoid division by zero, cap minimum to meaningful range
-      const counterAccessibility = Math.max(counterCount, 1);
+      // Use 0.1 for 0 to heavily penalize uncounterable heroes
+      const counterAccessibility = counterCount === 0 ? 0.1 : counterCount;
       const banScore = tierW * (10 / counterAccessibility);
 
       // Build reason
