@@ -1,0 +1,25 @@
+{
+  "name": "DraftForge - MLBB Counter Pick Helper",
+  "short_name": "DraftForge",
+  "description": "Instant counter-pick and team composition helper for Mobile Legends: Bang Bang",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#6366f1",
+  "orientation": "portrait",
+  "categories": ["games", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
