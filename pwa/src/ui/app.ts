@@ -9,7 +9,6 @@ import { store } from './state';
 import { Capacitor } from '@capacitor/core';
 
 import heroData from '../../../data/processed/v1_heroes.json';
-import matchupData from '../../../data/processed/v1_matchups.json';
 import buildData from '../../../data/processed/v1_builds.json';
 import portraitMap from '../../../data/processed/v1_portraits.json';
 
@@ -56,11 +55,15 @@ export function getRoleColor(role: string): string {
   return colors[role] || 'var(--text-muted)';
 }
 
-export function initApp(): void {
+export async function initApp(): Promise<void> {
+  const timestamp = new Date().getTime();
+  const res = await fetch(`/data/processed/v2_schema.json?bust=${timestamp}`);
+  const dynamicMatchupData = await res.json();
+
   loader = new DataLoader();
   loader.load(
     heroData as unknown as HeroDatabase,
-    matchupData as unknown as MatchupMatrix,
+    dynamicMatchupData as unknown as MatchupMatrix,
     buildData as unknown as BuildDatabase
   );
   engine = new DraftEngine(loader);

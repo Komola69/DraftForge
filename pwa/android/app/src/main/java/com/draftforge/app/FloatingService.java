@@ -29,6 +29,21 @@ public class FloatingService extends Service {
     public void onCreate() {
         super.onCreate();
         
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            android.app.NotificationChannel channel = new android.app.NotificationChannel(
+                "draftforge_channel", "DraftForge Overlay", android.app.NotificationManager.IMPORTANCE_HIGH);
+            android.app.NotificationManager manager = getSystemService(android.app.NotificationManager.class);
+            if (manager != null) manager.createNotificationChannel(channel);
+        }
+
+        android.app.Notification notification = new androidx.core.app.NotificationCompat.Builder(this, "draftforge_channel")
+            .setContentTitle("DraftForge Intelligence")
+            .setContentText("Overlay active. Monitoring draft...")
+            .setSmallIcon(android.R.drawable.ic_menu_camera)
+            .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+            .build();
+        startForeground(1, notification);
+        
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         
         // Root container

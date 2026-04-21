@@ -124,7 +124,11 @@ export class TeamBuilder {
 
       const pos = posOrder[depth];
       const candidates = lanePool[pos].filter(s => !currentUsed.has(s.hero.id)).slice(0, 3);
-      if (candidates.length === 0) return null; // Dead end
+      if (candidates.length === 0) {
+        // Graceful degradation: skip position, continue building a 4-man board
+        const branches = recursiveBuild(depth + 1, [...currentSlots], currentUsed);
+        return branches;
+      }
 
       let bestBranch: TeamSlot[] | null = null;
       let bestScore = -Infinity;

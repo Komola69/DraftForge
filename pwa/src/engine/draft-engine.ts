@@ -52,7 +52,7 @@ export class DraftEngine {
    * @param filter - Optional filtering (roles, lanes, tier, limit)
    * @returns Sorted array of ScoredHero, best counters first
    */
-  getCounterPicks(enemyIds: number[], filter?: CounterFilter): ScoredHero[] {
+  getCounterPicks(enemyIds: number[], allyIds: number[] = [], filter?: CounterFilter): ScoredHero[] {
     if (enemyIds.length === 0 || enemyIds.length > 5) {
       return [];
     }
@@ -87,6 +87,16 @@ export class DraftEngine {
           enemy_name: enemy?.name ?? `Unknown(${enemyId})`,
           score,
         });
+      }
+
+      // Add synergy scores from allies
+      for (const allyId of allyIds) {
+        // Synergy is represented as a positive score against allies
+        const synScore = this.data.getMatchupScore(hero.id, allyId); 
+        // In reality we should have getSynergyScore, using matchupScore as placeholder logic
+        if (synScore > 0) {
+          rawScore += (synScore * 0.5); // Weight synergy slightly less than direct counters
+        }
       }
 
       const tierWeight = TIER_WEIGHT[hero.tier] ?? 1.0;
