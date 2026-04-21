@@ -704,12 +704,12 @@ function initVisionScanner(): void {
 function renderBanSuggestions(
   list: HTMLElement,
   badge: HTMLElement,
-  allyPickIds: number[],
-  enemyPickIds: number[],
-  existingBanIds: number[]
+  allyPickIds: number[] = [],
+  enemyPickIds: number[] = [],
+  existingBanIds: number[] = []
 ): void {
   const suggestions = banAdvisor.getSuggestedBans(
-    allyPickIds, enemyPickIds, existingBanIds, 6
+    allyPickIds ?? [], enemyPickIds ?? [], existingBanIds ?? [], 6
   );
 
   const phase = allyPickIds.length > 0 ? 'Protective' : 'Meta';

@@ -36,19 +36,88 @@ type APIData struct {
 	Matchups map[string]map[string]APIMatchup `json:"matchups"`
 }
 
+type HeroRaw struct {
+	ID             int     `json:"id"`
+	GoldReliance   float64 `json:"goldReliance"`
+	BuffDependency string  `json:"buffDependency"`
+}
+
+type HeroData struct {
+	Heroes []HeroRaw `json:"heroes"`
+}
+
+type HeroResourceProfile struct {
+	GoldReliance   int    `json:"goldReliance"`
+	BuffDependency string `json:"buffDependency"`
+}
+
 // Final output schema
 type V2Schema struct {
 	GeneratedAt string                       `json:"generated_at"`
 	DataSource  string                       `json:"data_source"`
 	Matchups    map[string]map[string]float64 `json:"matchups"`
+	HeroProfiles map[string]HeroResourceProfile `json:"hero_profiles"`
 }
 
 const (
 	communityAPIURL = "https://raw.githubusercontent.com/p3hndrx/MLBB-API/main/api_counters.json"
 	baselinePath    = "./data/raw/baseline.json"
+	heroesPath      = "./data/processed/v1_heroes.json"
 	outputPath      = "./data/processed/v2_schema.json"
 	zScoreThreshold = 2.5 // Max standard deviations allowed before dropping
 )
+
+func normalizeGoldReliance(value float64) int {
+	if math.IsNaN(value) || math.IsInf(value, 0) {
+		return 5
+	}
+	rounded := int(math.Round(value))
+	if rounded < 1 {
+		return 1
+	}
+	if rounded > 10 {
+		return 10
+	}
+	return rounded
+}
+
+func normalizeBuffDependency(value string) string {
+	switch value {
+	case "Purple", "Red", "None":
+		return value
+	default:
+		return "None"
+	}
+}
+
+func loadHeroProfiles(path string) map[string]HeroResourceProfile {
+	profiles := make(map[string]HeroResourceProfile)
+
+	file, err := os.ReadFile(path)
+	if err != nil {
+		log.Printf("[WARNING] Could not read hero source (%v). Using empty hero_profiles.", err)
+		return profiles
+	}
+
+	var heroesData HeroData
+	if err := json.Unmarshal(file, &heroesData); err != nil {
+		log.Printf("[WARNING] Could not parse hero source (%v). Using empty hero_profiles.", err)
+		return profiles
+	}
+
+	for _, h := range heroesData.Heroes {
+		if h.ID <= 0 {
+			continue
+		}
+		key := fmt.Sprintf("%d", h.ID)
+		profiles[key] = HeroResourceProfile{
+			GoldReliance:   normalizeGoldReliance(h.GoldReliance),
+			BuffDependency: normalizeBuffDependency(h.BuffDependency),
+		}
+	}
+
+	return profiles
+}
 
 func main() {
 	log.Println("[ENGINE] Booting Zero-Trust Aggregator Pipeline...")
@@ -206,6 +275,7 @@ func main() {
 		GeneratedAt: time.Now().UTC().Format(time.RFC3339),
 		DataSource:  dataSource,
 		Matchups:    finalMatchups,
+		HeroProfiles: loadHeroProfiles(heroesPath),
 	}
 
 	outBytes, err := json.MarshalIndent(output, "", "  ")

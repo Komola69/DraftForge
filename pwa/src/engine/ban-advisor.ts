@@ -121,7 +121,7 @@ export class BanAdvisor {
    * Total = sum across all allies + tier bonus
    */
   getProtectiveBans(
-    allyPickIds: number[],
+    allyPickIds: number[] = [],
     alreadyUnavailable: number[] = [],
     limit: number = 5
   ): BanSuggestion[] {
@@ -146,8 +146,8 @@ export class BanAdvisor {
       let totalThreat = 0;
 
       for (const ally of allyHeroes) {
-        // Positive score means candidate counters the ally
-        const threat = this.data.getMatchupScore(candidate.id, ally.id);
+        // Clamp negatives so weak matchups never invert protective-ban math.
+        const threat = Math.max(0, this.data.getMatchupScore(candidate.id, ally.id));
         if (threat > 0) {
           threats.push({ allyName: ally.name, threat });
           totalThreat += threat;
@@ -198,9 +198,9 @@ export class BanAdvisor {
    * Otherwise → meta bans.
    */
   getSuggestedBans(
-    allyPickIds: number[],
-    enemyPickIds: number[],
-    existingBanIds: number[],
+    allyPickIds: number[] = [],
+    enemyPickIds: number[] = [],
+    existingBanIds: number[] = [],
     limit: number = 5
   ): BanSuggestion[] {
     const unavailable = [...allyPickIds, ...enemyPickIds, ...existingBanIds];

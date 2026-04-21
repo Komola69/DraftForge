@@ -68,7 +68,11 @@ export class TeamBuilder {
       return { valid: true, scorePenalty: 0 };
     }
 
-    const totalGoldReliance = slots.reduce((sum, slot) => sum + slot.hero.goldReliance, 0);
+    const totalGoldReliance = slots.reduce((sum, slot) => {
+      const parsed = Number(slot.hero.goldReliance);
+      const safeGoldReliance = Number.isFinite(parsed) ? parsed : 5;
+      return sum + safeGoldReliance;
+    }, 0);
     const strictPurpleCount = slots.reduce(
       (sum, slot) => sum + (slot.hero.buffDependency === 'Purple' ? 1 : 0),
       0
