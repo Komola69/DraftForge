@@ -6,6 +6,35 @@ const DIR_PROCESSED = path.resolve('./data/processed');
 
 const rawMeta = JSON.parse(fs.readFileSync(path.join(DIR_RAW, 'hero-meta-final.json'), 'utf8'));
 
+const PURPLE_DEPENDENT_HEROES = new Set(['fanny', 'ling']);
+const HIGH_GOLD_RELIANCE_HEROES = new Set(['aldous', 'cecilion', 'miya', 'alice']);
+
+function inferGoldReliance(rawHero, roles) {
+  const explicit = Number(rawHero.goldReliance);
+  if (!Number.isNaN(explicit) && explicit > 0) {
+    return Math.max(1, Math.min(10, Math.round(explicit)));
+  }
+
+  const key = String(rawHero.hero_name || '').toLowerCase();
+  if (HIGH_GOLD_RELIANCE_HEROES.has(key)) return 9;
+  if (roles.includes('marksman')) return 7;
+  if (roles.includes('assassin')) return 6;
+  if (roles.includes('mage')) return 6;
+  if (roles.includes('tank') || roles.includes('support')) return 3;
+  return 5;
+}
+
+function inferBuffDependency(rawHero) {
+  const explicit = rawHero.buffDependency;
+  if (explicit === 'Purple' || explicit === 'Red' || explicit === 'None') {
+    return explicit;
+  }
+
+  const key = String(rawHero.hero_name || '').toLowerCase();
+  if (PURPLE_DEPENDENT_HEROES.has(key)) return 'Purple';
+  return 'None';
+}
+
 // We will build a completely new Hero DB and Matchup DB
 const heroesList = [];
 const nameToId = new Map();
@@ -56,7 +85,9 @@ for (const rawHero of rawMeta.data) {
     roles,
     lanes,
     tier: "A", // Default tier, engine will adjust
-    base_wr: 50.0 // Default WR
+    base_wr: 50.0, // Default WR
+    goldReliance: inferGoldReliance(rawHero, roles),
+    buffDependency: inferBuffDependency(rawHero)
   });
   
   nameToId.set(name.toLowerCase(), id);

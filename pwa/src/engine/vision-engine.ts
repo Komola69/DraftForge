@@ -4,7 +4,6 @@
  * grayscale images to match screenshots of heroes to our portrait database.
  */
 
-import type { Hero } from './types';
 import portraitMap from '../../../data/processed/v1_portraits.json';
 import { DataLoader } from './data-loader';
 

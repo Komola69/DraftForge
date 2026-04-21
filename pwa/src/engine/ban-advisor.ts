@@ -23,6 +23,9 @@ const TIER_WEIGHT: Record<string, number> = {
   'S': 1.30, 'A': 1.10, 'B': 1.00, 'C': 0.85, 'D': 0.70,
 };
 
+const PHASE2_ALLY_LOCK_COUNT = 3;
+const TARGETED_THREAT_SCALE = 12;
+
 /** Threshold: a hero is "countered" if someone scores >= this against them */
 const COUNTER_THRESHOLD = 3.0;
 
@@ -128,6 +131,7 @@ export class BanAdvisor {
 
     const unavailable = new Set(alreadyUnavailable);
     const allHeroes = this.data.getAllHeroes().filter(h => !unavailable.has(h.id));
+    const isTargetedPhase = allyPickIds.length >= PHASE2_ALLY_LOCK_COUNT;
 
     // Get ally hero names for display
     const allyHeroes = allyPickIds
@@ -150,8 +154,13 @@ export class BanAdvisor {
         }
       }
 
-      // Final score: total threat to allies × tier weight
-      const banScore = totalThreat * tierW;
+      // Phase-2 targeted boost: amplify candidates that hard-counter current locked allies.
+      const targetedThreatModifier = isTargetedPhase
+        ? 1 + (totalThreat / TARGETED_THREAT_SCALE)
+        : 1;
+
+      // Final score: total threat to allies × tier weight × phase modifier
+      const banScore = totalThreat * tierW * targetedThreatModifier;
 
       // Build reason string
       let reason: string;
@@ -160,7 +169,11 @@ export class BanAdvisor {
           .sort((a, b) => b.threat - a.threat)
           .slice(0, 3)
           .map(t => `${t.allyName} (+${t.threat.toFixed(1)})`);
-        reason = `Threatens your ${threatStrs.join(', ')}`;
+        if (isTargetedPhase) {
+          reason = `Phase 2 targeted ban: hard-counters your ${threatStrs.join(', ')}`;
+        } else {
+          reason = `Threatens your ${threatStrs.join(', ')}`;
+        }
       } else {
         reason = `Tier ${candidate.tier} meta threat`;
       }
@@ -192,7 +205,7 @@ export class BanAdvisor {
   ): BanSuggestion[] {
     const unavailable = [...allyPickIds, ...enemyPickIds, ...existingBanIds];
 
-    if (allyPickIds.length > 0) {
+    if (allyPickIds.length >= PHASE2_ALLY_LOCK_COUNT) {
       return this.getProtectiveBans(allyPickIds, unavailable, limit);
     }
 

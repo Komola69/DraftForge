@@ -11,6 +11,10 @@ export interface Hero {
   lanes: string[];
   tier: string;
   base_wr: number;
+  /** 1-10 scale: higher means hero is heavily farm-dependent */
+  goldReliance: number;
+  /** Core buff dependency for map resource conflict checks */
+  buffDependency: 'Purple' | 'Red' | 'None';
 }
 
 export interface HeroDatabase {

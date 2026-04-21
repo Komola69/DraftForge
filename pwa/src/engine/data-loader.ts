@@ -11,6 +11,16 @@
 import type { Hero, HeroDatabase, MatchupMatrix, BuildDatabase, BuildEntry } from './types';
 
 const SUPPORTED_SCHEMAS = ['1.0.0', '2.0.0'];
+const DEFAULT_GOLD_RELIANCE = 5;
+
+function normalizeGoldReliance(value: unknown): number {
+  if (typeof value !== 'number' || Number.isNaN(value)) return DEFAULT_GOLD_RELIANCE;
+  return Math.max(1, Math.min(10, Math.round(value)));
+}
+
+function normalizeBuffDependency(value: unknown): Hero['buffDependency'] {
+  return value === 'Purple' || value === 'Red' || value === 'None' ? value : 'None';
+}
 
 export class DataLoader {
   private heroes: Map<number, Hero> = new Map();
@@ -46,7 +56,13 @@ export class DataLoader {
     // Build hero lookup maps
     this.heroes.clear();
     this.heroByName.clear();
-    for (const hero of heroData.heroes) {
+    for (const rawHero of heroData.heroes) {
+      const hero: Hero = {
+        ...rawHero,
+        goldReliance: normalizeGoldReliance((rawHero as Partial<Hero>).goldReliance),
+        buffDependency: normalizeBuffDependency((rawHero as Partial<Hero>).buffDependency),
+      };
+
       this.heroes.set(hero.id, hero);
       this.heroByName.set(hero.name.toLowerCase(), hero);
     }

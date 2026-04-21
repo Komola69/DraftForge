@@ -27,9 +27,13 @@ const POSITION_LABELS: Record<Position, string> = {
   jungle: 'Jungler',
 };
 
-const TIER_WEIGHT: Record<string, number> = {
-  'S': 1.15, 'A': 1.05, 'B': 1.00, 'C': 0.90, 'D': 0.75,
-};
+const MAX_SAFE_GOLD_RELIANCE = 35;
+const GOLD_STARVATION_PENALTY = 35.0;
+
+interface CompositionValidationResult {
+  valid: boolean;
+  scorePenalty: number;
+}
 
 export interface TeamSlot {
   position: Position;
@@ -52,6 +56,30 @@ export class TeamBuilder {
 
   constructor(dataLoader: DataLoader) {
     this.data = dataLoader;
+  }
+
+  /**
+   * Macro composition validation:
+   * 1) Penalize teams that over-index into farm-dependent late-game carries.
+   * 2) Invalidate drafts with hard buff contention (multiple strict Purple heroes).
+   */
+  private compositionValidator(slots: TeamSlot[]): CompositionValidationResult {
+    if (slots.length !== 5) {
+      return { valid: true, scorePenalty: 0 };
+    }
+
+    const totalGoldReliance = slots.reduce((sum, slot) => sum + slot.hero.goldReliance, 0);
+    const strictPurpleCount = slots.reduce(
+      (sum, slot) => sum + (slot.hero.buffDependency === 'Purple' ? 1 : 0),
+      0
+    );
+
+    if (strictPurpleCount > 1) {
+      return { valid: false, scorePenalty: 0 };
+    }
+
+    const scorePenalty = totalGoldReliance > MAX_SAFE_GOLD_RELIANCE ? -GOLD_STARVATION_PENALTY : 0;
+    return { valid: true, scorePenalty };
   }
 
   /**
@@ -140,7 +168,7 @@ export class TeamBuilder {
     });
 
     // Bounded Beam Search: Max Width 3, Depth 5 (O(3^5) = 243 operations)
-    function recursiveBuild(depth: number, currentSlots: TeamSlot[], currentUsed: Set<number>): TeamSlot[] | null {
+    const recursiveBuild = (depth: number, currentSlots: TeamSlot[], currentUsed: Set<number>): TeamSlot[] | null => {
       if (depth === 5) return currentSlots;
 
       const pos = posOrder[depth];
@@ -184,6 +212,14 @@ export class TeamBuilder {
             }
           }
 
+          if (depth === 0 && result.length === 5) {
+            const validation = this.compositionValidator(result);
+            if (!validation.valid) {
+              continue;
+            }
+            branchScore += validation.scorePenalty;
+          }
+
           if (branchScore > bestScore) {
             bestScore = branchScore;
             bestBranch = result;
@@ -191,7 +227,7 @@ export class TeamBuilder {
         }
       }
       return bestBranch;
-    }
+    };
 
     let slots = recursiveBuild(0, [], new Set<number>()) || [];
 

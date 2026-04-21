@@ -184,7 +184,12 @@ function initDraftToggle(): void {
   } else {
     overlayBtn.addEventListener('click', async () => {
       try {
-        await Capacitor.Plugins.FloatingOverlay.startOverlay();
+        const floatingOverlay = (Capacitor as any).Plugins?.FloatingOverlay;
+        if (!floatingOverlay?.startOverlay) {
+          alert('Floating overlay plugin is unavailable on this build.');
+          return;
+        }
+        await floatingOverlay.startOverlay();
       } catch (e) {
         alert('Failed to start overlay. Permission needed.');
       }
@@ -478,7 +483,7 @@ function initResultsPanel(): void {
 
     let results: ScoredHero[];
     if (resultsTab === 'counters') {
-      results = engine.getCounterPicks(enemyIds, { limit: 15 });
+      results = engine.getCounterPicks(enemyIds, allyPickIds, { limit: 15 });
     } else {
       results = engine.getWeakPicks(enemyIds, 10);
     }
