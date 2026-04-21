@@ -92,8 +92,10 @@ export function calculateHeroScore(
     weightedScore -= safetyPenalty;
     
     // Add base WR boost to differentiate heroes when enemyIds is 0
+    // Safeguard against NaN in case base_wr is missing from the JSON schema
     if (enemyIds.length === 0) {
-       weightedScore += (hero.base_wr - 50); // Usually around -5 to +5
+       const safeWr = (typeof hero.base_wr === 'number' && !isNaN(hero.base_wr)) ? hero.base_wr : 50;
+       weightedScore += (safeWr - 50); // Usually around -5 to +5
     }
   }
 

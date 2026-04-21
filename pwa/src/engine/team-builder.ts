@@ -49,7 +49,6 @@ export interface TeamSuggestion {
 
 export class TeamBuilder {
   private data: DataLoader;
-  public state: { bannedHeroes: number[] } = { bannedHeroes: [] };
 
   constructor(dataLoader: DataLoader) {
     this.data = dataLoader;
@@ -92,9 +91,7 @@ export class TeamBuilder {
       return { mode: 'balanced', label: `Set ${setNumber}`, slots: [], totalScore: 0, coverage: 0 };
     }
 
-    const allHeroes = this.data.getAllHeroes().filter(h => 
-      !excludeIds.has(h.id) && !this.state.bannedHeroes.includes(h.id)
-    );
+    const allHeroes = this.data.getAllHeroes().filter(h => !excludeIds.has(h.id));
 
     const scored = allHeroes.map(hero => {
       const { weightedScore, breakdown } = calculateHeroScore(this.data, hero, enemyIds);
@@ -170,6 +167,7 @@ export class TeamBuilder {
           let branchScore = result.reduce((sum, s) => sum + s.score, 0);
           
           // The Damage-Type Monopoly Fix: Penalize compositions skewed heavily to one damage type
+          // Dynamically map damage types using roles (Mage = Magic) and known non-Mage magic users.
           if (depth === 0 && result.length === 5) {
             let magicCount = 0;
             let physCount = 0;
@@ -223,9 +221,7 @@ export class TeamBuilder {
     }
 
     const excludeSet = new Set([...excludeIds, ...enemyIds]);
-    const allHeroes = this.data.getAllHeroes().filter(h => 
-      !excludeSet.has(h.id) && !this.state.bannedHeroes.includes(h.id)
-    );
+    const allHeroes = this.data.getAllHeroes().filter(h => !excludeSet.has(h.id));
 
     const allScored = allHeroes
       .map(hero => {
