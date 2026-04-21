@@ -14,6 +14,7 @@
 
 import type { Hero, MatchupBreakdown } from './types';
 import { DataLoader } from './data-loader';
+import { calculateHeroScore } from './draft-engine';
 
 export const POSITIONS = ['exp', 'gold', 'mid', 'roam', 'jungle'] as const;
 export type Position = typeof POSITIONS[number];
@@ -92,11 +93,14 @@ export class TeamBuilder {
 
     const allHeroes = this.data.getAllHeroes().filter(h => !excludeIds.has(h.id));
 
-    const scored = allHeroes.map(hero => ({
-      hero,
-      score: this.scoreHero(hero, enemyIds),
-      breakdown: this.getBreakdown(hero, enemyIds),
-    }));
+    const scored = allHeroes.map(hero => {
+      const { weightedScore, breakdown } = calculateHeroScore(this.data, hero, enemyIds);
+      return {
+        hero,
+        score: weightedScore,
+        breakdown,
+      };
+    });
 
     const lanePool: Record<Position, typeof scored> = {
       exp: [], gold: [], mid: [], roam: [], jungle: [],
@@ -118,7 +122,14 @@ export class TeamBuilder {
     }
 
     for (const pos of POSITIONS) {
-      lanePool[pos].sort((a, b) => b.score - a.score);
+      lanePool[pos].sort((a, b) => {
+        const aNative = a.hero.lanes.includes(pos) ? 1 : 0;
+        const bNative = b.hero.lanes.includes(pos) ? 1 : 0;
+        if (aNative !== bNative) {
+          return bNative - aNative;
+        }
+        return b.score - a.score;
+      });
     }
 
     // Sort by most constrained lane first, ignoring flex-pick padding
@@ -194,11 +205,14 @@ export class TeamBuilder {
     const allHeroes = this.data.getAllHeroes().filter(h => !excludeSet.has(h.id));
 
     const allScored = allHeroes
-      .map(hero => ({
-        hero,
-        score: this.scoreHero(hero, enemyIds),
-        breakdown: this.getBreakdown(hero, enemyIds),
-      }))
+      .map(hero => {
+        const { weightedScore, breakdown } = calculateHeroScore(this.data, hero, enemyIds);
+        return {
+          hero,
+          score: weightedScore,
+          breakdown,
+        };
+      })
       .sort((a, b) => b.score - a.score);
 
     const scored = allScored.slice(0, 10);
@@ -258,32 +272,4 @@ export class TeamBuilder {
     };
   }
 
-  private scoreHero(hero: Hero, enemyIds: number[]): number {
-    let raw = 0;
-    let minScore = 0;
-    for (const eid of enemyIds) {
-      const score = this.data.getMatchupScore(hero.id, eid);
-      raw += score;
-      if (score < minScore) {
-        minScore = score;
-      }
-    }
-    const weight = TIER_WEIGHT[hero.tier] ?? 1.0;
-    let weightedScore = raw * weight;
-
-    // The Esmeralda-Aldous Rule: Exponential Penalty for Hard Counters
-    if (minScore <= -3) {
-      weightedScore -= (minScore * minScore);
-    }
-    
-    return Math.round(weightedScore * 100) / 100;
-  }
-
-  private getBreakdown(hero: Hero, enemyIds: number[]): MatchupBreakdown[] {
-    return enemyIds.map(eid => ({
-      enemy_id: eid,
-      enemy_name: this.data.getHero(eid)?.name ?? `Unknown(${eid})`,
-      score: this.data.getMatchupScore(hero.id, eid),
-    }));
-  }
 }

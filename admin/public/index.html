@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DraftForge - Easy Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+
+    <div class="dashboard">
+        <header>
+            <h1>DraftForge <span>Simple Control</span></h1>
+            <p>Manage your app without touching any code.</p>
+        </header>
+
+        <!-- New Quick Start Guide -->
+        <section class="glass-card full-width guide-card">
+            <h2>How do I use this?</h2>
+            <div class="guide-steps">
+                <div class="step">
+                    <span class="step-num">1</span>
+                    <p><strong>Check the Health:</strong> If you see "Working Great" in green, you're all set.</p>
+                </div>
+                <div class="step">
+                    <span class="step-num">2</span>
+                    <p><strong>Allow Updates:</strong> If the game releases a new version, just turn the switch "ON" below.</p>
+                </div>
+                <div class="step">
+                    <span class="step-num">3</span>
+                    <p><strong>Refresh Everything:</strong> Click the big button at the bottom to get the latest hero data.</p>
+                </div>
+            </div>
+        </section>
+
+        <main class="grid-container">
+            <!-- App Compatibility -->
+            <section class="glass-card">
+                <h2>Game Version Support</h2>
+                <p class="subtitle">Which versions of the game should work?</p>
+                <div class="schema-controls" id="schemaControls">
+                    <!-- Toggles rendered by JS -->
+                </div>
+                <button class="btn btn-save" id="btnSaveSchemas">Confirm Changes</button>
+            </section>
+
+            <!-- Health Check -->
+            <section class="glass-card">
+                <h2>System Health Check</h2>
+                <p class="subtitle">Is the "Brain" of the app working?</p>
+                <div class="diagnostics-list">
+                    <div class="diag-item">
+                        <span class="diag-label">Counter Calculations</span>
+                        <div class="status-badge" id="statusSynergy">
+                            <span class="indicator"></span><span class="text">Checking...</span>
+                        </div>
+                    </div>
+                    <div class="diag-item">
+                        <span class="diag-label">Smart Sorting</span>
+                        <div class="status-badge" id="statusConstraints">
+                            <span class="indicator"></span><span class="text">Checking...</span>
+                        </div>
+                    </div>
+                    <div class="diag-item">
+                        <span class="diag-label">Memory Loading</span>
+                        <div class="status-badge" id="statusCache">
+                            <span class="indicator"></span><span class="text">Checking...</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-refresh" id="btnRefreshDiag">Check Again</button>
+            </section>
+
+            <!-- Update App -->
+            <section class="glass-card full-width">
+                <h2>Sync & Update App</h2>
+                <p class="subtitle">Click this to fetch the latest heroes and refresh the whole system.</p>
+                <button class="btn btn-primary btn-execute" id="btnRunPipeline">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"></path></svg>
+                    Refresh Hero Data & App Update
+                </button>
+                <div class="terminal" id="terminal">
+                    <div class="terminal-header">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                        <span class="terminal-title">Progress Report</span>
+                    </div>
+                    <div class="terminal-body" id="terminalOutput">
+                        <div class="log-line text-muted">Waiting for you to click the button...</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

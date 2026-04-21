@@ -35,6 +35,55 @@ const TIER_RANK: Record<string, number> = {
   'S': 0, 'A': 1, 'B': 2, 'C': 3, 'D': 4,
 };
 
+export function calculateHeroScore(
+  data: DataLoader,
+  hero: Hero,
+  enemyIds: number[],
+  allyIds: number[] = []
+): { rawScore: number; weightedScore: number; minScore: number; breakdown: MatchupBreakdown[] } {
+  const breakdown: MatchupBreakdown[] = [];
+  let rawScore = 0;
+  let minScore = 0;
+
+  for (const enemyId of enemyIds) {
+    const score = data.getMatchupScore(hero.id, enemyId);
+    rawScore += score;
+    if (score < minScore) {
+      minScore = score;
+    }
+
+    const enemy = data.getHero(enemyId);
+    breakdown.push({
+      enemy_id: enemyId,
+      enemy_name: enemy?.name ?? `Unknown(${enemyId})`,
+      score,
+    });
+  }
+
+  // Add synergy scores from allies
+  for (const allyId of allyIds) {
+    const synScore = (data as any).getSynergyScore ? (data as any).getSynergyScore(hero.id, allyId) : 0; 
+    if (synScore > 0) {
+      rawScore += (synScore * 0.5);
+    }
+  }
+
+  const tierWeight = TIER_WEIGHT[hero.tier] ?? 1.0;
+  let weightedScore = rawScore * tierWeight;
+
+  // The Esmeralda-Aldous Rule: Exponential Penalty for Hard Counters
+  if (minScore <= -3) {
+    weightedScore -= (minScore * minScore);
+  }
+
+  return {
+    rawScore,
+    weightedScore: Math.round(weightedScore * 100) / 100,
+    minScore,
+    breakdown
+  };
+}
+
 export class DraftEngine {
   private data: DataLoader;
 
@@ -69,48 +118,12 @@ export class DraftEngine {
       // Apply filters before scoring (skip early = faster)
       if (!this.passesFilter(hero, filter)) continue;
 
-      // Score this hero against all enemies
-      const breakdown: MatchupBreakdown[] = [];
-      let rawScore = 0;
-      let minScore = 0;
-
-      for (const enemyId of enemyIds) {
-        const score = this.data.getMatchupScore(hero.id, enemyId);
-        rawScore += score;
-        if (score < minScore) {
-          minScore = score;
-        }
-
-        const enemy = this.data.getHero(enemyId);
-        breakdown.push({
-          enemy_id: enemyId,
-          enemy_name: enemy?.name ?? `Unknown(${enemyId})`,
-          score,
-        });
-      }
-
-      // Add synergy scores from allies
-      for (const allyId of allyIds) {
-        // FIXED: Do not use getMatchupScore for synergy! That measures how much they counter each other.
-        // We will call a dedicated getSynergyScore method (which returns 0 if no data is available).
-        const synScore = (this.data as any).getSynergyScore ? (this.data as any).getSynergyScore(hero.id, allyId) : 0; 
-        if (synScore > 0) {
-          rawScore += (synScore * 0.5); // Weight synergy slightly less than direct counters
-        }
-      }
-
-      const tierWeight = TIER_WEIGHT[hero.tier] ?? 1.0;
-      let weightedScore = rawScore * tierWeight;
-
-      // The Esmeralda-Aldous Rule: Exponential Penalty for Hard Counters
-      if (minScore <= -3) {
-        weightedScore -= (minScore * minScore);
-      }
+      const { rawScore, weightedScore, breakdown } = calculateHeroScore(this.data, hero, enemyIds, allyIds);
 
       results.push({
         hero,
         raw_score: rawScore,
-        weighted_score: Math.round(weightedScore * 100) / 100,
+        weighted_score: weightedScore,
         breakdown,
         build: this.data.getBuild(hero.id),
       });

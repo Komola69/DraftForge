@@ -10,7 +10,7 @@
 
 import type { Hero, HeroDatabase, MatchupMatrix, BuildDatabase, BuildEntry } from './types';
 
-const SUPPORTED_SCHEMA = '1.0.0';
+const SUPPORTED_SCHEMAS = ['1.0.0', '2.0.0'];
 
 export class DataLoader {
   private heroes: Map<number, Hero> = new Map();
@@ -19,6 +19,15 @@ export class DataLoader {
   private builds: Record<string, BuildEntry> = {};
   private _loaded = false;
   private _gameVersion = '';
+  private onLoadCallbacks: Array<() => void> = [];
+
+  onLoad(callback: () => void) {
+    if (this._loaded) {
+      callback();
+    } else {
+      this.onLoadCallbacks.push(callback);
+    }
+  }
 
   get loaded(): boolean { return this._loaded; }
   get gameVersion(): string { return this._gameVersion; }
@@ -48,6 +57,7 @@ export class DataLoader {
 
     this._gameVersion = heroData.game_version;
     this._loaded = true;
+    this.onLoadCallbacks.forEach(cb => cb());
   }
 
   /** Get hero by numeric ID. Returns undefined if not found. */
@@ -81,10 +91,8 @@ export class DataLoader {
   }
 
   private validateSchema(dataName: string, version: string): void {
-    if (!version || (!version.startsWith('1.') && !version.startsWith('2.'))) {
-      console.warn(
-        `Schema mismatch warning for ${dataName}: expected v1 or v2, got ${version}`
-      );
+    if (!version || !SUPPORTED_SCHEMAS.includes(version)) {
+      throw new Error(`Fatal: Schema mismatch for ${dataName}. Expected one of ${SUPPORTED_SCHEMAS.join(', ')}, got ${version}`);
     }
   }
 }
