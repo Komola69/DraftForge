@@ -11,6 +11,7 @@ import { Capacitor } from '@capacitor/core';
 import heroData from '../../../data/processed/v1_heroes.json';
 import buildData from '../../../data/processed/v1_builds.json';
 import portraitMap from '../../../data/processed/v1_portraits.json';
+import v1MatchupData from '../../../data/processed/v1_matchups.json';
 
 export let engine: DraftEngine;
 export let loader: DataLoader;
@@ -56,23 +57,52 @@ export function getRoleColor(role: string): string {
 }
 
 export async function initApp(): Promise<void> {
-  const timestamp = new Date().getTime();
-  const res = await fetch(`/data/processed/v2_schema.json?bust=${timestamp}`);
-  const dynamicMatchupData = await res.json();
+  const app = document.getElementById('app')!;
+  
+  // 1. Immediate loading state to prevent black screen
+  app.innerHTML = `
+    <div style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-muted);">
+      <div style="width:40px; height:40px; border:3px solid rgba(99, 102, 241, 0.2); border-top-color:var(--accent); border-radius:50%; animation:spin 1s linear infinite;"></div>
+      <p style="margin-top:16px; font-weight:500; letter-spacing:0.5px;">INITIALIZING ENGINE...</p>
+      <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+    </div>
+  `;
 
+  const timestamp = new Date().getTime();
+  let dynamicMatchupData;
+  
+  // 2. Robust data loading with SPA-safe fallback
+  try {
+    const res = await fetch(`/data/processed/v2_schema.json?bust=${timestamp}`);
+    const contentType = res.headers.get('content-type') || '';
+    
+    if (!res.ok || contentType.includes('text/html')) {
+      throw new Error('v2_schema.json missing or invalid (got HTML)');
+    }
+    
+    dynamicMatchupData = await res.json();
+  } catch (e) {
+    console.warn('[DraftForge] Using local v1 static fallback:', e);
+    dynamicMatchupData = v1MatchupData;
+  }
+
+  // 3. Component initialization
   loader = new DataLoader();
   loader.load(
     heroData as unknown as HeroDatabase,
     dynamicMatchupData as unknown as MatchupMatrix,
     buildData as unknown as BuildDatabase
   );
+
   engine = new DraftEngine(loader);
   teamBuilder = new TeamBuilder(loader);
   banAdvisor = new BanAdvisor(loader);
   vision = new VisionEngine(loader);
-  vision.init(); // async
+  
+  // 4. Async vision init (don't block the UI render)
+  vision.init().catch(e => console.error('[VisionEngine] Failed to init:', e));
 
-  const app = document.getElementById('app')!;
+  // 5. Render Main UI
   app.innerHTML = `
     <header class="header" id="header">
       <div class="header__logo">
@@ -211,7 +241,14 @@ function initDraftBar(): void {
   tapActions.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest('.tap-btn') as HTMLElement | null;
     if (!btn) return;
-    store.set('tapAction', btn.dataset.action as any);
+    
+    const action = btn.dataset.action as any;
+    store.set('tapAction', action);
+    
+    // Automatically switch the results tab to match the current draft action
+    if (action === 'ban') store.set('resultsTab', 'bans');
+    else if (action === 'ally_pick') store.set('resultsTab', 'team');
+    else if (action === 'enemy_pick') store.set('resultsTab', 'counters');
   });
 
   function renderBans(): void {
@@ -448,7 +485,8 @@ function initResultsPanel(): void {
     const { enemyIds, resultsTab, expandedResultId, bannedIds, allyPickIds } = store.get();
 
     const hasEnemies = enemyIds.length > 0;
-    const showPanel = hasEnemies || resultsTab === 'bans';
+    const hasDraftAction = bannedIds.length > 0 || allyPickIds.length > 0;
+    const showPanel = hasEnemies || resultsTab === 'bans' || resultsTab === 'team' || hasDraftAction;
     panel.classList.toggle('results-panel--open', showPanel);
     heroPanel.classList.toggle('hero-panel--shrunk', showPanel);
 
