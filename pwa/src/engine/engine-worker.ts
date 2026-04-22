@@ -7,7 +7,7 @@
  */
 
 import { calculateHeroScore } from './draft-engine';
-import type { Hero, MatchupMatrix, SynergyDatabase } from './types';
+import type { Hero, MatchupMatrix } from './types';
 
 // ============================================================
 // Worker-side DataLoader Shim
@@ -55,7 +55,7 @@ self.onmessage = (e: MessageEvent) => {
   }
 
   if (type === 'counterPicks') {
-    const { enemyIds, allyIds, filter, limit } = payload;
+    const { enemyIds, filter, limit } = payload;
     const enemySet = new Set(enemyIds);
     const results = [];
 
@@ -76,7 +76,7 @@ self.onmessage = (e: MessageEvent) => {
         }
       }
 
-      const scoreResult = calculateHeroScore(data as any, hero, enemyIds, allyIds);
+      const scoreResult = calculateHeroScore(data as any, hero, enemyIds);
 
       results.push({
         hero,

@@ -4,6 +4,13 @@
  * Every other module depends on these — change carefully.
  */
 
+export type HeroTag = 
+  | 'BLINK' | 'DASH' | 'CABLE' | 'ANTI_DASH' | 'SUPPRESS' | 'STUN' | 'SILENCE' | 'GROUNDED'
+  | 'HEAL' | 'SHIELD' | 'REGEN' | 'SHIELD_SHRED' | 'ANTI_HEAL' | 'TRUE_DAMAGE'
+  | 'POKE' | 'ARTILLERY' | 'DIVE' | 'BACKLINE_ACCESS' | 'AOE' | 'SINGLE_TARGET'
+  | 'HIGH_DEFENSE' | 'DAMAGE_REDUCTION' | 'PERCENT_HP_DMG' | 'PENETRATION'
+  | 'EARLY_GAME' | 'LATE_GAME' | 'MID_GAME' | 'BUFF_DEPENDENT' | 'BURST' | 'SUSTAIN';
+
 export interface Hero {
   id: number;
   name: string;
@@ -17,6 +24,8 @@ export interface Hero {
   buffDependency: 'Purple' | 'Red' | 'None';
   /** Primary damage type for team balance checks */
   primaryDamageType: 'Physical' | 'Magic';
+  /** New: Mechanical DNA tags for advanced logic */
+  tags: HeroTag[];
 }
 
 export interface SynergyDatabase {

@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "game_version": "1.8.44",
-  "generated_at": "2026-04-22T12:07:53.413Z",
+  "generated_at": "2026-04-22T15:17:21.317Z",
   "data_source": "auto_compiled",
   "hero_count": 132,
   "heroes": [
@@ -18,7 +18,12 @@
       "base_wr": 50,
       "goldReliance": 9,
       "buffDependency": "Red",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 2,
@@ -34,7 +39,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 3,
@@ -48,9 +58,15 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUPPRESS",
+        "SINGLE_TARGET",
+        "EARLY_GAME",
+        "BACKLINE_ACCESS"
+      ]
     },
     {
       "id": 4,
@@ -65,9 +81,16 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 5,
@@ -80,9 +103,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "STUN",
+        "POKE"
+      ]
     },
     {
       "id": 6,
@@ -97,7 +125,14 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "AOE",
+        "STUN",
+        "HIGH_DEFENSE",
+        "DIVE",
+        "EARLY_GAME"
+      ]
     },
     {
       "id": 7,
@@ -111,9 +146,18 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
-      "buffDependency": "Purple",
-      "primaryDamageType": "Physical"
+      "goldReliance": 5,
+      "buffDependency": "None",
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 8,
@@ -126,9 +170,15 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET"
+      ]
     },
     {
       "id": 9,
@@ -143,7 +193,12 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE"
+      ]
     },
     {
       "id": 10,
@@ -158,7 +213,12 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUPPRESS",
+        "SINGLE_TARGET",
+        "DIVE"
+      ]
     },
     {
       "id": 11,
@@ -173,9 +233,16 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME",
+        "SUSTAIN",
+        "DASH"
+      ]
     },
     {
       "id": 12,
@@ -190,7 +257,13 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SINGLE_TARGET",
+        "DASH",
+        "LATE_GAME",
+        "PENETRATION"
+      ]
     },
     {
       "id": 13,
@@ -205,7 +278,12 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "Red",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 14,
@@ -220,7 +298,12 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HEAL",
+        "AOE",
+        "EARLY_GAME"
+      ]
     },
     {
       "id": 15,
@@ -233,9 +316,15 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "BURST",
+        "STUN",
+        "SINGLE_TARGET",
+        "EARLY_GAME"
+      ]
     },
     {
       "id": 16,
@@ -249,9 +338,18 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 17,
@@ -264,9 +362,16 @@
       ],
       "tier": "S",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "Purple",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "CABLE",
+        "BLINK",
+        "DIVE",
+        "EARLY_GAME",
+        "BUFF_DEPENDENT"
+      ]
     },
     {
       "id": 18,
@@ -281,7 +386,12 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 19,
@@ -297,7 +407,13 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "AOE",
+        "STUN",
+        "HEAL",
+        "SUSTAIN"
+      ]
     },
     {
       "id": 20,
@@ -313,7 +429,13 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SHIELD",
+        "STUN",
+        "HIGH_DEFENSE",
+        "AOE"
+      ]
     },
     {
       "id": 21,
@@ -326,9 +448,15 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "Purple",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET"
+      ]
     },
     {
       "id": 22,
@@ -344,7 +472,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 23,
@@ -357,9 +490,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 24,
@@ -373,9 +511,15 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET"
+      ]
     },
     {
       "id": 25,
@@ -388,9 +532,14 @@
       ],
       "tier": "S",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 26,
@@ -406,7 +555,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 27,
@@ -422,7 +576,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 28,
@@ -438,7 +597,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 29,
@@ -453,7 +617,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 30,
@@ -469,7 +638,15 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "LATE_GAME",
+        "POKE"
+      ]
     },
     {
       "id": 31,
@@ -484,7 +661,13 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "BLINK",
+        "LATE_GAME",
+        "AOE",
+        "PENETRATION"
+      ]
     },
     {
       "id": 32,
@@ -500,7 +683,14 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE",
+        "HEAL",
+        "EARLY_GAME"
+      ]
     },
     {
       "id": 33,
@@ -513,9 +703,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 34,
@@ -530,7 +725,13 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HEAL",
+        "REGEN",
+        "AOE",
+        "BUFF_DEPENDENT"
+      ]
     },
     {
       "id": 35,
@@ -547,7 +748,15 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 36,
@@ -560,9 +769,15 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "STUN",
+        "BURST",
+        "POKE"
+      ]
     },
     {
       "id": 37,
@@ -577,7 +792,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 38,
@@ -590,9 +810,15 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "STUN",
+        "POKE",
+        "BURST"
+      ]
     },
     {
       "id": 39,
@@ -608,7 +834,15 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 40,
@@ -621,9 +855,15 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 8,
+      "goldReliance": 7,
       "buffDependency": "Red",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "TRUE_DAMAGE",
+        "PERCENT_HP_DMG",
+        "DASH",
+        "LATE_GAME"
+      ]
     },
     {
       "id": 41,
@@ -640,7 +880,15 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 42,
@@ -654,9 +902,18 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 43,
@@ -671,7 +928,12 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 44,
@@ -688,7 +950,14 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "AOE",
+        "STUN",
+        "HIGH_DEFENSE",
+        "DIVE",
+        "EARLY_GAME"
+      ]
     },
     {
       "id": 45,
@@ -703,7 +972,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 46,
@@ -716,9 +990,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 47,
@@ -731,9 +1010,14 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "BLINK",
+        "DASH",
+        "EARLY_GAME"
+      ]
     },
     {
       "id": 48,
@@ -748,7 +1032,12 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HEAL",
+        "AOE",
+        "EARLY_GAME"
+      ]
     },
     {
       "id": 49,
@@ -763,7 +1052,12 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE"
+      ]
     },
     {
       "id": 50,
@@ -776,9 +1070,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 51,
@@ -791,9 +1090,15 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET"
+      ]
     },
     {
       "id": 52,
@@ -806,9 +1111,15 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "ARTILLERY",
+        "AOE",
+        "BLINK",
+        "BURST"
+      ]
     },
     {
       "id": 53,
@@ -824,7 +1135,15 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "LATE_GAME",
+        "POKE"
+      ]
     },
     {
       "id": 54,
@@ -840,7 +1159,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 55,
@@ -855,7 +1179,12 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HEAL",
+        "SHIELD",
+        "BUFF_DEPENDENT"
+      ]
     },
     {
       "id": 56,
@@ -869,9 +1198,15 @@
       ],
       "tier": "S",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET"
+      ]
     },
     {
       "id": 57,
@@ -884,9 +1219,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 58,
@@ -901,7 +1241,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 59,
@@ -916,7 +1261,14 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "REGEN",
+        "SUSTAIN",
+        "HIGH_DEFENSE",
+        "AOE",
+        "SHIELD"
+      ]
     },
     {
       "id": 60,
@@ -930,8 +1282,14 @@
       "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
-      "buffDependency": "Red",
-      "primaryDamageType": "Physical"
+      "buffDependency": "None",
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SHIELD",
+        "AOE",
+        "LATE_GAME",
+        "POKE"
+      ]
     },
     {
       "id": 61,
@@ -944,9 +1302,15 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "ARTILLERY",
+        "POKE",
+        "AOE",
+        "SHIELD"
+      ]
     },
     {
       "id": 62,
@@ -962,7 +1326,13 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "SUPPRESS",
+        "SINGLE_TARGET",
+        "DIVE",
+        "EARLY_GAME"
+      ]
     },
     {
       "id": 63,
@@ -977,9 +1347,18 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 64,
@@ -994,7 +1373,12 @@
       "base_wr": 50,
       "goldReliance": 9,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 65,
@@ -1008,8 +1392,14 @@
       "tier": "A",
       "base_wr": 50,
       "goldReliance": 9,
-      "buffDependency": "Red",
-      "primaryDamageType": "Physical"
+      "buffDependency": "None",
+      "primaryDamageType": "Physical",
+      "tags": [
+        "BLINK",
+        "AOE",
+        "LATE_GAME",
+        "PERCENT_HP_DMG"
+      ]
     },
     {
       "id": 66,
@@ -1022,9 +1412,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 67,
@@ -1039,7 +1434,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 68,
@@ -1052,9 +1452,14 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 69,
@@ -1067,9 +1472,15 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET"
+      ]
     },
     {
       "id": 70,
@@ -1084,7 +1495,12 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE"
+      ]
     },
     {
       "id": 71,
@@ -1099,9 +1515,16 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 8,
-      "buffDependency": "Red",
-      "primaryDamageType": "Magic"
+      "goldReliance": 7,
+      "buffDependency": "None",
+      "primaryDamageType": "Magic",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE",
+        "AOE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 72,
@@ -1116,7 +1539,14 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "REGEN",
+        "TRUE_DAMAGE",
+        "DASH",
+        "EARLY_GAME",
+        "SUSTAIN"
+      ]
     },
     {
       "id": 73,
@@ -1130,9 +1560,16 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "BLINK",
+        "DASH",
+        "SHIELD",
+        "MID_GAME",
+        "AOE"
+      ]
     },
     {
       "id": 74,
@@ -1148,7 +1585,13 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "ANTI_DASH",
+        "GROUNDED",
+        "STUN",
+        "SUSTAIN"
+      ]
     },
     {
       "id": 75,
@@ -1162,9 +1605,18 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 76,
@@ -1178,9 +1630,16 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME",
+        "HEAL",
+        "EARLY_GAME"
+      ]
     },
     {
       "id": 77,
@@ -1196,7 +1655,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 78,
@@ -1211,7 +1675,13 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "ANTI_DASH",
+        "STUN",
+        "HIGH_DEFENSE",
+        "DIVE"
+      ]
     },
     {
       "id": 79,
@@ -1224,9 +1694,14 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 8,
-      "buffDependency": "Red",
-      "primaryDamageType": "Physical"
+      "goldReliance": 7,
+      "buffDependency": "None",
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 80,
@@ -1241,7 +1716,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 81,
@@ -1255,9 +1735,16 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "SHIELD",
+        "REGEN",
+        "AOE",
+        "SHIELD_SHRED",
+        "MID_GAME"
+      ]
     },
     {
       "id": 82,
@@ -1273,7 +1760,14 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "AOE",
+        "STUN",
+        "DAMAGE_REDUCTION",
+        "EARLY_GAME",
+        "SUSTAIN"
+      ]
     },
     {
       "id": 83,
@@ -1288,7 +1782,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 84,
@@ -1301,9 +1800,15 @@
       ],
       "tier": "S",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "Purple",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "BLINK",
+        "DIVE",
+        "LATE_GAME",
+        "BUFF_DEPENDENT"
+      ]
     },
     {
       "id": 85,
@@ -1319,7 +1824,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 86,
@@ -1332,9 +1842,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 87,
@@ -1349,7 +1864,13 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "ANTI_HEAL",
+        "REGEN",
+        "HIGH_DEFENSE",
+        "DIVE"
+      ]
     },
     {
       "id": 88,
@@ -1365,7 +1886,15 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 89,
@@ -1380,7 +1909,12 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 90,
@@ -1395,7 +1929,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 91,
@@ -1410,7 +1949,12 @@
       "base_wr": 50,
       "goldReliance": 9,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 92,
@@ -1426,7 +1970,13 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "SHIELD_SHRED",
+        "AOE",
+        "SUSTAIN",
+        "LATE_GAME"
+      ]
     },
     {
       "id": 93,
@@ -1441,7 +1991,14 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "AOE",
+        "STUN",
+        "HIGH_DEFENSE",
+        "DIVE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 94,
@@ -1457,7 +2014,12 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 95,
@@ -1472,7 +2034,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 96,
@@ -1485,9 +2052,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 97,
@@ -1501,9 +2073,15 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "BLINK",
+        "DASH",
+        "AOE",
+        "BACKLINE_ACCESS"
+      ]
     },
     {
       "id": 98,
@@ -1519,7 +2097,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 99,
@@ -1535,7 +2118,15 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 100,
@@ -1548,9 +2139,15 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 8,
-      "buffDependency": "Red",
-      "primaryDamageType": "Physical"
+      "goldReliance": 7,
+      "buffDependency": "None",
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SINGLE_TARGET",
+        "POKE",
+        "EARLY_GAME",
+        "PENETRATION"
+      ]
     },
     {
       "id": 101,
@@ -1563,9 +2160,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 102,
@@ -1579,9 +2181,16 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "BLINK",
+        "DASH",
+        "SHIELD",
+        "EARLY_GAME",
+        "HEAL"
+      ]
     },
     {
       "id": 103,
@@ -1595,9 +2204,18 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 104,
@@ -1613,7 +2231,12 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE"
+      ]
     },
     {
       "id": 105,
@@ -1626,9 +2249,14 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 8,
-      "buffDependency": "Red",
-      "primaryDamageType": "Physical"
+      "goldReliance": 7,
+      "buffDependency": "None",
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 106,
@@ -1643,7 +2271,13 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "ANTI_DASH",
+        "AOE",
+        "SHIELD",
+        "MID_GAME"
+      ]
     },
     {
       "id": 107,
@@ -1656,9 +2290,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 8,
-      "buffDependency": "Red",
-      "primaryDamageType": "Magic"
+      "goldReliance": 7,
+      "buffDependency": "None",
+      "primaryDamageType": "Magic",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 108,
@@ -1673,7 +2312,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 109,
@@ -1686,9 +2330,15 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET"
+      ]
     },
     {
       "id": 110,
@@ -1701,9 +2351,14 @@
       ],
       "tier": "S",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 111,
@@ -1720,7 +2375,13 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "STUN",
+        "HIGH_DEFENSE",
+        "TRUE_DAMAGE"
+      ]
     },
     {
       "id": 112,
@@ -1735,7 +2396,12 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HEAL",
+        "REGEN",
+        "AOE"
+      ]
     },
     {
       "id": 113,
@@ -1750,9 +2416,18 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 114,
@@ -1767,7 +2442,12 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 115,
@@ -1780,9 +2460,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 116,
@@ -1796,9 +2481,18 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 117,
@@ -1814,7 +2508,15 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 118,
@@ -1827,9 +2529,15 @@
       ],
       "tier": "S",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET"
+      ]
     },
     {
       "id": 119,
@@ -1842,9 +2550,15 @@
       ],
       "tier": "S",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "ARTILLERY",
+        "POKE",
+        "BACKLINE_ACCESS",
+        "BLINK"
+      ]
     },
     {
       "id": 120,
@@ -1858,9 +2572,18 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 121,
@@ -1873,9 +2596,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 8,
-      "buffDependency": "Red",
-      "primaryDamageType": "Physical"
+      "goldReliance": 7,
+      "buffDependency": "None",
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 122,
@@ -1888,9 +2616,15 @@
       ],
       "tier": "S",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET"
+      ]
     },
     {
       "id": 123,
@@ -1905,7 +2639,12 @@
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 124,
@@ -1921,7 +2660,14 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HIGH_DEFENSE",
+        "STUN",
+        "AOE",
+        "HEAL",
+        "EARLY_GAME"
+      ]
     },
     {
       "id": 125,
@@ -1934,9 +2680,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 126,
@@ -1950,9 +2701,18 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 127,
@@ -1966,9 +2726,14 @@
       ],
       "tier": "B",
       "base_wr": 50,
-      "goldReliance": 8,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 128,
@@ -1984,7 +2749,15 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HEAL",
+        "AOE",
+        "EARLY_GAME",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 129,
@@ -1997,9 +2770,14 @@
       ],
       "tier": "S",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Magic"
+      "primaryDamageType": "Magic",
+      "tags": [
+        "AOE",
+        "POKE",
+        "MID_GAME"
+      ]
     },
     {
       "id": 130,
@@ -2014,7 +2792,12 @@
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "LATE_GAME",
+        "SINGLE_TARGET",
+        "POKE"
+      ]
     },
     {
       "id": 131,
@@ -2028,9 +2811,18 @@
       ],
       "tier": "C",
       "base_wr": 50,
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "DIVE",
+        "BLINK",
+        "EARLY_GAME",
+        "SINGLE_TARGET",
+        "SUSTAIN",
+        "DASH",
+        "MID_GAME"
+      ]
     },
     {
       "id": 132,
@@ -2045,7 +2837,12 @@
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None",
-      "primaryDamageType": "Physical"
+      "primaryDamageType": "Physical",
+      "tags": [
+        "HEAL",
+        "AOE",
+        "EARLY_GAME"
+      ]
     }
   ]
 }

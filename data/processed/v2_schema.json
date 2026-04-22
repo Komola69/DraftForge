@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-22T06:52:28Z",
-  "data_source": "baseline_fallback",
+  "generated_at": "2026-04-22T20:47:37+05:30",
+  "data_source": "multi_source_consensus",
   "matchups": {
     "1": {
       "101": -7,
@@ -2668,7 +2668,7 @@
   "hero_profiles": {
     "1": {
       "goldReliance": 9,
-      "buffDependency": "None"
+      "buffDependency": "Red"
     },
     "10": {
       "goldReliance": 3,
@@ -2679,15 +2679,15 @@
       "buffDependency": "None"
     },
     "101": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "102": {
-      "goldReliance": 6,
+      "goldReliance": 3,
       "buffDependency": "None"
     },
     "103": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "104": {
@@ -2711,15 +2711,15 @@
       "buffDependency": "None"
     },
     "109": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "11": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "110": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "111": {
@@ -2731,7 +2731,7 @@
       "buffDependency": "None"
     },
     "113": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "114": {
@@ -2739,11 +2739,11 @@
       "buffDependency": "None"
     },
     "115": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "116": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "117": {
@@ -2751,11 +2751,11 @@
       "buffDependency": "None"
     },
     "118": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "119": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "12": {
@@ -2763,7 +2763,7 @@
       "buffDependency": "None"
     },
     "120": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "121": {
@@ -2771,7 +2771,7 @@
       "buffDependency": "None"
     },
     "122": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "123": {
@@ -2783,11 +2783,11 @@
       "buffDependency": "None"
     },
     "125": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "126": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "127": {
@@ -2799,19 +2799,19 @@
       "buffDependency": "None"
     },
     "129": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "13": {
       "goldReliance": 7,
-      "buffDependency": "None"
+      "buffDependency": "Red"
     },
     "130": {
       "goldReliance": 7,
       "buffDependency": "None"
     },
     "131": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "132": {
@@ -2823,15 +2823,15 @@
       "buffDependency": "None"
     },
     "15": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "16": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "17": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "Purple"
     },
     "18": {
@@ -2851,23 +2851,23 @@
       "buffDependency": "None"
     },
     "21": {
-      "goldReliance": 6,
-      "buffDependency": "None"
+      "goldReliance": 5,
+      "buffDependency": "Purple"
     },
     "22": {
       "goldReliance": 5,
       "buffDependency": "None"
     },
     "23": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "24": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "25": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "26": {
@@ -2887,7 +2887,7 @@
       "buffDependency": "None"
     },
     "3": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "30": {
@@ -2903,7 +2903,7 @@
       "buffDependency": "None"
     },
     "33": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "34": {
@@ -2915,7 +2915,7 @@
       "buffDependency": "None"
     },
     "36": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "37": {
@@ -2923,7 +2923,7 @@
       "buffDependency": "None"
     },
     "38": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "39": {
@@ -2931,19 +2931,19 @@
       "buffDependency": "None"
     },
     "4": {
-      "goldReliance": 9,
+      "goldReliance": 3,
       "buffDependency": "None"
     },
     "40": {
       "goldReliance": 7,
-      "buffDependency": "None"
+      "buffDependency": "Red"
     },
     "41": {
       "goldReliance": 3,
       "buffDependency": "None"
     },
     "42": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "43": {
@@ -2959,11 +2959,11 @@
       "buffDependency": "None"
     },
     "46": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "47": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "48": {
@@ -2975,19 +2975,19 @@
       "buffDependency": "None"
     },
     "5": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "50": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "51": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "52": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "53": {
@@ -3003,11 +3003,11 @@
       "buffDependency": "None"
     },
     "56": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "57": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "58": {
@@ -3027,7 +3027,7 @@
       "buffDependency": "None"
     },
     "61": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "62": {
@@ -3035,7 +3035,7 @@
       "buffDependency": "None"
     },
     "63": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "64": {
@@ -3043,11 +3043,11 @@
       "buffDependency": "None"
     },
     "65": {
-      "goldReliance": 7,
+      "goldReliance": 9,
       "buffDependency": "None"
     },
     "66": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "67": {
@@ -3055,15 +3055,15 @@
       "buffDependency": "None"
     },
     "68": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "69": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "7": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "70": {
@@ -3079,7 +3079,7 @@
       "buffDependency": "None"
     },
     "73": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "74": {
@@ -3087,11 +3087,11 @@
       "buffDependency": "None"
     },
     "75": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "76": {
-      "goldReliance": 6,
+      "goldReliance": 3,
       "buffDependency": "None"
     },
     "77": {
@@ -3107,7 +3107,7 @@
       "buffDependency": "None"
     },
     "8": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "80": {
@@ -3115,7 +3115,7 @@
       "buffDependency": "None"
     },
     "81": {
-      "goldReliance": 6,
+      "goldReliance": 3,
       "buffDependency": "None"
     },
     "82": {
@@ -3127,7 +3127,7 @@
       "buffDependency": "None"
     },
     "84": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "Purple"
     },
     "85": {
@@ -3135,7 +3135,7 @@
       "buffDependency": "None"
     },
     "86": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "87": {
@@ -3179,11 +3179,11 @@
       "buffDependency": "None"
     },
     "96": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "97": {
-      "goldReliance": 6,
+      "goldReliance": 5,
       "buffDependency": "None"
     },
     "98": {

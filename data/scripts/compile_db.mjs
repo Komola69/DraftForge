@@ -8,47 +8,86 @@ const rawMeta = JSON.parse(fs.readFileSync(path.join(DIR_RAW, 'hero-meta-final.j
 const metaOverrides = JSON.parse(fs.readFileSync(path.join(DIR_RAW, 'meta_overrides.json'), 'utf8'));
 const synergiesData = JSON.parse(fs.readFileSync(path.join(DIR_RAW, 'synergies.json'), 'utf8'));
 
-function inferGoldReliance(rawHero, roles) {
-  const explicit = Number(rawHero.goldReliance);
-  if (!Number.isNaN(explicit) && explicit > 0) {
-    return Math.max(1, Math.min(10, Math.round(explicit)));
-  }
+/**
+ * DNA DICTIONARY - THE ULTIMATE TRUTH
+ */
+const MASTER_DNA = {
+  // Mobility & Counters
+  'Fanny': ['CABLE', 'BLINK', 'DIVE', 'EARLY_GAME', 'BUFF_DEPENDENT'],
+  'Ling': ['BLINK', 'DIVE', 'LATE_GAME', 'BUFF_DEPENDENT'],
+  'Benedetta': ['BLINK', 'DASH', 'AOE', 'BACKLINE_ACCESS'],
+  'Lancelot': ['BLINK', 'DASH', 'EARLY_GAME'],
+  'Phoveus': ['ANTI_DASH', 'AOE', 'SHIELD', 'MID_GAME'],
+  'Minsitthar': ['ANTI_DASH', 'GROUNDED', 'STUN', 'SUSTAIN'],
+  'Khufra': ['ANTI_DASH', 'STUN', 'HIGH_DEFENSE', 'DIVE'],
+  'Saber': ['SUPPRESS', 'SINGLE_TARGET', 'EARLY_GAME', 'BACKLINE_ACCESS'],
+  'Kaja': ['SUPPRESS', 'SINGLE_TARGET', 'DIVE', 'EARLY_GAME'],
+  'Franco': ['SUPPRESS', 'SINGLE_TARGET', 'DIVE'],
 
+  // Sustain & Anti-Sustain
+  'Estes': ['HEAL', 'REGEN', 'AOE', 'BUFF_DEPENDENT'],
+  'Floryn': ['HEAL', 'REGEN', 'AOE'],
+  'Angela': ['HEAL', 'SHIELD', 'BUFF_DEPENDENT'],
+  'Baxia': ['ANTI_HEAL', 'REGEN', 'HIGH_DEFENSE', 'DIVE'],
+  'Esmeralda': ['SHIELD', 'REGEN', 'AOE', 'SHIELD_SHRED', 'MID_GAME'],
+  'Thamuz': ['REGEN', 'TRUE_DAMAGE', 'DASH', 'EARLY_GAME', 'SUSTAIN'],
+  'Karrie': ['TRUE_DAMAGE', 'PERCENT_HP_DMG', 'DASH', 'LATE_GAME'],
+  'Claude': ['BLINK', 'AOE', 'LATE_GAME', 'PERCENT_HP_DMG'],
+  'Carmilla': ['SHIELD_SHRED', 'AOE', 'SUSTAIN', 'LATE_GAME'],
+  'Uranus': ['REGEN', 'SUSTAIN', 'HIGH_DEFENSE', 'AOE', 'SHIELD'],
+  'Harith': ['BLINK', 'DASH', 'SHIELD', 'MID_GAME', 'AOE'],
+  'Mathilda': ['BLINK', 'DASH', 'SHIELD', 'EARLY_GAME', 'HEAL'],
+  'Lolita': ['SHIELD', 'STUN', 'HIGH_DEFENSE', 'AOE'],
+  'Hanabi': ['SHIELD', 'AOE', 'LATE_GAME', 'POKE'],
+
+  // Artillery & Burst
+  'Vexana': ['AOE', 'STUN', 'POKE', 'BURST'],
+  'Nana': ['AOE', 'STUN', 'POKE'],
+  'Chang\'e': ['ARTILLERY', 'POKE', 'AOE', 'SHIELD'],
+  'Pharsa': ['ARTILLERY', 'AOE', 'BLINK', 'BURST'],
+  'Novaria': ['ARTILLERY', 'POKE', 'BACKLINE_ACCESS', 'BLINK'],
+  'Eudora': ['BURST', 'STUN', 'SINGLE_TARGET', 'EARLY_GAME'],
+  'Aurora': ['AOE', 'STUN', 'BURST', 'POKE'],
+
+  // Defense & CC Setters
+  'Tigreal': ['AOE', 'STUN', 'HIGH_DEFENSE', 'DIVE', 'EARLY_GAME'],
+  'Atlas': ['AOE', 'STUN', 'HIGH_DEFENSE', 'DIVE', 'MID_GAME'],
+  'Grock': ['AOE', 'STUN', 'HIGH_DEFENSE', 'DIVE', 'EARLY_GAME'],
+  'Terizla': ['AOE', 'STUN', 'DAMAGE_REDUCTION', 'EARLY_GAME', 'SUSTAIN'],
+  'Edith': ['AOE', 'STUN', 'HIGH_DEFENSE', 'TRUE_DAMAGE'],
+  'Minotaur': ['AOE', 'STUN', 'HEAL', 'SUSTAIN'],
+
+  // High-Tier DPS DNA
+  'Brody': ['SINGLE_TARGET', 'POKE', 'EARLY_GAME', 'PENETRATION'],
+  'Bruno': ['SINGLE_TARGET', 'DASH', 'LATE_GAME', 'PENETRATION'],
+  'Moskov': ['BLINK', 'LATE_GAME', 'AOE', 'PENETRATION'],
+};
+
+function getHeuristicDNA(hero) {
+  const tags = new Set();
+  const roles = hero.roles.map(r => r.toLowerCase());
+  if (roles.includes('assassin')) tags.add('DIVE').add('BLINK').add('EARLY_GAME').add('SINGLE_TARGET');
+  if (roles.includes('marksman')) tags.add('LATE_GAME').add('SINGLE_TARGET').add('POKE');
+  if (roles.includes('tank')) tags.add('HIGH_DEFENSE').add('STUN').add('AOE');
+  if (roles.includes('mage')) tags.add('AOE').add('POKE').add('MID_GAME');
+  if (roles.includes('support')) tags.add('HEAL').add('AOE').add('EARLY_GAME');
+  if (roles.includes('fighter')) tags.add('SUSTAIN').add('DASH').add('MID_GAME');
+  return Array.from(tags);
+}
+
+function inferGoldReliance(rawHero, roles) {
   const key = String(rawHero.hero_name || '').toLowerCase();
-  
   const VERY_HIGH_GOLD = ['aldous', 'cecilion', 'claude', 'miya'];
   if (VERY_HIGH_GOLD.includes(key)) return 9;
-  
-  const HIGH_GOLD = ['karrie', 'kimmy', 'granger', 'brody', 'beatrix', 'natan', 'ixia', 'lukas'];
-  if (HIGH_GOLD.includes(key)) return 8;
-
-  const LOW_GOLD = ['tigreal', 'franco', 'angela', 'estes', 'floryn', 'rafaela', 'diggie', 'atlas', 'khufra', 'johnson', 'lolita', 'hylos', 'baxia', 'belerick', 'grock', 'uranus', 'chip'];
-  if (LOW_GOLD.includes(key)) return 3;
-
-  if (metaOverrides.gold_reliance[key]) return metaOverrides.gold_reliance[key];
-  
   if (roles.includes('marksman')) return 7;
-  if (roles.includes('assassin')) return 6;
-  if (roles.includes('mage')) return 6;
   if (roles.includes('tank') || roles.includes('support')) return 3;
   return 5;
 }
 
 function inferBuffDependency(rawHero) {
-  const explicit = rawHero.buffDependency;
-  if (explicit === 'Purple' || explicit === 'Red' || explicit === 'None') {
-    return explicit;
-  }
-
   const key = String(rawHero.hero_name || '').toLowerCase();
-  
-  const PURPLE_DEPENDENT = ['fanny', 'ling', 'hayabusa', 'alucard'];
-  if (PURPLE_DEPENDENT.includes(key)) return 'Purple';
-
-  const RED_DEPENDENT = ['karrie', 'kimmy', 'clint', 'brody', 'beatrix', 'natan', 'ixia', 'granger', 'claude', 'miya', 'hanabi'];
-  if (RED_DEPENDENT.includes(key)) return 'Red';
-
-  if (metaOverrides.buff_dependencies[key]) return metaOverrides.buff_dependencies[key];
+  if (['fanny', 'ling', 'hayabusa'].includes(key)) return 'Purple';
+  if (['karrie', 'clint', 'miya'].includes(key)) return 'Red';
   return 'None';
 }
 
@@ -63,25 +102,16 @@ function inferDamageType(heroName, roles) {
   return 'Physical';
 }
 
-// We will build a completely new Hero DB and Matchup DB
 const heroesList = [];
 const nameToId = new Map();
 const matchups = {};
 let currentId = 1;
 
-// 1. Process Heroes
 for (const rawHero of rawMeta.data) {
   if (rawHero.hero_name === "None") continue;
-
   const id = currentId++;
   const name = rawHero.hero_name;
-  
-  // Parse roles
-  const roles = (rawHero.class || "fighter")
-    .split(',')
-    .map(r => r.trim().toLowerCase());
-    
-  // Parse lanes
+  const roles = (rawHero.class || "fighter").split(',').map(r => r.trim().toLowerCase());
   let lanes = [];
   if (rawHero.laning && Array.isArray(rawHero.laning)) {
     const rawLanes = rawHero.laning.join(',').split(',');
@@ -95,7 +125,6 @@ for (const rawHero of rawMeta.data) {
       return clean;
     }).filter(Boolean);
   }
-  
   if (lanes.length === 0) {
     if (roles.includes('tank') || roles.includes('support')) lanes.push('roam');
     else if (roles.includes('assassin')) lanes.push('jungle');
@@ -103,54 +132,44 @@ for (const rawHero of rawMeta.data) {
     else if (roles.includes('marksman')) lanes.push('gold');
     else lanes.push('exp');
   }
-
-  // Deduplicate lanes
   lanes = [...new Set(lanes)];
 
-  heroesList.push({
+  const heroObj = {
     id,
     name,
     roles,
     lanes,
     tier: inferTier(name),
-    base_wr: 50.0, // Default WR
+    base_wr: 50.0,
     goldReliance: inferGoldReliance(rawHero, roles),
     buffDependency: inferBuffDependency(rawHero),
     primaryDamageType: inferDamageType(name, roles)
-  });
-  
+  };
+
+  heroObj.tags = MASTER_DNA[name] || getHeuristicDNA(heroObj);
+
+  heroesList.push(heroObj);
   nameToId.set(name.toLowerCase(), id);
   matchups[id] = {};
 }
 
-// 2. Build Intelligent Matchups
-// We loop again now that we have all IDs
-const STRENGTH_COUNTER = 7.0; // Point 5 Fix: Define mathematical weight
-
+const STRENGTH_COUNTER = 7.0;
 for (const rawHero of rawMeta.data) {
   if (rawHero.hero_name === "None") continue;
-  
   const targetId = nameToId.get(rawHero.hero_name.toLowerCase());
   if (!targetId) continue;
-  
-  // Counters array: These heroes COUNTER the target
   if (Array.isArray(rawHero.counters)) {
     for (const c of rawHero.counters) {
       const counterId = nameToId.get(c.heroname.toLowerCase());
       if (counterId) {
-        matchups[counterId][targetId] = STRENGTH_COUNTER; // Counter wins vs Target
-        matchups[targetId][counterId] = -STRENGTH_COUNTER; // Target loses vs Counter
+        matchups[counterId][targetId] = STRENGTH_COUNTER;
+        matchups[targetId][counterId] = -STRENGTH_COUNTER;
       }
     }
   }
 }
 
-// 3. Process Synergies (Combos)
-const synergyOutput = {
-  schema_version: "1.0.0",
-  combos: {}
-};
-
+const synergyOutput = { schema_version: "1.0.0", combos: {} };
 for (const [heroName, combos] of Object.entries(synergiesData.combos)) {
   const heroId = nameToId.get(heroName.toLowerCase());
   if (heroId) {
@@ -161,7 +180,6 @@ for (const [heroName, combos] of Object.entries(synergiesData.combos)) {
   }
 }
 
-// 4. Write output
 const heroesOutput = {
   schema_version: "1.0.0",
   game_version: "1.8.44",
@@ -175,14 +193,11 @@ const matchupsOutput = {
   schema_version: "1.0.0",
   game_version: "1.8.44",
   generated_at: new Date().toISOString(),
-  note: "Generated from raw hero metadata. Scores: +/-7 for strong counters.",
   matchups: matchups
 };
 
-// Replace v1 files to instantly apply
 fs.writeFileSync(path.join(DIR_PROCESSED, 'v1_heroes.json'), JSON.stringify(heroesOutput, null, 2));
 fs.writeFileSync(path.join(DIR_PROCESSED, 'v1_matchups.json'), JSON.stringify(matchupsOutput, null, 2));
 fs.writeFileSync(path.join(DIR_PROCESSED, 'v1_synergies.json'), JSON.stringify(synergyOutput, null, 2));
 
-console.log(`[SUCCESS] Compiled ${heroesList.length} heroes from raw metadata!`);
-console.log(`[SUCCESS] Built complete matchup matrix and synergies.`);
+console.log(`[SUCCESS] Compiled DNA-aware database.`);

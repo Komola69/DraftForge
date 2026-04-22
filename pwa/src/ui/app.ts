@@ -94,7 +94,7 @@ export async function initApp(): Promise<void> {
 
   const timestamp = new Date().getTime();
   let dynamicMatchupData;
-  let supportedSchemas = ['1.0.0'];
+  let supportedSchemas = ['1.0.0', '2.0.0']; // Point 1 Fix: support both by default if config missing
 
   // Point 1 Fix: Fetch dynamic system config
   try {
@@ -107,6 +107,7 @@ export async function initApp(): Promise<void> {
   } catch (e) {
     console.warn('[DraftForge] Config unavailable, using core defaults.');
   }
+
   
   // 2. Data loading with Point 6 Sync Validation & Cat 5 Fetch Timeout
   try {
@@ -594,8 +595,12 @@ function initResultsPanel(): void {
   tabTeam.addEventListener('click', () => store.set('resultsTab', 'team'));
   tabBans.addEventListener('click', () => store.set('resultsTab', 'bans'));
 
-  function renderResults(): void {
+  let lastRequestTimestamp = 0;
+
+  async function renderResults(): Promise<void> {
     const { enemyIds, resultsTab, expandedResultId, bannedIds, allyPickIds, priorityHeroIds } = store.get();
+    const requestId = Date.now();
+    lastRequestTimestamp = requestId;
 
     const hasEnemies = enemyIds.length > 0;
     const hasDraftAction = bannedIds.length > 0 || allyPickIds.length > 0;
@@ -632,17 +637,33 @@ function initResultsPanel(): void {
     // Exclude bans + ally picks from suggestions
     const excludeSet = new Set([...bannedIds, ...allyPickIds]);
 
-    let results: ScoredHero[];
+    // Show loading state for async results
     if (resultsTab === 'counters') {
-      results = engine.getCounterPicks(enemyIds, allyPickIds, { limit: 15 });
-    } else {
-      results = engine.getWeakPicks(enemyIds, 10);
+        list.innerHTML = `<div style="padding:2rem; text-align:center; color:var(--text-muted); opacity:0.6;">Calculating Best Counters...</div>`;
     }
+
+    let results: ScoredHero[];
+    try {
+        if (resultsTab === 'counters') {
+            results = await engine.getCounterPicksAsync(enemyIds, allyPickIds, { limit: 15 });
+        } else {
+            // Weak picks are still sync for now, but we use the same structure
+            results = engine.getWeakPicks(enemyIds, 10);
+        }
+    } catch (e) {
+        console.error('[DraftForge] Scoring error:', e);
+        return;
+    }
+
+    // Race condition check: only proceed if this is still the latest request
+    if (requestId !== lastRequestTimestamp) return;
+
     // Filter out unavailable heroes
     results = results.filter(r => !excludeSet.has(r.hero.id));
 
     if (results.length > 0) {
-      badge.textContent = `Max: ${Math.abs(results[0].weighted_score).toFixed(1)}`;
+      const topScore = results[0].weighted_score;
+      badge.textContent = `Max: ${topScore > 0 ? '+' : ''}${topScore.toFixed(1)}`;
     }
 
     let html = '';
@@ -651,11 +672,15 @@ function initResultsPanel(): void {
     results.forEach((result, i) => {
       const rank = i + 1;
       const rankClass = rank === 1 ? 'result-card__rank--gold' : rank === 2 ? 'result-card__rank--silver' : rank === 3 ? 'result-card__rank--bronze' : '';
-      const scoreClass = result.weighted_score > 0 ? 'result-card__score-value--positive' : result.weighted_score < 0 ? 'result-card__score-value--negative' : 'result-card__score-value--neutral';
+      const scoreValue = result.weighted_score;
+      const scoreClass = scoreValue > 0 ? 'result-card__score-value--positive' : scoreValue < 0 ? 'result-card__score-value--negative' : 'result-card__score-value--neutral';
       const isExpanded = expandedResultId === result.hero.id;
       const tierLower = result.hero.tier.toLowerCase();
-      const barPct = Math.round((Math.abs(result.weighted_score) / maxAbs) * 100);
-      const barClass = result.weighted_score >= 0 ? 'result-card__score-fill--positive' : 'result-card__score-fill--negative';
+      const barPct = Math.round((Math.abs(scoreValue) / maxAbs) * 100);
+      const barClass = scoreValue >= 0 ? 'result-card__score-fill--positive' : 'result-card__score-fill--negative';
+
+      // Special case: if score is exactly 0.0, show "NO DATA" to avoid misleading users
+      const scoreDisplay = scoreValue === 0 ? '<small style="opacity:0.5">NEUTRAL</small>' : `${scoreValue > 0 ? '+' : ''}${scoreValue.toFixed(1)}`;
 
       html += `
         <div class="result-card${isExpanded ? ' result-card--expanded' : ''}" data-result-id="${result.hero.id}" data-rank="${rank}" style="animation-delay: ${i * 30}ms">
@@ -669,10 +694,10 @@ function initResultsPanel(): void {
             </div>
             <div class="result-card__score-bar"><div class="result-card__score-fill ${barClass}" style="width:${barPct}%"></div></div>
             <div class="result-card__breakdown">
-              ${result.breakdown.map(b => {
+              ${result.breakdown.length > 0 ? result.breakdown.map(b => {
                 const chipClass = b.score > 0 ? 'breakdown-chip--positive' : b.score < 0 ? 'breakdown-chip--negative' : 'breakdown-chip--neutral';
                 return `<span class="breakdown-chip ${chipClass}">vs ${b.enemy_name}: ${b.score > 0 ? '+' : ''}${b.score}</span>`;
-              }).join('')}
+              }).join('') : '<span class="breakdown-chip breakdown-chip--neutral">No direct matchup data</span>'}
             </div>
             ${result.build ? `
               <div class="result-card__build">
@@ -692,7 +717,7 @@ function initResultsPanel(): void {
             ` : ''}
           </div>
           <div class="result-card__score">
-            <span class="result-card__score-value ${scoreClass}">${result.weighted_score > 0 ? '+' : ''}${result.weighted_score.toFixed(1)}</span>
+            <span class="result-card__score-value ${scoreClass}">${scoreDisplay}</span>
             <span class="result-card__tier tier--${tierLower}">Tier ${result.hero.tier}</span>
           </div>
         </div>`;
@@ -700,7 +725,6 @@ function initResultsPanel(): void {
 
     list.innerHTML = html;
   }
-
   list.addEventListener('click', (e) => {
     const card = (e.target as HTMLElement).closest('.result-card') as HTMLElement | null;
     if (!card) return;

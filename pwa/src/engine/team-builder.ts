@@ -12,7 +12,7 @@
  *   For alternatives: exclude previous team's heroes, re-run.
  */
 
-import type { Hero, MatchupBreakdown } from './types';
+import type { Hero, HeroTag, MatchupBreakdown } from './types';
 import { DataLoader } from './data-loader';
 import { calculateHeroScore } from './draft-engine';
 
@@ -51,6 +51,18 @@ export interface TeamSuggestion {
   coverage: number;
 }
 
+/** 
+ * TEAM SYNERGY MATRIX
+ * Defines how hero mechanics should ideally pair up in a team.
+ */
+const DNA_SYNERGY: Array<{ a: HeroTag; b: HeroTag; bonus: number }> = [
+  { a: 'DIVE', b: 'AOE', bonus: 3.5 },          // Engage + Follow up
+  { a: 'STUN', b: 'BURST', bonus: 4.0 },        // Setup + Execute
+  { a: 'ARTILLERY', b: 'HIGH_DEFENSE', bonus: 3.0 }, // Frontline protection for Artillery
+  { a: 'SUPPRESS', b: 'SINGLE_TARGET', bonus: 4.5 }, // Isolated pickoff
+  { a: 'HEAL', b: 'SUSTAIN', bonus: 3.5 },      // Infinite brawling potential
+];
+
 export class TeamBuilder {
   private data: DataLoader;
 
@@ -72,49 +84,40 @@ export class TeamBuilder {
 
     let scorePenalty = 0;
 
-    // === Existing: Gold Reliance ===
+    // 1. Gold Reliance & Buff Contention
     const totalGoldReliance = slots.reduce((sum, slot) => {
       const parsed = Number(slot.hero.goldReliance);
-      const safeGoldReliance = Number.isFinite(parsed) ? parsed : 5;
-      return sum + safeGoldReliance;
+      return sum + (Number.isFinite(parsed) ? parsed : 5);
     }, 0);
-    const strictPurpleCount = slots.reduce(
-      (sum, slot) => sum + (slot.hero.buffDependency === 'Purple' ? 1 : 0),
-      0
-    );
+    const strictPurpleCount = slots.reduce((sum, slot) => sum + (slot.hero.buffDependency === 'Purple' ? 1 : 0), 0);
 
-    if (strictPurpleCount > 1) {
-      return { valid: false, scorePenalty: 0 };
+    if (strictPurpleCount > 1) return { valid: false, scorePenalty: 0 };
+    if (totalGoldReliance > MAX_SAFE_GOLD_RELIANCE) scorePenalty -= GOLD_STARVATION_PENALTY;
+
+    // 2. Zero-Initiative Trap (Frontline check)
+    const hasTank = slots.some(s => s.hero.roles.includes('tank') || s.hero.tags.includes('HIGH_DEFENSE'));
+    const hasInitiator = slots.some(s => s.hero.tags.includes('DIVE') || s.hero.tags.includes('STUN'));
+    if (!hasTank && !hasInitiator) scorePenalty -= 25.0;
+
+    // 3. Siege Potential (High Ground / Turrets)
+    const hasMarksman = slots.some(s => s.hero.roles.includes('marksman'));
+    const hasArtillery = slots.some(s => s.hero.tags.includes('ARTILLERY'));
+    if (!hasMarksman && !hasArtillery) {
+      scorePenalty -= 20.0; // "The Siege Trap": Cannot end the game
     }
 
-    if (totalGoldReliance > MAX_SAFE_GOLD_RELIANCE) {
-      scorePenalty -= GOLD_STARVATION_PENALTY;
+    // 4. Wave-Clear Check (Base Defense)
+    const hasAoE = slots.some(s => s.hero.tags.includes('AOE'));
+    const mageCount = slots.filter(s => s.hero.roles.includes('mage')).length;
+    if (!hasAoE && mageCount === 0) {
+      scorePenalty -= 15.0; // Vulnerable to Lord pushes
     }
 
-    // === NEW: Zero-Initiative Trap ===
-    // A team without any Tank or Support has zero reliable engage/CC.
-    // In 5v5 teamfights, they cannot initiate and will be peeled apart.
-    const hasTank = slots.some(s => s.hero.roles.some(r => r.toLowerCase() === 'tank'));
-    const hasSupport = slots.some(s => s.hero.roles.some(r => r.toLowerCase() === 'support'));
-    const assassinCount = slots.filter(s => s.hero.roles.some(r => r.toLowerCase() === 'assassin')).length;
-
-    if (!hasTank && !hasSupport) {
-      // All-backline comp: no frontline whatsoever → severe penalty
-      scorePenalty -= 20;
-    }
-    if (assassinCount >= 3 && !hasTank) {
-      // 3+ assassins without a tank = guaranteed teamfight wipe
-      scorePenalty -= 30;
-    }
-
-    // === NEW: Wave-Clear Deficiency ===
-    // If the team has zero Mages AND zero Marksmen, they cannot defend
-    // against Lord/super-minion pushes due to lack of AoE/ranged clear.
-    const hasMage = slots.some(s => s.hero.roles.some(r => r.toLowerCase() === 'mage'));
-    const hasMarksman = slots.some(s => s.hero.roles.some(r => r.toLowerCase() === 'marksman'));
-
-    if (!hasMage && !hasMarksman) {
-      scorePenalty -= 15;
+    // 5. Objective Secure (Lord/Turtle)
+    const jungler = slots.find(s => s.position === 'jungle');
+    if (jungler) {
+      const hasObjectiveDNA = jungler.hero.tags.includes('BURST') || jungler.hero.tags.includes('SINGLE_TARGET') || jungler.hero.tags.includes('TRUE_DAMAGE');
+      if (!hasObjectiveDNA) scorePenalty -= 10.0; // Risky Retribution fights
     }
 
     return { valid: true, scorePenalty };
@@ -231,6 +234,25 @@ export class TeamBuilder {
         const result = recursiveBuild(depth + 1, [...currentSlots, newSlot], nextUsed);
         if (result) {
           let branchScore = result.reduce((sum, s) => sum + s.score, 0);
+
+          // ============================================================
+          // TEAM DNA SYNERGY: Bonus for mechanically cohesive teams
+          // ============================================================
+          if (depth === 0 && result.length === 5) {
+            let synergyTotal = 0;
+            for (let i = 0; i < result.length; i++) {
+              for (let j = i + 1; j < result.length; j++) {
+                const hA = result[i].hero;
+                const hB = result[j].hero;
+                for (const syn of DNA_SYNERGY) {
+                   const match = (hA.tags.includes(syn.a) && hB.tags.includes(syn.b)) ||
+                                (hA.tags.includes(syn.b) && hB.tags.includes(syn.a));
+                   if (match) synergyTotal += syn.bonus;
+                }
+              }
+            }
+            branchScore += synergyTotal;
+          }
           
           // The Damage-Type Monopoly Fix: Penalize compositions skewed heavily to one damage type
           // Dynamically map damage types using roles (Mage = Magic) and known non-Mage magic users.
