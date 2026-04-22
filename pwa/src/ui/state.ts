@@ -72,6 +72,8 @@ class StateManager {
   private state: AppState;
   private listeners: Map<string, Set<Listener>> = new Map();
   private globalListeners: Set<Listener> = new Set();
+  /** Registry of all active unsubscribe handles for bulk teardown */
+  private subscriptionRegistry: Set<() => void> = new Set();
 
   constructor() {
     this.state = { ...initialState };
@@ -92,12 +94,52 @@ class StateManager {
       this.listeners.set(key, new Set());
     }
     this.listeners.get(key)!.add(listener);
-    return () => this.listeners.get(key)?.delete(listener);
+    const unsub = () => {
+      this.listeners.get(key)?.delete(listener);
+      this.subscriptionRegistry.delete(unsub);
+    };
+    this.subscriptionRegistry.add(unsub);
+    return unsub;
   }
 
   onAny(listener: Listener): () => void {
     this.globalListeners.add(listener);
-    return () => this.globalListeners.delete(listener);
+    const unsub = () => {
+      this.globalListeners.delete(listener);
+      this.subscriptionRegistry.delete(unsub);
+    };
+    this.subscriptionRegistry.add(unsub);
+    return unsub;
+  }
+
+  /**
+   * Teardown: Unsubscribe ALL active listeners.
+   * Call this when the floating overlay is dismissed/destroyed to prevent
+   * orphaned listeners from leaking memory on the Android WebView thread.
+   */
+  unsubscribeAll(): void {
+    // Snapshot to avoid mutation during iteration
+    const handles = [...this.subscriptionRegistry];
+    for (const unsub of handles) {
+      unsub();
+    }
+    this.subscriptionRegistry.clear();
+    this.listeners.clear();
+    this.globalListeners.clear();
+  }
+
+  /**
+   * Full disposal: unsubscribe all listeners AND reset state.
+   * Use when the overlay WebView is being fully destroyed.
+   */
+  dispose(): void {
+    this.unsubscribeAll();
+    this.state = { ...initialState };
+  }
+
+  /** Current subscription count (for diagnostics) */
+  get subscriptionCount(): number {
+    return this.subscriptionRegistry.size;
   }
 
   /** All unavailable hero IDs (enemies + bans + ally picks) */

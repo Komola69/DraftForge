@@ -70,26 +70,50 @@ app.get('/api/pipeline', (req, res) => {
   const send = (msg) => res.write(`data: ${msg}\n\n`);
 
   send('Starting DraftForge Auto-Pipeline...');
-  send('--> [1/4] Triggering Go backend for latest meta data...');
-  
-  setTimeout(() => send('    Done. Received JSON datasets.'), 1000);
-  setTimeout(() => send('--> [2/4] Merging JSON schemas and computing hashes...'), 1500);
-  setTimeout(() => send('    Done. Schemas validated.'), 2500);
-  setTimeout(() => send('--> [3/4] Downloading missing hero portraits...'), 3000);
-  setTimeout(() => send('    Done. 0 new portraits downloaded.'), 4000);
-  setTimeout(() => send('--> [4/4] Building PWA via Vite...'), 4500);
+  send('--> [1/2] Compiling base Hero DB and Matrix...');
 
-  setTimeout(() => {
-    // Actually run npm run build in pwa folder
-    const pwaPath = path.join(__dirname, '../pwa');
-    // Using simple simulation instead of full npm install to avoid extreme wait times for the user
-    send('    vite v4.0.0 building for production...');
-    send('    ✓ 124 modules transformed.');
-    send('    dist/index.html   1.2 kB');
-    send('    dist/assets/index.js  145.2 kB');
-    send('Pipeline execution complete! 🚀');
-    res.end();
-  }, 5000);
+  const rootDir = path.join(__dirname, '../');
+  
+  // Step 1: compile_db.mjs
+  const compileProc = spawn('node', ['data/scripts/compile_db.mjs'], { cwd: rootDir });
+  
+  compileProc.stdout.on('data', data => {
+    data.toString().split('\n').filter(Boolean).forEach(line => send(`    ${line}`));
+  });
+  
+  compileProc.stderr.on('data', data => {
+    data.toString().split('\n').filter(Boolean).forEach(line => send(`    [ERROR] ${line}`));
+  });
+
+  compileProc.on('close', code => {
+    if (code !== 0) {
+      send(`Pipeline failed at compilation step (code ${code})`);
+      res.end();
+      return;
+    }
+    
+    send('--> [2/2] Merging directional API counters...');
+    
+    // Step 2: merge_counters.mjs
+    const mergeProc = spawn('node', ['data/scripts/merge_counters.mjs'], { cwd: rootDir });
+    
+    mergeProc.stdout.on('data', data => {
+      data.toString().split('\n').filter(Boolean).forEach(line => send(`    ${line}`));
+    });
+
+    mergeProc.stderr.on('data', data => {
+      data.toString().split('\n').filter(Boolean).forEach(line => send(`    [ERROR] ${line}`));
+    });
+
+    mergeProc.on('close', mCode => {
+      if (mCode !== 0) {
+        send(`Pipeline failed at merge step (code ${mCode})`);
+      } else {
+        send('Pipeline execution complete! 🚀 You can safely close this.');
+      }
+      res.end();
+    });
+  });
 });
 
 const PORT = process.env.PORT || 3001;

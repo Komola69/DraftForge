@@ -62,12 +62,17 @@ export class TeamBuilder {
    * Macro composition validation:
    * 1) Penalize teams that over-index into farm-dependent late-game carries.
    * 2) Invalidate drafts with hard buff contention (multiple strict Purple heroes).
+   * 3) Zero-Initiative Trap: Penalize all-backline comps with no engage/CC frontline.
+   * 4) Wave-Clear Deficiency: Penalize all-melee burst comps that can't defend base.
    */
   private compositionValidator(slots: TeamSlot[]): CompositionValidationResult {
     if (slots.length !== 5) {
       return { valid: true, scorePenalty: 0 };
     }
 
+    let scorePenalty = 0;
+
+    // === Existing: Gold Reliance ===
     const totalGoldReliance = slots.reduce((sum, slot) => {
       const parsed = Number(slot.hero.goldReliance);
       const safeGoldReliance = Number.isFinite(parsed) ? parsed : 5;
@@ -82,7 +87,36 @@ export class TeamBuilder {
       return { valid: false, scorePenalty: 0 };
     }
 
-    const scorePenalty = totalGoldReliance > MAX_SAFE_GOLD_RELIANCE ? -GOLD_STARVATION_PENALTY : 0;
+    if (totalGoldReliance > MAX_SAFE_GOLD_RELIANCE) {
+      scorePenalty -= GOLD_STARVATION_PENALTY;
+    }
+
+    // === NEW: Zero-Initiative Trap ===
+    // A team without any Tank or Support has zero reliable engage/CC.
+    // In 5v5 teamfights, they cannot initiate and will be peeled apart.
+    const hasTank = slots.some(s => s.hero.roles.some(r => r.toLowerCase() === 'tank'));
+    const hasSupport = slots.some(s => s.hero.roles.some(r => r.toLowerCase() === 'support'));
+    const assassinCount = slots.filter(s => s.hero.roles.some(r => r.toLowerCase() === 'assassin')).length;
+
+    if (!hasTank && !hasSupport) {
+      // All-backline comp: no frontline whatsoever → severe penalty
+      scorePenalty -= 20;
+    }
+    if (assassinCount >= 3 && !hasTank) {
+      // 3+ assassins without a tank = guaranteed teamfight wipe
+      scorePenalty -= 30;
+    }
+
+    // === NEW: Wave-Clear Deficiency ===
+    // If the team has zero Mages AND zero Marksmen, they cannot defend
+    // against Lord/super-minion pushes due to lack of AoE/ranged clear.
+    const hasMage = slots.some(s => s.hero.roles.some(r => r.toLowerCase() === 'mage'));
+    const hasMarksman = slots.some(s => s.hero.roles.some(r => r.toLowerCase() === 'marksman'));
+
+    if (!hasMage && !hasMarksman) {
+      scorePenalty -= 15;
+    }
+
     return { valid: true, scorePenalty };
   }
 

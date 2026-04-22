@@ -11,6 +11,16 @@ import com.getcapacitor.annotation.CapacitorPlugin
 @CapacitorPlugin(name = "DraftForgeVision")
 class DraftForgeVisionPlugin : Plugin() {
 
+    /**
+     * State-change detection: Only fire bridge events when the draft screen
+     * has definitively changed (hero locked, ban confirmed, phase shift).
+     * This prevents IPC saturation from streaming raw frames at 30fps.
+     */
+    private var lastHashSnapshot: List<Long> = emptyList()
+    private var lastEmitTimestamp: Long = 0
+    private val MIN_EMIT_INTERVAL_MS = 500L  // Hard floor: max 2 bridge events/sec
+    private val HASH_CHANGE_THRESHOLD = 2    // Min slots that must change to trigger
+
     // Simulating the MediaProjection Frame arrival
     fun processFrame(bitmap: Bitmap) {
         val hashes = mutableListOf<Long>()
@@ -31,9 +41,33 @@ class DraftForgeVisionPlugin : Plugin() {
             hashes.add(hash)
         }
 
+        // ============================================================
+        // Debounce Gate: Only emit if state has materially changed
+        // ============================================================
+        val now = System.currentTimeMillis()
+        
+        // Time gate: don't fire more than 2x/sec regardless of changes
+        if (now - lastEmitTimestamp < MIN_EMIT_INTERVAL_MS) return
+
+        // Change detection: count how many slot hashes differ from last snapshot
+        val changedSlots = if (lastHashSnapshot.size != hashes.size) {
+            hashes.size // First run or slot count changed — always emit
+        } else {
+            hashes.zip(lastHashSnapshot).count { (a, b) -> a != b }
+        }
+
+        // Only emit if enough slots changed (filters out noise/animation frames)
+        if (changedSlots < HASH_CHANGE_THRESHOLD) return
+
+        // Commit: update snapshot and fire bridge event
+        lastHashSnapshot = hashes.toList()
+        lastEmitTimestamp = now
+
         // Send 100-byte micro-payload over the Capacitor Bridge
         val result = JSObject()
         result.put("hashes", hashes)
+        result.put("changedSlots", changedSlots)
+        result.put("timestamp", now)
         notifyListeners("onScreenDraftDetected", result)
     }
 
@@ -63,7 +97,11 @@ class DraftForgeVisionPlugin : Plugin() {
 
     @PluginMethod
     fun startCapture(call: PluginCall) {
+        // Reset state on new capture session
+        lastHashSnapshot = emptyList()
+        lastEmitTimestamp = 0
         // Trigger MediaProjection logic...
         call.resolve()
     }
 }
+

@@ -35,6 +35,40 @@ const TIER_RANK: Record<string, number> = {
   'S': 0, 'A': 1, 'B': 2, 'C': 3, 'D': 4,
 };
 
+/**
+ * Known pro-meta combo table for Draft Denial scoring.
+ * Maps hero names to their known synergy partners and combo strength (1-10).
+ * Used to detect enemy intentions and recommend "steal" picks.
+ *
+ * These are hardcoded because getSynergyScore() is still a stub.
+ * When the Go pipeline produces real synergy data, this table becomes
+ * the fallback/override layer for curated combos the scraper might miss.
+ */
+const KNOWN_COMBOS: Record<string, { partner: string; strength: number }[]> = {
+  'carmilla':    [{ partner: 'cecilion', strength: 9 }],
+  'cecilion':    [{ partner: 'carmilla', strength: 9 }],
+  'angela':      [{ partner: 'roger', strength: 7 }, { partner: 'ling', strength: 7 }, { partner: 'chou', strength: 6 }],
+  'roger':       [{ partner: 'angela', strength: 7 }],
+  'ling':        [{ partner: 'angela', strength: 7 }],
+  'atlas':       [{ partner: 'diggie', strength: 8 }, { partner: 'aurora', strength: 7 }],
+  'diggie':      [{ partner: 'atlas', strength: 8 }],
+  'aurora':      [{ partner: 'atlas', strength: 7 }, { partner: 'tigreal', strength: 7 }],
+  'tigreal':     [{ partner: 'aurora', strength: 7 }, { partner: 'odette', strength: 8 }],
+  'odette':      [{ partner: 'tigreal', strength: 8 }, { partner: 'johnson', strength: 8 }],
+  'johnson':     [{ partner: 'odette', strength: 8 }],
+  'rafaela':     [{ partner: 'karrie', strength: 6 }],
+  'karrie':      [{ partner: 'rafaela', strength: 6 }],
+  'mathilda':    [{ partner: 'fanny', strength: 6 }],
+  'fanny':       [{ partner: 'mathilda', strength: 6 }],
+  'franco':      [{ partner: 'aldous', strength: 6 }],
+  'aldous':      [{ partner: 'franco', strength: 6 }],
+  'khufra':      [{ partner: 'selena', strength: 6 }],
+  'selena':      [{ partner: 'khufra', strength: 6 }],
+};
+
+/** Weight applied to denial score when boosting candidates */
+const DENIAL_WEIGHT = 2.5;
+
 export function calculateHeroScore(
   data: DataLoader,
   hero: Hero,
@@ -99,6 +133,37 @@ export function calculateHeroScore(
     }
   }
 
+  // ============================================================
+  // Draft Denial: Flex-Stealing enemy combo partners
+  // ============================================================
+  // If the enemy has locked a hero that has a known combo partner,
+  // and THIS candidate IS that combo partner, boost them.
+  // Rationale: Stealing Cecilion when the enemy picked Carmilla
+  // breaks their win condition and adds value to our draft.
+  if (enemyIds.length > 0) {
+    const candidateName = hero.name.toLowerCase();
+    let denialScore = 0;
+
+    for (const enemyId of enemyIds) {
+      const enemy = data.getHero(enemyId);
+      if (!enemy) continue;
+
+      const enemyName = enemy.name.toLowerCase();
+      const combos = KNOWN_COMBOS[enemyName];
+      if (!combos) continue;
+
+      for (const combo of combos) {
+        if (combo.partner === candidateName) {
+          denialScore += combo.strength;
+        }
+      }
+    }
+
+    if (denialScore > 0) {
+      weightedScore += denialScore * DENIAL_WEIGHT;
+    }
+  }
+
   return {
     rawScore,
     weightedScore: Math.round(weightedScore * 100) / 100,
@@ -109,12 +174,116 @@ export function calculateHeroScore(
 
 export class DraftEngine {
   private data: DataLoader;
+  private worker: Worker | null = null;
+  private pendingRequests: Map<string, { resolve: (data: any) => void; reject: (err: any) => void }> = new Map();
+  private workerReady = false;
+  private requestCounter = 0;
 
   constructor(dataLoader: DataLoader) {
     if (!dataLoader.loaded) {
       throw new Error('DraftEngine: DataLoader must be loaded before creating engine');
     }
     this.data = dataLoader;
+    this.initWorker();
+  }
+
+  /**
+   * Initialize Web Worker for off-thread scoring.
+   * Falls back gracefully to main-thread if Workers are unavailable.
+   */
+  private initWorker(): void {
+    try {
+      this.worker = new Worker(
+        new URL('./engine-worker.ts', import.meta.url),
+        { type: 'module' }
+      );
+
+      this.worker.onmessage = (e: MessageEvent) => {
+        const { type, id, data, error } = e.data;
+        const pending = this.pendingRequests.get(id);
+        if (!pending) return;
+        this.pendingRequests.delete(id);
+
+        if (type === 'ready') {
+          this.workerReady = true;
+          pending.resolve(true);
+        } else if (type === 'error') {
+          pending.reject(new Error(error));
+        } else if (type === 'result') {
+          pending.resolve(data);
+        }
+      };
+
+      this.worker.onerror = (err) => {
+        console.warn('[DraftEngine] Worker failed, falling back to main thread:', err.message);
+        this.worker = null;
+        this.workerReady = false;
+      };
+
+      // Send hero + matchup data to worker
+      const heroes = this.data.getAllHeroes();
+      const matchups: Record<string, Record<string, number>> = {};
+      for (const hero of heroes) {
+        const heroKey = String(hero.id);
+        matchups[heroKey] = {};
+        for (const other of heroes) {
+          if (hero.id === other.id) continue;
+          const score = this.data.getMatchupScore(hero.id, other.id);
+          if (score !== 0) matchups[heroKey][String(other.id)] = score;
+        }
+      }
+
+      const initId = this.nextId();
+      this.pendingRequests.set(initId, {
+        resolve: () => { this.workerReady = true; },
+        reject: () => { this.workerReady = false; }
+      });
+      this.worker.postMessage({ type: 'init', id: initId, payload: { heroes, matchups } });
+    } catch (e) {
+      console.warn('[DraftEngine] Web Workers unavailable, using main thread:', e);
+      this.worker = null;
+    }
+  }
+
+  private nextId(): string {
+    return `req_${++this.requestCounter}_${Date.now()}`;
+  }
+
+  /**
+   * Async counter-picks via Web Worker (non-blocking).
+   * Falls back to synchronous main-thread if worker unavailable.
+   */
+  async getCounterPicksAsync(enemyIds: number[], allyIds: number[] = [], filter?: CounterFilter): Promise<ScoredHero[]> {
+    if (this.worker && this.workerReady) {
+      const id = this.nextId();
+      const limit = filter?.limit ?? 10;
+      return new Promise((resolve, reject) => {
+        this.pendingRequests.set(id, {
+          resolve: (data) => {
+            // Worker returns raw objects without build data, enrich them
+            const enriched: ScoredHero[] = data.map((r: any) => ({
+              ...r,
+              build: this.data.getBuild(r.hero.id),
+            }));
+            resolve(enriched);
+          },
+          reject
+        });
+        this.worker!.postMessage({ type: 'counterPicks', id, payload: { enemyIds, allyIds, filter, limit } });
+      });
+    }
+    // Fallback: synchronous main-thread
+    return this.getCounterPicks(enemyIds, allyIds, filter);
+  }
+
+  /** Terminate the worker thread (call on app teardown) */
+  dispose(): void {
+    if (this.worker) {
+      this.worker.terminate();
+      this.worker = null;
+      this.workerReady = false;
+      this.pendingRequests.clear();
+    }
   }
 
   /**

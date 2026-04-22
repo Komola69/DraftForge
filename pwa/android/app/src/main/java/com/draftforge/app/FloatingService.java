@@ -21,6 +21,7 @@ public class FloatingService extends Service {
     private View floatingView;
     private FrameLayout container;
     private WindowManager.LayoutParams params;
+    private WebView webView;
 
     @Override
     public IBinder onBind(Intent intent) { return null; }
@@ -73,7 +74,7 @@ public class FloatingService extends Service {
         params.y = 100;
 
         // WebView for PWA
-        WebView webView = new WebView(this);
+        webView = new WebView(this);
         webView.setLayoutParams(new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT, 
                 FrameLayout.LayoutParams.MATCH_PARENT));
@@ -137,6 +138,22 @@ public class FloatingService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        
+        // Teardown: Fire JS disposal to unsubscribe all state listeners
+        // This prevents the memory leak from orphaned pub/sub handlers
+        if (webView != null) {
+            try {
+                webView.evaluateJavascript(
+                    "if(window.__draftforge_dispose){window.__draftforge_dispose();}",
+                    null
+                );
+            } catch (Exception e) {
+                // WebView may already be detached — safe to ignore
+            }
+            webView.destroy();
+            webView = null;
+        }
+        
         if (floatingView != null) windowManager.removeView(floatingView);
     }
 }

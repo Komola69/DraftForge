@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "game_version": "1.8.44",
-  "generated_at": "2026-04-21T16:25:16.195Z",
+  "generated_at": "2026-04-22T06:14:53.359Z",
   "data_source": "auto_compiled",
   "hero_count": 132,
   "heroes": [
@@ -15,7 +15,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 9,
+      "buffDependency": "None"
     },
     {
       "id": 2,
@@ -28,7 +30,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 3,
@@ -41,7 +45,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 4,
@@ -55,7 +61,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 9,
+      "buffDependency": "None"
     },
     {
       "id": 5,
@@ -67,7 +75,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 6,
@@ -79,7 +89,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 7,
@@ -92,7 +104,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 8,
@@ -104,7 +118,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 9,
@@ -116,7 +132,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 10,
@@ -128,7 +146,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 11,
@@ -142,7 +162,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 12,
@@ -154,7 +176,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 13,
@@ -166,7 +190,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 14,
@@ -178,7 +204,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 15,
@@ -190,7 +218,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 16,
@@ -203,7 +233,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 17,
@@ -215,7 +247,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "Purple"
     },
     {
       "id": 18,
@@ -227,7 +261,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 19,
@@ -240,7 +276,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 20,
@@ -253,7 +291,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 21,
@@ -265,7 +305,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 22,
@@ -278,7 +320,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 23,
@@ -290,7 +334,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 24,
@@ -303,7 +349,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 25,
@@ -315,7 +363,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 26,
@@ -328,7 +378,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 27,
@@ -341,7 +393,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 28,
@@ -354,7 +408,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 29,
@@ -366,7 +422,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 30,
@@ -379,7 +437,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 31,
@@ -391,7 +451,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 32,
@@ -404,7 +466,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 33,
@@ -416,7 +480,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 34,
@@ -428,7 +494,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 35,
@@ -442,7 +510,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 36,
@@ -454,7 +524,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 37,
@@ -466,7 +538,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 38,
@@ -478,7 +552,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 39,
@@ -491,7 +567,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 40,
@@ -503,7 +581,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 41,
@@ -517,7 +597,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 42,
@@ -530,7 +612,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 43,
@@ -542,7 +626,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 44,
@@ -556,7 +642,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 45,
@@ -568,7 +656,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 46,
@@ -580,7 +670,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 47,
@@ -592,7 +684,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 48,
@@ -604,7 +698,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 49,
@@ -616,7 +712,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 50,
@@ -628,7 +726,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 51,
@@ -640,7 +740,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 52,
@@ -652,7 +754,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 53,
@@ -665,7 +769,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 54,
@@ -678,7 +784,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 55,
@@ -690,7 +798,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 56,
@@ -703,7 +813,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 57,
@@ -715,7 +827,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 58,
@@ -727,7 +841,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 59,
@@ -739,7 +855,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 60,
@@ -751,7 +869,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 61,
@@ -763,7 +883,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 62,
@@ -776,7 +898,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 63,
@@ -790,7 +914,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 64,
@@ -802,7 +928,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 9,
+      "buffDependency": "None"
     },
     {
       "id": 65,
@@ -814,7 +942,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 66,
@@ -826,7 +956,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 67,
@@ -838,7 +970,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 68,
@@ -850,7 +984,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 69,
@@ -862,7 +998,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 70,
@@ -874,7 +1012,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 71,
@@ -888,7 +1028,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 72,
@@ -900,7 +1042,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 73,
@@ -913,7 +1057,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 74,
@@ -926,7 +1072,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 75,
@@ -939,7 +1087,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 76,
@@ -952,7 +1102,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 77,
@@ -965,7 +1117,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 78,
@@ -977,7 +1131,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 79,
@@ -989,7 +1145,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 80,
@@ -1001,7 +1159,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 81,
@@ -1014,7 +1174,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 82,
@@ -1027,7 +1189,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 83,
@@ -1039,7 +1203,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 84,
@@ -1051,7 +1217,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "Purple"
     },
     {
       "id": 85,
@@ -1064,7 +1232,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 86,
@@ -1076,7 +1246,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 87,
@@ -1088,7 +1260,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 88,
@@ -1101,7 +1275,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 89,
@@ -1113,7 +1289,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 90,
@@ -1125,7 +1303,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 91,
@@ -1137,7 +1317,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 9,
+      "buffDependency": "None"
     },
     {
       "id": 92,
@@ -1150,7 +1332,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 93,
@@ -1162,7 +1346,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 94,
@@ -1175,7 +1361,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 95,
@@ -1187,7 +1375,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 96,
@@ -1199,7 +1389,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 97,
@@ -1212,7 +1404,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 98,
@@ -1225,7 +1419,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 99,
@@ -1238,7 +1434,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 100,
@@ -1250,7 +1448,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 101,
@@ -1262,7 +1462,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 102,
@@ -1275,7 +1477,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 103,
@@ -1288,7 +1492,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 104,
@@ -1301,7 +1507,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 105,
@@ -1313,7 +1521,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 106,
@@ -1325,7 +1535,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 107,
@@ -1337,7 +1549,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 108,
@@ -1349,7 +1563,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 109,
@@ -1361,7 +1577,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 110,
@@ -1373,7 +1591,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 111,
@@ -1387,7 +1607,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 112,
@@ -1399,7 +1621,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 113,
@@ -1413,7 +1637,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 114,
@@ -1425,7 +1651,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 115,
@@ -1437,7 +1665,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 116,
@@ -1450,7 +1680,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 117,
@@ -1463,7 +1695,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 118,
@@ -1475,7 +1709,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 119,
@@ -1487,7 +1723,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 120,
@@ -1500,7 +1738,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 121,
@@ -1512,7 +1752,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 122,
@@ -1524,7 +1766,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 123,
@@ -1536,7 +1780,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 124,
@@ -1549,7 +1795,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 125,
@@ -1561,7 +1809,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 126,
@@ -1574,7 +1824,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 127,
@@ -1587,7 +1839,9 @@
         "jungle"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 5,
+      "buffDependency": "None"
     },
     {
       "id": 128,
@@ -1600,7 +1854,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     },
     {
       "id": 129,
@@ -1612,7 +1868,9 @@
         "mid"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 130,
@@ -1624,7 +1882,9 @@
         "gold"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 7,
+      "buffDependency": "None"
     },
     {
       "id": 131,
@@ -1637,7 +1897,9 @@
         "exp"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 6,
+      "buffDependency": "None"
     },
     {
       "id": 132,
@@ -1649,7 +1911,9 @@
         "roam"
       ],
       "tier": "A",
-      "base_wr": 50
+      "base_wr": 50,
+      "goldReliance": 3,
+      "buffDependency": "None"
     }
   ]
 }

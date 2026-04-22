@@ -2,7 +2,15 @@
  * Entry point. Imports CSS, initializes the app.
  */
 import './styles/index.css';
-import { initApp } from './ui/app';
+import { initApp, engine } from './ui/app';
+import { store } from './ui/state';
+
+// Global disposal hook — called by FloatingService.onDestroy() via evaluateJavascript
+(window as any).__draftforge_dispose = () => {
+  console.log('[DraftForge] Teardown: disposing state manager and engine worker...');
+  store.dispose();
+  if (engine?.dispose) engine.dispose();
+};
 
 // Boot
 initApp().catch(err => {

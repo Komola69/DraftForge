@@ -48,12 +48,24 @@ export class DataLoader {
    * Throws on schema mismatch or malformed data.
    */
   load(heroData: HeroDatabase, matchupData: MatchupMatrix, buildData: BuildDatabase): void {
-    // Validate schemas
+    // ============================================================
+    // Phase 1: Schema version validation
+    // ============================================================
     this.validateSchema('heroes', heroData.schema_version);
     this.validateSchema('matchups', matchupData.schema_version);
     this.validateSchema('builds', buildData.schema_version);
 
-    // Build hero lookup maps
+    // ============================================================
+    // Phase 2: Runtime structural validation (Zero-Trust)
+    // Prevents malformed/empty/partial JSON from crashing the engine
+    // ============================================================
+    this.validateHeroStructure(heroData);
+    this.validateMatchupStructure(matchupData);
+    this.validateBuildStructure(buildData);
+
+    // ============================================================
+    // Phase 3: Commit to cache (only reached if validation passes)
+    // ============================================================
     this.heroes.clear();
     this.heroByName.clear();
     for (const rawHero of heroData.heroes) {
@@ -109,6 +121,79 @@ export class DataLoader {
   private validateSchema(dataName: string, version: string): void {
     if (!version || !SUPPORTED_SCHEMAS.includes(version)) {
       throw new Error(`Fatal: Schema mismatch for ${dataName}. Expected one of ${SUPPORTED_SCHEMAS.join(', ')}, got ${version}`);
+    }
+  }
+
+  /**
+   * Runtime structural validation: Verify hero JSON matches the Hero interface.
+   * Catches malformed admin dashboard pushes, empty arrays, and partial transitions.
+   */
+  private validateHeroStructure(data: HeroDatabase): void {
+    if (!data || typeof data !== 'object') {
+      throw new Error('DataLoader: heroData is null or not an object');
+    }
+    if (!Array.isArray(data.heroes)) {
+      throw new Error('DataLoader: heroData.heroes is not an array');
+    }
+    if (data.heroes.length === 0) {
+      throw new Error('DataLoader: heroData.heroes is empty — refusing to load a blank hero database');
+    }
+    if (!data.game_version || typeof data.game_version !== 'string') {
+      throw new Error('DataLoader: heroData.game_version is missing or invalid');
+    }
+
+    // Spot-check first hero for required fields
+    const sample = data.heroes[0];
+    if (typeof sample.id !== 'number' || typeof sample.name !== 'string') {
+      throw new Error(`DataLoader: Hero at index 0 is malformed (id=${sample.id}, name=${sample.name})`);
+    }
+    if (!Array.isArray(sample.roles) || !Array.isArray(sample.lanes)) {
+      throw new Error(`DataLoader: Hero "${sample.name}" has invalid roles/lanes arrays`);
+    }
+    if (typeof sample.tier !== 'string' || !['S', 'A', 'B', 'C', 'D'].includes(sample.tier)) {
+      throw new Error(`DataLoader: Hero "${sample.name}" has invalid tier "${sample.tier}"`);
+    }
+  }
+
+  /**
+   * Runtime structural validation: Verify matchup JSON is a valid nested object.
+   */
+  private validateMatchupStructure(data: MatchupMatrix): void {
+    if (!data || typeof data !== 'object') {
+      throw new Error('DataLoader: matchupData is null or not an object');
+    }
+    if (!data.matchups || typeof data.matchups !== 'object') {
+      throw new Error('DataLoader: matchupData.matchups is missing or not an object');
+    }
+    // Verify at least one hero has matchup data
+    const keys = Object.keys(data.matchups);
+    if (keys.length === 0) {
+      throw new Error('DataLoader: matchupData.matchups is empty — no hero matchup data found');
+    }
+    // Spot-check: first entry should be an object of number values
+    const firstEntry = data.matchups[keys[0]];
+    if (typeof firstEntry !== 'object' || firstEntry === null) {
+      throw new Error(`DataLoader: matchup entry for hero ${keys[0]} is not a valid object`);
+    }
+  }
+
+  /**
+   * Runtime structural validation: Verify build JSON has expected shape.
+   */
+  private validateBuildStructure(data: BuildDatabase): void {
+    if (!data || typeof data !== 'object') {
+      throw new Error('DataLoader: buildData is null or not an object');
+    }
+    if (!data.builds || typeof data.builds !== 'object') {
+      throw new Error('DataLoader: buildData.builds is missing or not an object');
+    }
+    // Builds can legitimately be empty for new heroes, so we only validate shape if entries exist
+    const keys = Object.keys(data.builds);
+    if (keys.length > 0) {
+      const sample = data.builds[keys[0]];
+      if (!Array.isArray(sample.core)) {
+        throw new Error(`DataLoader: Build entry for hero ${keys[0]} has no 'core' array`);
+      }
     }
   }
 }
