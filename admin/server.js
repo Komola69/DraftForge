@@ -11,6 +11,22 @@ const dataLoaderPath = path.join(__dirname, '../pwa/src/engine/data-loader.ts');
 const teamBuilderPath = path.join(__dirname, '../pwa/src/engine/team-builder.ts');
 const banAdvisorPath = path.join(__dirname, '../pwa/src/engine/ban-advisor.ts');
 const draftEnginePath = path.join(__dirname, '../pwa/src/engine/draft-engine.ts');
+const defaultGoExe = 'C:\\Program Files\\Go\\bin\\go.exe';
+const goExecutable = fs.existsSync(defaultGoExe) ? defaultGoExe : 'go';
+const v2SchemaSourcePath = path.join(__dirname, '../data/processed/v2_schema.json');
+const v2SchemaPublicPath = path.join(__dirname, '../pwa/public/data/processed/v2_schema.json');
+
+function mirrorV2SchemaToPublic(send) {
+  if (!fs.existsSync(v2SchemaSourcePath)) {
+    send('    [WARN] v2_schema.json not found for public mirror step.');
+    return false;
+  }
+
+  fs.mkdirSync(path.dirname(v2SchemaPublicPath), { recursive: true });
+  fs.copyFileSync(v2SchemaSourcePath, v2SchemaPublicPath);
+  send('    Mirrored v2_schema.json to pwa/public/data/processed for app fetch path.');
+  return true;
+}
 
 app.get('/api/schemas', (req, res) => {
   try {
@@ -70,48 +86,74 @@ app.get('/api/pipeline', (req, res) => {
   const send = (msg) => res.write(`data: ${msg}\n\n`);
 
   send('Starting DraftForge Auto-Pipeline...');
-  send('--> [1/2] Compiling base Hero DB and Matrix...');
-
   const rootDir = path.join(__dirname, '../');
-  
-  // Step 1: compile_db.mjs
-  const compileProc = spawn('node', ['data/scripts/compile_db.mjs'], { cwd: rootDir });
-  
-  compileProc.stdout.on('data', data => {
-    data.toString().split('\n').filter(Boolean).forEach(line => send(`    ${line}`));
-  });
-  
-  compileProc.stderr.on('data', data => {
-    data.toString().split('\n').filter(Boolean).forEach(line => send(`    [ERROR] ${line}`));
-  });
 
-  compileProc.on('close', code => {
-    if (code !== 0) {
-      send(`Pipeline failed at compilation step (code ${code})`);
-      res.end();
-      return;
-    }
-    
-    send('--> [2/2] Merging directional API counters...');
-    
-    // Step 2: merge_counters.mjs
-    const mergeProc = spawn('node', ['data/scripts/merge_counters.mjs'], { cwd: rootDir });
-    
-    mergeProc.stdout.on('data', data => {
+  const runStep = (label, command, args, options, onDone) => {
+    send(label);
+    const proc = spawn(command, args, options);
+
+    proc.stdout.on('data', data => {
       data.toString().split('\n').filter(Boolean).forEach(line => send(`    ${line}`));
     });
 
-    mergeProc.stderr.on('data', data => {
+    proc.stderr.on('data', data => {
       data.toString().split('\n').filter(Boolean).forEach(line => send(`    [ERROR] ${line}`));
     });
 
-    mergeProc.on('close', mCode => {
-      if (mCode !== 0) {
-        send(`Pipeline failed at merge step (code ${mCode})`);
-      } else {
-        send('Pipeline execution complete! 🚀 You can safely close this.');
-      }
+    proc.on('error', (err) => {
+      send(`Pipeline step failed to start: ${err.message}`);
       res.end();
+    });
+
+    proc.on('close', code => onDone(code));
+  };
+
+  runStep('--> [1/3] Compiling base Hero DB and Matrix...', 'node', ['data/scripts/compile_db.mjs'], { cwd: rootDir }, (compileCode) => {
+    if (compileCode !== 0) {
+      send(`Pipeline failed at compilation step (code ${compileCode})`);
+      res.end();
+      return;
+    }
+
+    runStep('--> [2/3] Merging directional API counters...', 'node', ['data/scripts/merge_counters.mjs'], { cwd: rootDir }, (mergeCode) => {
+      if (mergeCode !== 0) {
+        send(`Pipeline failed at merge step (code ${mergeCode})`);
+        res.end();
+        return;
+      }
+
+      const goCheck = spawn(goExecutable, ['version'], { cwd: rootDir });
+      goCheck.on('error', () => {
+        send('--> [3/3] Generating v2 schema...');
+        send('    [WARN] Go runtime not found. Skipping v2_schema.json generation.');
+        send('Pipeline execution complete with v1 artifacts.');
+        res.end();
+      });
+
+      goCheck.on('close', (goCheckCode) => {
+        if (goCheckCode !== 0) {
+          send('--> [3/3] Generating v2 schema...');
+          send(`    [WARN] Go runtime check failed (code ${goCheckCode}). Skipping v2_schema.json generation.`);
+          send('Pipeline execution complete with v1 artifacts.');
+          res.end();
+          return;
+        }
+
+        runStep('--> [3/3] Generating v2 schema...', goExecutable, ['run', 'data/scripts/update_meta.go'], { cwd: rootDir }, (goCode) => {
+          if (goCode !== 0) {
+            send(`    [WARN] v2 schema generation failed (code ${goCode}). Keeping v1 fallback.`);
+            send('Pipeline execution complete with v1 artifacts.');
+          } else {
+            try {
+              mirrorV2SchemaToPublic(send);
+            } catch (err) {
+              send(`    [WARN] Failed to mirror v2 schema into PWA public path: ${err.message}`);
+            }
+            send('Pipeline execution complete! v2_schema.json generated. 🚀');
+          }
+          res.end();
+        });
+      });
     });
   });
 });

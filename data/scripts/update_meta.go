@@ -28,6 +28,10 @@ type BaselineData struct {
 	Matchups map[string]map[string]BaselineMatchup `json:"matchups"` // [HeroID][EnemyID]
 }
 
+type V1MatchupData struct {
+	Matchups map[string]map[string]float64 `json:"matchups"`
+}
+
 // Struct for the volatile Community API Data
 type APIMatchup struct {
 	Score float64 `json:"score"`
@@ -63,9 +67,81 @@ const (
 	communityAPIURL = "https://raw.githubusercontent.com/p3hndrx/MLBB-API/main/api_counters.json"
 	baselinePath    = "./data/raw/baseline.json"
 	heroesPath      = "./data/processed/v1_heroes.json"
+	v1MatchupsPath  = "./data/processed/v1_matchups.json"
 	outputPath      = "./data/processed/v2_schema.json"
 	zScoreThreshold = 2.5 // Max standard deviations allowed before dropping
 )
+
+func clamp(value float64, min float64, max float64) float64 {
+	if value < min {
+		return min
+	}
+	if value > max {
+		return max
+	}
+	return value
+}
+
+func bootstrapBaselineFromV1(path string) (BaselineData, error) {
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return BaselineData{}, err
+	}
+
+	var v1 V1MatchupData
+	if err := json.Unmarshal(file, &v1); err != nil {
+		return BaselineData{}, err
+	}
+
+	baseline := BaselineData{
+		Version:  "bootstrap-v1",
+		Matchups: make(map[string]map[string]BaselineMatchup),
+	}
+
+	for heroID, enemies := range v1.Matchups {
+		baseline.Matchups[heroID] = make(map[string]BaselineMatchup)
+		for enemyID, score := range enemies {
+			baseline.Matchups[heroID][enemyID] = BaselineMatchup{
+				BaseScore:   score,
+				MinAllowed:  clamp(score-4.0, -10.0, 10.0),
+				MaxAllowed:  clamp(score+4.0, -10.0, 10.0),
+				RollingMean: score,
+				RollingStd:  1.0,
+			}
+		}
+	}
+
+	return baseline, nil
+}
+
+func loadOrInitializeBaseline(path string) (BaselineData, error) {
+	file, err := os.ReadFile(path)
+	if err == nil {
+		var baseline BaselineData
+		if unmarshalErr := json.Unmarshal(file, &baseline); unmarshalErr != nil {
+			return BaselineData{}, unmarshalErr
+		}
+		return baseline, nil
+	}
+
+	if !os.IsNotExist(err) {
+		return BaselineData{}, err
+	}
+
+	log.Printf("[WARNING] baseline.json missing. Bootstrapping from %s", v1MatchupsPath)
+	baseline, bootstrapErr := bootstrapBaselineFromV1(v1MatchupsPath)
+	if bootstrapErr != nil {
+		return BaselineData{}, bootstrapErr
+	}
+
+	baseBytes, marshalErr := json.MarshalIndent(baseline, "", "  ")
+	if marshalErr == nil {
+		_ = os.WriteFile(path, baseBytes, 0644)
+	}
+
+	log.Println("[INGEST] baseline.json bootstrapped successfully.")
+	return baseline, nil
+}
 
 func normalizeGoldReliance(value float64) int {
 	if math.IsNaN(value) || math.IsInf(value, 0) {
@@ -125,6 +201,7 @@ func main() {
 	var wg sync.WaitGroup
 	var baseline BaselineData
 	var apiData APIData
+	var baselineErr error
 	var apiErr error
 
 	// ==========================================
@@ -135,13 +212,12 @@ func main() {
 	// Goroutine 1: Load Local Ground Truth
 	go func() {
 		defer wg.Done()
-		file, err := os.ReadFile(baselinePath)
+		loadedBaseline, err := loadOrInitializeBaseline(baselinePath)
 		if err != nil {
-			log.Fatalf("[CRITICAL] Baseline file unreadable: %v. Pipeline halted.", err)
+			baselineErr = err
+			return
 		}
-		if err := json.Unmarshal(file, &baseline); err != nil {
-			log.Fatalf("[CRITICAL] Baseline JSON corrupt: %v. Pipeline halted.", err)
-		}
+		baseline = loadedBaseline
 		log.Println("[INGEST] Local Baseline loaded successfully.")
 	}()
 
@@ -179,6 +255,10 @@ func main() {
 
 	// Block until both routines finish
 	wg.Wait()
+
+	if baselineErr != nil {
+		log.Fatalf("[CRITICAL] Baseline load failed: %v. Pipeline halted.", baselineErr)
+	}
 
 	dataSource := "community_merged"
 	if apiErr != nil {

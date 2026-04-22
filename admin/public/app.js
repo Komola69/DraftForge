@@ -123,11 +123,19 @@ document.addEventListener('DOMContentLoaded', () => {
             line.textContent = e.data.replace('Done', '✅ Finished').replace('-->', '➡️');
             terminalOutput.appendChild(line);
             terminalOutput.scrollTop = terminalOutput.scrollHeight;
-            if (e.data.includes('complete!')) {
+            const isComplete = /pipeline execution complete/i.test(e.data);
+            const isFailed = /pipeline failed/i.test(e.data);
+            if (isComplete || isFailed) {
                 evtSource.close();
                 btnRunPipeline.disabled = false;
                 btnRunPipeline.textContent = 'Refresh Everything Now';
             }
+        };
+
+        evtSource.onerror = () => {
+            evtSource.close();
+            btnRunPipeline.disabled = false;
+            btnRunPipeline.textContent = 'Refresh Everything Now';
         };
     });
 

@@ -13,6 +13,25 @@ import buildData from '../../../data/processed/v1_builds.json';
 import portraitMap from '../../../data/processed/v1_portraits.json';
 import v1MatchupData from '../../../data/processed/v1_matchups.json';
 
+function normalizeDynamicMatchups(payload: any): MatchupMatrix {
+  // v1 shape already matches MatchupMatrix.
+  if (payload && typeof payload.schema_version === 'string' && payload.matchups) {
+    return payload as MatchupMatrix;
+  }
+
+  // v2 schema from update_meta.go omits schema_version/game_version.
+  if (payload && payload.matchups && typeof payload.matchups === 'object') {
+    return {
+      schema_version: '2.0.0',
+      game_version: (heroData as any).game_version || 'unknown',
+      generated_at: payload.generated_at || new Date().toISOString(),
+      matchups: payload.matchups,
+    } as MatchupMatrix;
+  }
+
+  throw new Error('Unsupported dynamic matchup schema format');
+}
+
 export let engine: DraftEngine;
 export let loader: DataLoader;
 export let teamBuilder: TeamBuilder;
@@ -80,7 +99,7 @@ export async function initApp(): Promise<void> {
       throw new Error('v2_schema.json missing or invalid (got HTML)');
     }
     
-    dynamicMatchupData = await res.json();
+    dynamicMatchupData = normalizeDynamicMatchups(await res.json());
   } catch (e) {
     console.warn('[DraftForge] Using local v1 static fallback:', e);
     dynamicMatchupData = v1MatchupData;
@@ -750,7 +769,7 @@ function renderBanSuggestions(
     allyPickIds ?? [], enemyPickIds ?? [], existingBanIds ?? [], 6
   );
 
-  const phase = allyPickIds.length > 0 ? 'Protective' : 'Meta';
+  const phase = suggestions[0]?.phase === 'protect' ? 'Protective' : 'Meta';
   badge.textContent = `${phase} Bans`;
 
   if (suggestions.length === 0) {

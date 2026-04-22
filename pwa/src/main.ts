@@ -5,12 +5,23 @@ import './styles/index.css';
 import { initApp, engine } from './ui/app';
 import { store } from './ui/state';
 
-// Global disposal hook — called by FloatingService.onDestroy() via evaluateJavascript
-(window as any).__draftforge_dispose = () => {
+let disposed = false;
+
+function teardown(): void {
+  if (disposed) return;
+  disposed = true;
   console.log('[DraftForge] Teardown: disposing state manager and engine worker...');
   store.dispose();
   if (engine?.dispose) engine.dispose();
+}
+
+// Global disposal hook — called by FloatingService.onDestroy() via evaluateJavascript
+(window as any).__draftforge_dispose = () => {
+  teardown();
 };
+
+window.addEventListener('pagehide', teardown);
+window.addEventListener('beforeunload', teardown);
 
 // Boot
 initApp().catch(err => {

@@ -1,59 +1,61 @@
-# DraftForge - Project Handover
+# DraftForge Handover Context - Session Release 4.0
 
-## 1. System Architecture State (v2.2)
+## 🚀 Project Overview
+**DraftForge** is a high-performance MLBB Counter-Picking Engine. 
+- **Admin Panel**: `http://localhost:3001` (Controls data pipeline)
+- **PWA Frontend**: `http://localhost:5174` (Vite-based logic engine)
 
-DraftForge has transitioned from a browser-based PWA into a highly-performant **Native Android Overlay** powered by Capacitor, with a Zero-Trust data pipeline backend.
+---
 
-### **The Engine (TypeScript / JavaScript)**
-*   **Draft Engine:** Upgraded to an exponential penalty scoring system ($minScore^2$) to strictly eliminate hard-counters from recommendations. Added Synergy loops to account for ally interactions.
-*   **Team Builder:** Utilizes a Bounded Beam Search (Width=3, Depth=5, 243 max operations). Solves 5-man composition locally in `<5ms` without freezing the UI. Implemented graceful degradation for heavily restricted lanes.
-*   **Data Loader:** Switched from static JSON bundling to a dynamic, cache-busting fetch (`v2_schema.json?bust=xyz`) to guarantee fresh meta on every boot.
+## ✅ Completed in Last Session
 
-### **The Eyes (Android Native Vision)**
-*   **DraftForgeVisionPlugin.kt:** Screen-reading logic is fully native. It isolates the "Safe Zones" (Top-Center 40% of hero slots) to bypass Moonton's "BANNED" overlays.
-*   **Difference Hashing (dHash):** Replaced slow MSE image-matching with 64-bit BigInt dHash generation natively, sending only a 100-byte array over the Capacitor bridge.
+### 1. Data Pipeline Automation (The "Real" Admin Panel)
+- **Problem**: The Admin Panel was a fake simulation using `setTimeout`. It never actually updated the game data.
+- **Fix**: Rewrote `admin/server.js` to use `child_process.spawn`. Clicking "Run Full Data Pipeline" now executes `compile_db.mjs` and `merge_counters.mjs` in sequence.
+- **Path Resolution**: Fixed a critical bug where scripts were looking for `data/raw` in the wrong folder when spawned from the server.
 
-### **The Body (Capacitor Overlay)**
-*   **FloatingService.java:** Binds a transparent WebView to a `SYSTEM_ALERT_WINDOW`.
-*   **Doze Freeze Patch:** Elevated the background service to a `Foreground Service` using an un-dismissible high-priority Notification (`startForeground(1)`), preventing Android's battery manager from killing the WebView during heavy GPU load.
+### 2. Strategic Win Conditions (Draft Denial)
+- **Implemented**: A high-priority boost for "Synergy Steals".
+- **Example**: If the enemy picks **Carmilla**, the engine now gives **Cecilion** a massive score boost to prevent the enemy from completing the world's strongest duo.
+- **Multiplier Fix**: Increased `DENIAL_WEIGHT` from `0.5` to `2.5` in `draft-engine.ts`. This ensures that strategic denials outweigh early-draft "safety" penalties.
 
-### **The Backend (Go Data Pipeline)**
-*   **update_meta.go:** A Zero-Cost, local Go CLI aggregator.
-*   **Zero-Trust:** Fetches unstable community APIs and sanitizes them against `baseline.json` using Z-Score anomaly detection and absolute min/max Sandbox clamping.
-*   **Welford's EMA:** Updates the statistical ledger ($O(1)$ space complexity) dynamically before compiling the final `v2_schema.json` to be hosted on GitHub Pages.
+### 3. Macro-Mechanic Validation
+- Updated `team-builder.ts` to penalize team comps that lack **Frontline (Tanks)** or **Wave-clear (Mages/Marksmen)**. The AI now drafts for teamfight anatomy, not just 1v1 counter-picks.
 
-***
+---
 
-## 2. Admin Workflows
+## 🛠 Current System State
 
-You are running a **"Laptop-to-Edge"** pipeline. 
+### Services
+- **Admin Server**: Running via `node admin/server.js` (PID managed in background).
+- **Vite PWA**: Running via `npm run dev` on **Port 5174**. (Port 5173 was busy).
 
-### To Update Matchup Winrates (Daily/Weekly):
-1. Navigate to the root directory.
-2. Run the Go pipeline: `go run data/scripts/update_meta.go`
-3. The script will automatically fetch community data, refine it, generate `v2_schema.json`, and update the `baseline.json` ledger.
-4. Commit and push the changes to GitHub. The app will pull the fresh schema automatically on its next boot.
+### Data Integrity
+- **Carmilla Matchups**: Verified. The JSON now contains 15 directional matchups for Carmilla (previously 0).
+- **Cecilion Combo**: Verified. Cecilion now scores `+7.5` against an enemy Carmilla (math: `22.5` denial bonus - `15.0` safety penalty).
 
-### To Add a New Hero:
-1. Manually add the hero's raw stats to `data/raw/hero-meta-final.json`.
-2. Compile the core database: `node data/scripts/compile_db.mjs`
-3. Add the hero's portrait to the assets folder.
-4. Run `npm run build` & `npx cap sync android` if the app needs re-bundling.
+---
 
-***
+## ⚠️ Outstanding Issues (Priority for Next Session)
 
-## 3. Deployment Instructions
+### 1. BanAdvisor Logic Stuck in "Meta Phase"
+- **User Report**: "In draft mode the ban always suggest meta."
+- **Investigation Needed**: 
+    - `BanAdvisor.ts` is configured with `PHASE2_ALLY_LOCK_COUNT = 1`. 
+    - It should switch to "Protective Bans" as soon as one ally is picked. 
+    - Need to check why `app.ts` is still rendering "Meta" labels or why the engine falls back to meta scores (likely because `totalThreat` is calculating as 0 for certain allies).
 
-To build the final production APK:
-1. `cd pwa`
-2. `npm run build`
-3. `npx cap sync android`
-4. Open the Android project in Android Studio: `npx cap open android`
-5. Click **Build > Generate Signed Bundle / APK**.
+### 2. v2 Schema Fallback
+- The PWA console shows `v2_schema.json missing or invalid`. 
+- It successfully falls back to the local `v1` JSON files, but the "Data Sync" button in the Admin panel should ideally be updated to generate a `v2_schema.json` if we want to move past the fallback.
 
-***
+### 3. UI Memory Leak
+- The `ui/state.ts` pub/sub system lacks teardown. Frequent re-renders in the Overlay view (Android) will eventually cause a memory crash.
 
-## 4. Known Edge-Cases / Future Roadmap
-1. **Web Worker Threading:** If the 132-hero pool expands significantly, the Beam Search may require an actual Web Worker split. `app.ts` is already patched to safely serialize `Set` states via `Array.from()` for this eventual transition.
-2. **Dynamic UI Resolution Scaling:** The floating overlay uses a hardcoded 350x400dp window. Future updates should include a resize-handle or pinch-to-zoom for tablet devices.
-3. **Screen Capture Intent:** Depending on the Android version (specifically Android 14+), the MediaProjection API requires explicit user consent every time it boots. Ensure the UI prompts clearly when draft mode begins.
+---
+
+## 🔑 Key Files to Watch
+- `pwa/src/engine/draft-engine.ts`: Core scoring logic and denial multipliers.
+- `pwa/src/engine/ban-advisor.ts`: Logic for Meta vs. Protective bans.
+- `pwa/src/ui/app.ts`: Main UI orchestrator and data fetching.
+- `data/processed/v1_matchups.json`: The source of truth for all counter scores.

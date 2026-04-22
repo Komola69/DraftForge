@@ -64,7 +64,7 @@ function getMatchupScore(heroId: number, enemyId: number): number {
 function scoreHero(
   hero: HeroData,
   enemyIds: number[],
-  allyIds: number[] = []
+  _allyIds: number[] = []
 ): { rawScore: number; weightedScore: number; minScore: number; breakdown: MatchupBreakdown[] } {
   const breakdown: MatchupBreakdown[] = [];
   let rawScore = 0;

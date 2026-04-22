@@ -69,6 +69,16 @@ export class BanAdvisor {
   }
 
   /**
+   * Resolve directional gaps in matchup data by checking both directions.
+   * If candidate->ally is missing, ally->candidate negative score still implies threat.
+   */
+  private getThreatAgainstAlly(candidateId: number, allyId: number): number {
+    const direct = this.data.getMatchupScore(candidateId, allyId);
+    const reverse = this.data.getMatchupScore(allyId, candidateId);
+    return Math.max(0, direct, -reverse);
+  }
+
+  /**
    * Phase 1 — Meta bans (before any ally picks).
    * Suggests banning high-tier heroes that have few effective counters.
    */
@@ -151,8 +161,7 @@ export class BanAdvisor {
       let totalThreat = 0;
 
       for (const ally of allyHeroes) {
-        // Clamp negatives so weak matchups never invert protective-ban math.
-        const threat = Math.max(0, this.data.getMatchupScore(candidate.id, ally.id));
+        const threat = this.getThreatAgainstAlly(candidate.id, ally.id);
         if (threat > 0) {
           threats.push({ allyName: ally.name, threat });
           totalThreat += threat;
@@ -177,8 +186,9 @@ export class BanAdvisor {
         if (counterScore > 0) counterDenial += counterScore;
       }
 
-      // Final score: (total threat to allies + enemy synergy) × tier weight × phase modifier - counter potential
-      let banScore = (totalThreat + enemySynergy) * tierW * targetedThreatModifier;
+      // Final score: weighted threats + optional phase-2 baseline - counter potential
+      const phase2Baseline = isTargetedPhase ? tierW * 0.25 : 0;
+      let banScore = ((totalThreat + enemySynergy) * tierW * targetedThreatModifier) + phase2Baseline;
       banScore -= (counterDenial * 1.5); // Penalty: don't ban our own good counters
       banScore = Math.max(0, banScore); // Clamp to 0
 
@@ -197,7 +207,9 @@ export class BanAdvisor {
           reason = `Threatens your ${threatStrs.join(', ')}`;
         }
       } else {
-        reason = `Tier ${candidate.tier} meta threat`;
+        reason = isTargetedPhase
+          ? `Protective phase: no direct hard-counter found, prioritize flexible denial`
+          : `Tier ${candidate.tier} meta threat`;
       }
 
       return {
