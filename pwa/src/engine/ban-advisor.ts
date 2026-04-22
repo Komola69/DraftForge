@@ -23,7 +23,7 @@ const TIER_WEIGHT: Record<string, number> = {
   'S': 1.30, 'A': 1.10, 'B': 1.00, 'C': 0.85, 'D': 0.70,
 };
 
-const PHASE2_ALLY_LOCK_COUNT = 3;
+const PHASE2_ALLY_LOCK_COUNT = 1;
 const TARGETED_THREAT_SCALE = 12;
 
 /** Threshold: a hero is "countered" if someone scores >= this against them */
@@ -122,6 +122,7 @@ export class BanAdvisor {
    */
   getProtectiveBans(
     allyPickIds: number[] = [],
+    enemyPickIds: number[] = [],
     alreadyUnavailable: number[] = [],
     limit: number = 5
   ): BanSuggestion[] {
@@ -135,6 +136,10 @@ export class BanAdvisor {
 
     // Get ally hero names for display
     const allyHeroes = allyPickIds
+      .map(id => this.data.getHero(id))
+      .filter((h): h is Hero => h !== undefined);
+
+    const enemyHeroes = enemyPickIds
       .map(id => this.data.getHero(id))
       .filter((h): h is Hero => h !== undefined);
 
@@ -159,12 +164,29 @@ export class BanAdvisor {
         ? 1 + (totalThreat / TARGETED_THREAT_SCALE)
         : 1;
 
-      // Final score: total threat to allies × tier weight × phase modifier
-      const banScore = totalThreat * tierW * targetedThreatModifier;
+      let enemySynergy = 0;
+      let counterDenial = 0;
+
+      for (const enemy of enemyHeroes) {
+        // Synergy: Does the candidate combo with the enemy? (draft denial)
+        const syn = (this.data as any).getSynergyScore ? (this.data as any).getSynergyScore(candidate.id, enemy.id) : 0;
+        if (syn > 0) enemySynergy += syn;
+
+        // We DO NOT want to ban our best counter-picks against the enemy team!
+        const counterScore = this.data.getMatchupScore(candidate.id, enemy.id);
+        if (counterScore > 0) counterDenial += counterScore;
+      }
+
+      // Final score: (total threat to allies + enemy synergy) × tier weight × phase modifier - counter potential
+      let banScore = (totalThreat + enemySynergy) * tierW * targetedThreatModifier;
+      banScore -= (counterDenial * 1.5); // Penalty: don't ban our own good counters
+      banScore = Math.max(0, banScore); // Clamp to 0
 
       // Build reason string
       let reason: string;
-      if (threats.length > 0) {
+      if (enemySynergy > 0 && enemySynergy > totalThreat) {
+        reason = `Draft denial: strong combo potential with enemy picks`;
+      } else if (threats.length > 0) {
         const threatStrs = threats
           .sort((a, b) => b.threat - a.threat)
           .slice(0, 3)
@@ -206,7 +228,7 @@ export class BanAdvisor {
     const unavailable = [...allyPickIds, ...enemyPickIds, ...existingBanIds];
 
     if (allyPickIds.length >= PHASE2_ALLY_LOCK_COUNT) {
-      return this.getProtectiveBans(allyPickIds, unavailable, limit);
+      return this.getProtectiveBans(allyPickIds, enemyPickIds, unavailable, limit);
     }
 
     return this.getMetaBans(unavailable, limit);
