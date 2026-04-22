@@ -6,8 +6,23 @@ const DIR_PROCESSED = path.resolve('./data/processed');
 
 const rawMeta = JSON.parse(fs.readFileSync(path.join(DIR_RAW, 'hero-meta-final.json'), 'utf8'));
 
-const PURPLE_DEPENDENT_HEROES = new Set(['fanny', 'ling']);
-const HIGH_GOLD_RELIANCE_HEROES = new Set(['aldous', 'cecilion', 'miya', 'alice']);
+const PURPLE_DEPENDENT_HEROES = new Set(['fanny', 'ling', 'hayabusa', 'alucard']);
+const RED_DEPENDENT_HEROES = new Set(['karrie', 'kimmy', 'clint', 'brody', 'beatrix', 'natan', 'ixia', 'granger', 'claude', 'miya', 'hanabi']);
+
+const VERY_HIGH_GOLD_HEROES = new Set(['aldous', 'cecilion', 'claude', 'miya']);
+const HIGH_GOLD_HEROES = new Set(['karrie', 'kimmy', 'granger', 'brody', 'beatrix', 'natan', 'ixia', 'lukas']);
+const LOW_GOLD_HEROES = new Set(['tigreal', 'franco', 'angela', 'estes', 'floryn', 'rafaela', 'diggie', 'atlas', 'khufra', 'johnson', 'lolita', 'hylos', 'baxia', 'belerick', 'grock', 'uranus', 'chip']);
+
+const HERO_TIERS = {
+  // S-Tier
+  'chip': 'S', 'chou': 'S', 'fredrinn': 'S', 'valentina': 'S', 'novaria': 'S', 'zetian': 'S', 'kalea': 'S', 'joy': 'S', 'nolan': 'S', 'ling': 'S', 'fanny': 'S', 'khufra': 'S', 'gusion': 'S', 'kagura': 'S', 'atlas': 'S',
+  // A-Tier
+  'lancelot': 'A', 'benedetta': 'A', 'hayabusa': 'A', 'franco': 'A', 'mathilda': 'A', 'selena': 'A', 'lunox': 'A', 'esmeralda': 'A', 'phoveus': 'A', 'baxia': 'A', 'edith': 'A', 'julian': 'A', 'arlott': 'A', 'aamon': 'A', 'beatrix': 'A', 'brody': 'A', 'granger': 'A', 'karrie': 'A', 'claude': 'A', 'yi sun-shin': 'A', 'wanwan': 'A', 'harith': 'A', 'silvanna': 'A', 'kaja': 'A', 'barats': 'A', 'hilda': 'A', 'paquito': 'A', 'lapu-lapu': 'A', 'martis': 'A', 'masha': 'A', 'thamuz': 'A', 'x.borg': 'A', 'yu zhong': 'A', 'dyrroth': 'A', 'leomord': 'A', 'guinevere': 'A', 'gloo': 'A', 'jawhead': 'A', 'terizla': 'A', 'alpha': 'A', 'badang': 'A', 'cecilion': 'A', 'carmilla': 'A', 'diggie': 'A', 'angela': 'A',
+  // B-Tier
+  'alucard': 'B', 'argus': 'B', 'balmond': 'B', 'roger': 'B', 'freya': 'B', 'zilong': 'B', 'sun': 'B', 'cici': 'B', 'khaleed': 'B', 'yin': 'B', 'saber': 'B', 'karina': 'B', 'aulus': 'B', 'natalia': 'B', 'hanzo': 'B', 'helcurt': 'B', 'aldous': 'B', 'lesley': 'B', 'moskov': 'B', 'bruno': 'B', 'clint': 'B', 'hanabi': 'B', 'irithel': 'B', 'miya': 'B', 'layla': 'B', 'popol and kupa': 'B', 'kimmy': 'B', 'natan': 'B', 'melissa': 'B', 'ixia': 'B', 'lukas': 'B', 'suyou': 'B', 'aurora': 'B', 'cyclops': 'B', 'eudora': 'B', 'gord': 'B', 'kadita': 'B', 'lylia': 'B', 'odette': 'B', 'pharsa': 'B', 'vale': 'B', 'vexana': 'B', 'xavier': 'B', 'yve': 'B', 'zhask': 'B', 'alice': 'B', 'bane': 'B', 'hylos': 'B', 'luo yi': 'B', 'valir': 'B', 'estes': 'B', 'floryn': 'B', 'rafaela': 'B', 'nana': 'B', 'faramis': 'B', 'chang\'e': 'B', 'obsidia': 'B', 'zhuxin': 'B',
+  // C-Tier
+  'minsitthar': 'C', 'belerick': 'C', 'gatotkaca': 'C', 'minotaur': 'C', 'ruby': 'C', 'tigreal': 'C', 'akai': 'C', 'johnson': 'C', 'lolita': 'C', 'grock': 'C', 'uranus': 'C', 'marcel': 'C', 'sora': 'C'
+};
 
 function inferGoldReliance(rawHero, roles) {
   const explicit = Number(rawHero.goldReliance);
@@ -16,7 +31,10 @@ function inferGoldReliance(rawHero, roles) {
   }
 
   const key = String(rawHero.hero_name || '').toLowerCase();
-  if (HIGH_GOLD_RELIANCE_HEROES.has(key)) return 9;
+  if (VERY_HIGH_GOLD_HEROES.has(key)) return 9;
+  if (HIGH_GOLD_HEROES.has(key)) return 8;
+  if (LOW_GOLD_HEROES.has(key)) return 3;
+  
   if (roles.includes('marksman')) return 7;
   if (roles.includes('assassin')) return 6;
   if (roles.includes('mage')) return 6;
@@ -32,7 +50,12 @@ function inferBuffDependency(rawHero) {
 
   const key = String(rawHero.hero_name || '').toLowerCase();
   if (PURPLE_DEPENDENT_HEROES.has(key)) return 'Purple';
+  if (RED_DEPENDENT_HEROES.has(key)) return 'Red';
   return 'None';
+}
+
+function inferTier(heroName) {
+  return HERO_TIERS[heroName.toLowerCase()] || 'B';
 }
 
 // We will build a completely new Hero DB and Matchup DB
@@ -84,7 +107,7 @@ for (const rawHero of rawMeta.data) {
     name,
     roles,
     lanes,
-    tier: "A", // Default tier, engine will adjust
+    tier: inferTier(name),
     base_wr: 50.0, // Default WR
     goldReliance: inferGoldReliance(rawHero, roles),
     buffDependency: inferBuffDependency(rawHero)

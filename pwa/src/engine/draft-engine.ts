@@ -355,10 +355,13 @@ export class DraftEngine {
         });
       }
 
+      const tierWeight = TIER_WEIGHT[hero.tier] ?? 1.0;
+      const weightedScore = rawScore * tierWeight;
+
       results.push({
         hero,
         raw_score: rawScore,
-        weighted_score: rawScore,
+        weighted_score: weightedScore,
         breakdown,
         build: null,
       });

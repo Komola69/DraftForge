@@ -49,6 +49,30 @@ const TIER_RANK: Record<string, number> = {
   'S': 0, 'A': 1, 'B': 2, 'C': 3, 'D': 4,
 };
 
+const KNOWN_COMBOS: Record<string, { partner: string; strength: number }[]> = {
+  'carmilla':    [{ partner: 'cecilion', strength: 9 }],
+  'cecilion':    [{ partner: 'carmilla', strength: 9 }],
+  'angela':      [{ partner: 'roger', strength: 7 }, { partner: 'ling', strength: 7 }, { partner: 'chou', strength: 6 }],
+  'roger':       [{ partner: 'angela', strength: 7 }],
+  'ling':        [{ partner: 'angela', strength: 7 }],
+  'atlas':       [{ partner: 'diggie', strength: 8 }, { partner: 'aurora', strength: 7 }],
+  'diggie':      [{ partner: 'atlas', strength: 8 }],
+  'aurora':      [{ partner: 'atlas', strength: 7 }, { partner: 'tigreal', strength: 7 }],
+  'tigreal':     [{ partner: 'aurora', strength: 7 }, { partner: 'odette', strength: 8 }],
+  'odette':      [{ partner: 'tigreal', strength: 8 }, { partner: 'johnson', strength: 8 }],
+  'johnson':     [{ partner: 'odette', strength: 8 }],
+  'rafaela':     [{ partner: 'karrie', strength: 6 }],
+  'karrie':      [{ partner: 'rafaela', strength: 6 }],
+  'mathilda':    [{ partner: 'fanny', strength: 6 }],
+  'fanny':       [{ partner: 'mathilda', strength: 6 }],
+  'franco':      [{ partner: 'aldous', strength: 6 }],
+  'aldous':      [{ partner: 'franco', strength: 6 }],
+  'khufra':      [{ partner: 'selena', strength: 6 }],
+  'selena':      [{ partner: 'khufra', strength: 6 }],
+};
+
+const DENIAL_WEIGHT = 2.5;
+
 // ============================================================
 // Worker State
 // ============================================================
@@ -103,6 +127,30 @@ function scoreHero(
     if (enemyIds.length === 0) {
       const safeWr = (typeof hero.base_wr === 'number' && !isNaN(hero.base_wr)) ? hero.base_wr : 50;
       weightedScore += (safeWr - 50);
+    }
+  }
+
+  // Draft Denial
+  if (enemyIds.length > 0) {
+    const candidateName = hero.name.toLowerCase();
+    let denialScore = 0;
+
+    for (const enemyId of enemyIds) {
+      const enemy = heroMap.get(enemyId);
+      if (!enemy) continue;
+
+      const combos = KNOWN_COMBOS[enemy.name.toLowerCase()];
+      if (combos) {
+        for (const combo of combos) {
+          if (combo.partner === candidateName) {
+            denialScore += combo.strength;
+          }
+        }
+      }
+    }
+
+    if (denialScore > 0) {
+      weightedScore += denialScore * DENIAL_WEIGHT;
     }
   }
 

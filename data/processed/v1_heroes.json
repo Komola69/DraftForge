@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "game_version": "1.8.44",
-  "generated_at": "2026-04-22T06:52:25.988Z",
+  "generated_at": "2026-04-22T09:10:50.981Z",
   "data_source": "auto_compiled",
   "hero_count": 132,
   "heroes": [
@@ -14,10 +14,10 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 9,
-      "buffDependency": "None"
+      "buffDependency": "Red"
     },
     {
       "id": 2,
@@ -29,7 +29,7 @@
         "jungle",
         "exp"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None"
@@ -44,7 +44,7 @@
         "jungle",
         "roam"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -60,9 +60,9 @@
         "exp",
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
-      "goldReliance": 9,
+      "goldReliance": 6,
       "buffDependency": "None"
     },
     {
@@ -74,7 +74,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -88,7 +88,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -103,10 +103,10 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
-      "buffDependency": "None"
+      "buffDependency": "Purple"
     },
     {
       "id": 8,
@@ -117,7 +117,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -131,7 +131,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -161,7 +161,7 @@
         "jungle",
         "exp"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -175,7 +175,7 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None"
@@ -189,10 +189,10 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
-      "buffDependency": "None"
+      "buffDependency": "Red"
     },
     {
       "id": 14,
@@ -203,7 +203,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -217,7 +217,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -232,7 +232,7 @@
       "lanes": [
         "exp"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -246,7 +246,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "Purple"
@@ -260,7 +260,7 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None"
@@ -275,7 +275,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -290,7 +290,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -307,7 +307,7 @@
       "tier": "A",
       "base_wr": 50,
       "goldReliance": 6,
-      "buffDependency": "None"
+      "buffDependency": "Purple"
     },
     {
       "id": 22,
@@ -319,7 +319,7 @@
         "exp",
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None"
@@ -333,7 +333,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -348,7 +348,7 @@
         "jungle",
         "roam"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -362,7 +362,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -377,7 +377,7 @@
         "exp",
         "roam"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None"
@@ -392,7 +392,7 @@
         "exp",
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None"
@@ -421,7 +421,7 @@
       "lanes": [
         "exp"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None"
@@ -450,7 +450,7 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None"
@@ -465,7 +465,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -479,7 +479,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -493,7 +493,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -523,7 +523,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -551,7 +551,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -566,7 +566,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None"
@@ -582,8 +582,8 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 7,
-      "buffDependency": "None"
+      "goldReliance": 8,
+      "buffDependency": "Red"
     },
     {
       "id": 41,
@@ -596,7 +596,7 @@
         "roam",
         "exp"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -611,7 +611,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -625,7 +625,7 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None"
@@ -641,7 +641,7 @@
         "roam",
         "exp"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -655,7 +655,7 @@
       "lanes": [
         "exp"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None"
@@ -669,7 +669,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -711,7 +711,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -725,7 +725,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -739,7 +739,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -753,7 +753,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -768,7 +768,7 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None"
@@ -812,7 +812,7 @@
         "jungle",
         "mid"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -826,7 +826,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -854,7 +854,7 @@
       "lanes": [
         "exp"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -868,10 +868,10 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
-      "buffDependency": "None"
+      "buffDependency": "Red"
     },
     {
       "id": 61,
@@ -882,7 +882,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -927,7 +927,7 @@
       "lanes": [
         "exp"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 9,
       "buffDependency": "None"
@@ -943,8 +943,8 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 7,
-      "buffDependency": "None"
+      "goldReliance": 9,
+      "buffDependency": "Red"
     },
     {
       "id": 66,
@@ -955,7 +955,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -997,7 +997,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1011,7 +1011,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -1027,10 +1027,10 @@
         "gold",
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
-      "goldReliance": 7,
-      "buffDependency": "None"
+      "goldReliance": 8,
+      "buffDependency": "Red"
     },
     {
       "id": 72,
@@ -1071,7 +1071,7 @@
         "exp",
         "roam"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None"
@@ -1086,7 +1086,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1101,7 +1101,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1130,7 +1130,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -1146,8 +1146,8 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 7,
-      "buffDependency": "None"
+      "goldReliance": 8,
+      "buffDependency": "Red"
     },
     {
       "id": 80,
@@ -1216,7 +1216,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "Purple"
@@ -1245,7 +1245,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1345,7 +1345,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -1360,7 +1360,7 @@
         "jungle",
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None"
@@ -1388,7 +1388,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1418,7 +1418,7 @@
         "exp",
         "roam"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None"
@@ -1449,8 +1449,8 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 7,
-      "buffDependency": "None"
+      "goldReliance": 8,
+      "buffDependency": "Red"
     },
     {
       "id": 101,
@@ -1461,7 +1461,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1522,8 +1522,8 @@
       ],
       "tier": "A",
       "base_wr": 50,
-      "goldReliance": 7,
-      "buffDependency": "None"
+      "goldReliance": 8,
+      "buffDependency": "Red"
     },
     {
       "id": 106,
@@ -1548,10 +1548,10 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
-      "goldReliance": 7,
-      "buffDependency": "None"
+      "goldReliance": 8,
+      "buffDependency": "Red"
     },
     {
       "id": 108,
@@ -1562,7 +1562,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None"
@@ -1590,7 +1590,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1620,7 +1620,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -1636,7 +1636,7 @@
         "jungle",
         "exp"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1650,7 +1650,7 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None"
@@ -1664,7 +1664,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1694,7 +1694,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -1708,7 +1708,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1722,7 +1722,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1751,10 +1751,10 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
-      "goldReliance": 7,
-      "buffDependency": "None"
+      "goldReliance": 8,
+      "buffDependency": "Red"
     },
     {
       "id": 122,
@@ -1765,7 +1765,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1779,7 +1779,7 @@
       "lanes": [
         "exp"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 5,
       "buffDependency": "None"
@@ -1794,7 +1794,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -1808,7 +1808,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1823,7 +1823,7 @@
       "lanes": [
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1838,9 +1838,9 @@
         "exp",
         "jungle"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
-      "goldReliance": 5,
+      "goldReliance": 8,
       "buffDependency": "None"
     },
     {
@@ -1853,7 +1853,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"
@@ -1867,7 +1867,7 @@
       "lanes": [
         "mid"
       ],
-      "tier": "A",
+      "tier": "S",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1881,7 +1881,7 @@
       "lanes": [
         "gold"
       ],
-      "tier": "A",
+      "tier": "B",
       "base_wr": 50,
       "goldReliance": 7,
       "buffDependency": "None"
@@ -1896,7 +1896,7 @@
       "lanes": [
         "exp"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 6,
       "buffDependency": "None"
@@ -1910,7 +1910,7 @@
       "lanes": [
         "roam"
       ],
-      "tier": "A",
+      "tier": "C",
       "base_wr": 50,
       "goldReliance": 3,
       "buffDependency": "None"

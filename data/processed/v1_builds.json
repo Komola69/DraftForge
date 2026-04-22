@@ -3,121 +3,1306 @@
   "game_version": "1.8.44",
   "generated_at": "2026-04-21T00:00:00Z",
   "builds": {
-    "27": {
-      "core": ["Tough Boots", "Blade of Despair", "Malefic Roar"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
-    },
-    "95": {
-      "core": ["Tough Boots", "War Axe", "Blade of Heptaseas"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
-    },
-    "70": {
-      "core": ["Tough Boots", "Dominance Ice", "Athena's Shield"],
-      "situational": { "vs_physical": ["Antique Cuirass"], "vs_magic": ["Radiant Armor"], "vs_heal": ["Dominance Ice"] }
-    },
-    "97": {
-      "core": ["Tough Boots", "War Axe", "Oracle"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_dash": ["Dominance Ice"] }
-    },
-    "35": {
-      "core": ["Arcane Boots", "Calamity Reaper", "Concentrated Energy"],
-      "situational": { "vs_tank": ["Divine Glaive"], "vs_burst": ["Immortality"], "vs_heal": ["Necklace of Durance"] }
-    },
-    "119": {
-      "core": ["Warrior Boots", "War Axe", "Oracle"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
-    },
-    "50": {
-      "core": ["Arcane Boots", "Calamity Reaper", "Holy Crystal"],
-      "situational": { "vs_tank": ["Divine Glaive"], "vs_magic_def": ["Genius Wand"], "vs_burst": ["Winter Truncheon"] }
-    },
-    "72": {
-      "core": ["Tough Boots", "Endless Battle", "Blade of Heptaseas"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
-    },
-    "77": {
-      "core": ["Tough Boots", "Blade of Heptaseas", "Endless Battle"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_cc": ["Tough Boots"] }
-    },
-    "38": {
-      "core": ["Tough Boots", "Blade of Despair", "Malefic Roar"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
-    },
-    "55": {
-      "core": ["Warrior Boots", "War Axe", "Blade of Despair"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
-    },
-    "92": {
-      "core": ["Tough Boots", "Blade of Heptaseas", "Endless Battle"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
-    },
-    "63": {
-      "core": ["Arcane Boots", "Concentrated Energy", "Holy Crystal"],
-      "situational": { "vs_tank": ["Divine Glaive"], "vs_burst": ["Winter Truncheon"], "vs_heal": ["Necklace of Durance"] }
+    "10": {
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
     },
     "17": {
-      "core": ["Tough Boots", "Dominance Ice", "Athena's Shield"],
-      "situational": { "vs_physical": ["Antique Cuirass"], "vs_magic": ["Radiant Armor"], "vs_heal": ["Dominance Ice"] }
-    },
-    "68": {
-      "core": ["Swift Boots", "Demon Hunter Sword", "Golden Staff"],
-      "situational": { "vs_tank": ["Demon Hunter Sword"], "vs_burst": ["Wind of Nature"], "vs_heal": ["Sea Halberd"] }
-    },
-    "109": {
-      "core": ["Warrior Boots", "Oracle", "Dominance Ice"],
-      "situational": { "vs_physical": ["Antique Cuirass"], "vs_magic": ["Radiant Armor"], "vs_burst": ["Immortality"] }
-    },
-    "108": {
-      "core": ["Tough Boots", "Dominance Ice", "Athena's Shield"],
-      "situational": { "vs_physical": ["Antique Cuirass"], "vs_magic": ["Radiant Armor"], "vs_heal": ["Dominance Ice"] }
-    },
-    "78": {
-      "core": ["Tough Boots", "Dominance Ice", "Athena's Shield"],
-      "situational": { "vs_physical": ["Antique Cuirass"], "vs_magic": ["Radiant Armor"], "vs_ranged": ["Athena's Shield"] }
-    },
-    "10": {
-      "core": ["Tough Boots", "Dominance Ice", "Athena's Shield"],
-      "situational": { "vs_physical": ["Antique Cuirass"], "vs_magic": ["Radiant Armor"], "vs_heal": ["Dominance Ice"] }
-    },
-    "102": {
-      "core": ["Tough Boots", "Blade of Heptaseas", "Endless Battle"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
     },
     "18": {
-      "core": ["Swift Boots", "Berserker's Fury", "Windtalker"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Wind of Nature"], "vs_heal": ["Sea Halberd"] }
+      "core": [
+        "Swift Boots",
+        "Berserker's Fury",
+        "Windtalker"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Wind of Nature"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "21": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "25": {
+      "core": [
+        "Arcane Boots",
+        "Clock of Destiny",
+        "Lightning Truncheon"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Divine Glaive"
+        ],
+        "vs_magic_def": [
+          "Genius Wand"
+        ],
+        "vs_burst": [
+          "Winter Truncheon"
+        ]
+      }
+    },
+    "26": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "27": {
+      "core": [
+        "Tough Boots",
+        "Blade of Despair",
+        "Malefic Roar"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "28": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "30": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
     },
     "33": {
-      "core": ["Warrior Boots", "War Axe", "Bloodlust Axe"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Bloodlust Axe"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "35": {
+      "core": [
+        "Arcane Boots",
+        "Calamity Reaper",
+        "Concentrated Energy"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Divine Glaive"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Necklace of Durance"
+        ]
+      }
+    },
+    "37": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "38": {
+      "core": [
+        "Tough Boots",
+        "Blade of Despair",
+        "Malefic Roar"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "40": {
+      "core": [
+        "Swift Boots",
+        "Windtalker",
+        "Berserker's Fury"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Demon Hunter Sword",
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Wind of Nature"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
     },
     "42": {
-      "core": ["Tough Boots", "War Axe", "Oracle"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
-    },
-    "101": {
-      "core": ["Tough Boots", "Haas's Claws", "War Axe"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
-    },
-    "91": {
-      "core": ["Swift Boots", "Blade of Heptaseas", "Berserker's Fury"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_reveal": ["Blade of Despair"] }
-    },
-    "65": {
-      "core": ["Arcane Boots", "Clock of Destiny", "Lightning Truncheon"],
-      "situational": { "vs_tank": ["Divine Glaive"], "vs_burst": ["Winter Truncheon"], "vs_heal": ["Necklace of Durance"] }
+      "core": [
+        "Tough Boots",
+        "War Axe",
+        "Oracle"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
     },
     "44": {
-      "core": ["Tough Boots", "Cursed Helmet", "Athena's Shield"],
-      "situational": { "vs_physical": ["Antique Cuirass"], "vs_magic": ["Radiant Armor"], "vs_heal": ["Dominance Ice"] }
+      "core": [
+        "Tough Boots",
+        "Cursed Helmet",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
     },
-    "115": {
-      "core": ["Warrior Boots", "War Axe", "Immortality"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_heal": ["Sea Halberd"], "vs_burst": ["Immortality"] }
+    "47": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "48": {
+      "core": [
+        "Tough Boots",
+        "Flask of the Oasis",
+        "Dominance Ice"
+      ],
+      "situational": {
+        "vs_magic": [
+          "Athena's Shield"
+        ],
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ]
+      }
+    },
+    "50": {
+      "core": [
+        "Arcane Boots",
+        "Calamity Reaper",
+        "Holy Crystal"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Divine Glaive"
+        ],
+        "vs_magic_def": [
+          "Genius Wand"
+        ],
+        "vs_burst": [
+          "Winter Truncheon"
+        ]
+      }
+    },
+    "54": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "55": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Blade of Despair"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "56": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "58": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "62": {
+      "core": [
+        "Tough Boots",
+        "Flask of the Oasis",
+        "Dominance Ice"
+      ],
+      "situational": {
+        "vs_magic": [
+          "Athena's Shield"
+        ],
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ]
+      }
+    },
+    "63": {
+      "core": [
+        "Arcane Boots",
+        "Concentrated Energy",
+        "Holy Crystal"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Divine Glaive"
+        ],
+        "vs_burst": [
+          "Winter Truncheon"
+        ],
+        "vs_heal": [
+          "Necklace of Durance"
+        ]
+      }
+    },
+    "65": {
+      "core": [
+        "Arcane Boots",
+        "Clock of Destiny",
+        "Lightning Truncheon"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Divine Glaive"
+        ],
+        "vs_burst": [
+          "Winter Truncheon"
+        ],
+        "vs_heal": [
+          "Necklace of Durance"
+        ]
+      }
+    },
+    "67": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "68": {
+      "core": [
+        "Swift Boots",
+        "Demon Hunter Sword",
+        "Golden Staff"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Demon Hunter Sword"
+        ],
+        "vs_burst": [
+          "Wind of Nature"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
     },
     "69": {
-      "core": ["Warrior Boots", "War Axe", "Bloodlust Axe"],
-      "situational": { "vs_tank": ["Malefic Roar"], "vs_burst": ["Immortality"], "vs_heal": ["Sea Halberd"] }
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Bloodlust Axe"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "70": {
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
+    },
+    "72": {
+      "core": [
+        "Tough Boots",
+        "Endless Battle",
+        "Blade of Heptaseas"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "73": {
+      "core": [
+        "Arcane Boots",
+        "Clock of Destiny",
+        "Lightning Truncheon"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Divine Glaive"
+        ],
+        "vs_magic_def": [
+          "Genius Wand"
+        ],
+        "vs_burst": [
+          "Winter Truncheon"
+        ]
+      }
+    },
+    "77": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Endless Battle"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_cc": [
+          "Tough Boots"
+        ]
+      }
+    },
+    "78": {
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_ranged": [
+          "Athena's Shield"
+        ]
+      }
+    },
+    "79": {
+      "core": [
+        "Swift Boots",
+        "Windtalker",
+        "Berserker's Fury"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Demon Hunter Sword",
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Wind of Nature"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "80": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "81": {
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
+    },
+    "82": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "83": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "84": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "85": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "87": {
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
+    },
+    "88": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "89": {
+      "core": [
+        "Swift Boots",
+        "Windtalker",
+        "Berserker's Fury"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Demon Hunter Sword",
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Wind of Nature"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "90": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "91": {
+      "core": [
+        "Swift Boots",
+        "Blade of Heptaseas",
+        "Berserker's Fury"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_reveal": [
+          "Blade of Despair"
+        ]
+      }
+    },
+    "92": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Endless Battle"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "93": {
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
+    },
+    "95": {
+      "core": [
+        "Tough Boots",
+        "War Axe",
+        "Blade of Heptaseas"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "97": {
+      "core": [
+        "Tough Boots",
+        "War Axe",
+        "Oracle"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_dash": [
+          "Dominance Ice"
+        ]
+      }
+    },
+    "99": {
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
+    },
+    "100": {
+      "core": [
+        "Swift Boots",
+        "Windtalker",
+        "Berserker's Fury"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Demon Hunter Sword",
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Wind of Nature"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "101": {
+      "core": [
+        "Tough Boots",
+        "Haas's Claws",
+        "War Axe"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "102": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Endless Battle"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "103": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "104": {
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
+    },
+    "105": {
+      "core": [
+        "Swift Boots",
+        "Windtalker",
+        "Berserker's Fury"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Demon Hunter Sword",
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Wind of Nature"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "106": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "108": {
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
+    },
+    "109": {
+      "core": [
+        "Warrior Boots",
+        "Oracle",
+        "Dominance Ice"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ]
+      }
+    },
+    "110": {
+      "core": [
+        "Arcane Boots",
+        "Clock of Destiny",
+        "Lightning Truncheon"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Divine Glaive"
+        ],
+        "vs_magic_def": [
+          "Genius Wand"
+        ],
+        "vs_burst": [
+          "Winter Truncheon"
+        ]
+      }
+    },
+    "111": {
+      "core": [
+        "Tough Boots",
+        "Dominance Ice",
+        "Athena's Shield"
+      ],
+      "situational": {
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_magic": [
+          "Radiant Armor"
+        ],
+        "vs_heal": [
+          "Dominance Ice"
+        ]
+      }
+    },
+    "115": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Immortality"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ]
+      }
+    },
+    "116": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "117": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "118": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "119": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Oracle"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "120": {
+      "core": [
+        "Warrior Boots",
+        "War Axe",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "122": {
+      "core": [
+        "Tough Boots",
+        "Blade of Heptaseas",
+        "Hunter Strike"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Malefic Roar"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ],
+        "vs_heal": [
+          "Sea Halberd"
+        ]
+      }
+    },
+    "124": {
+      "core": [
+        "Tough Boots",
+        "Flask of the Oasis",
+        "Dominance Ice"
+      ],
+      "situational": {
+        "vs_magic": [
+          "Athena's Shield"
+        ],
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ]
+      }
+    },
+    "128": {
+      "core": [
+        "Tough Boots",
+        "Flask of the Oasis",
+        "Dominance Ice"
+      ],
+      "situational": {
+        "vs_magic": [
+          "Athena's Shield"
+        ],
+        "vs_physical": [
+          "Antique Cuirass"
+        ],
+        "vs_burst": [
+          "Immortality"
+        ]
+      }
+    },
+    "129": {
+      "core": [
+        "Arcane Boots",
+        "Clock of Destiny",
+        "Lightning Truncheon"
+      ],
+      "situational": {
+        "vs_tank": [
+          "Divine Glaive"
+        ],
+        "vs_magic_def": [
+          "Genius Wand"
+        ],
+        "vs_burst": [
+          "Winter Truncheon"
+        ]
+      }
     }
   }
 }

@@ -23,7 +23,7 @@ const TIER_WEIGHT: Record<string, number> = {
   'S': 1.30, 'A': 1.10, 'B': 1.00, 'C': 0.85, 'D': 0.70,
 };
 
-const PHASE2_ALLY_LOCK_COUNT = 1;
+const PHASE2_ALLY_LOCK_COUNT = 3;
 const TARGETED_THREAT_SCALE = 12;
 
 /** Threshold: a hero is "countered" if someone scores >= this against them */
@@ -83,25 +83,36 @@ export class BanAdvisor {
    * Suggests banning high-tier heroes that have few effective counters.
    */
   getMetaBans(
+    enemyPickIds: number[] = [],
     alreadyUnavailable: number[] = [],
     limit: number = 5
   ): BanSuggestion[] {
     const unavailable = new Set(alreadyUnavailable);
     const allHeroes = this.data.getAllHeroes().filter(h => !unavailable.has(h.id));
+    const enemyHeroes = enemyPickIds
+      .map(id => this.data.getHero(id))
+      .filter((h): h is Hero => h !== undefined);
 
     const scored: BanSuggestion[] = allHeroes.map(hero => {
       const tierW = TIER_WEIGHT[hero.tier] ?? 1.0;
       const counterCount = this.counterCountCache.get(hero.id) ?? 0;
 
-      // Inverse counter accessibility: fewer counters = higher ban value
-      // Use 0.1 for 0 to heavily penalize uncounterable heroes
       const counterAccessibility = counterCount === 0 ? 0.1 : counterCount;
-      const banScore = tierW * (10 / counterAccessibility);
+      let banScore = tierW * (10 / counterAccessibility);
 
-      // Build reason
+      // Early Draft Denial logic: if enemy picked half of a combo, suggest banning the other half
+      let denialBonus = 0;
+      for (const enemy of enemyHeroes) {
+        const syn = (this.data as any).getSynergyScore ? (this.data as any).getSynergyScore(hero.id, enemy.id) : 0;
+        if (syn > 0) denialBonus += syn;
+      }
+      banScore += denialBonus * 2.0;
+
       const tierLabel = hero.tier;
       let reason: string;
-      if (counterCount <= 2) {
+      if (denialBonus > 0) {
+        reason = `Draft denial: prevent enemy from completing a strong combo`;
+      } else if (counterCount <= 2) {
         reason = `${hero.name} is Tier ${tierLabel} with almost no counters (${counterCount} effective counter${counterCount !== 1 ? 's' : ''})`;
       } else if (counterCount <= 5) {
         reason = `${hero.name} is Tier ${tierLabel} with few counters (${counterCount}). Hard to deal with if picked.`;
@@ -243,6 +254,6 @@ export class BanAdvisor {
       return this.getProtectiveBans(allyPickIds, enemyPickIds, unavailable, limit);
     }
 
-    return this.getMetaBans(unavailable, limit);
+    return this.getMetaBans(enemyPickIds, unavailable, limit);
   }
 }
