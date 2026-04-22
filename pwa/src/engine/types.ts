@@ -15,6 +15,13 @@ export interface Hero {
   goldReliance: number;
   /** Core buff dependency for map resource conflict checks */
   buffDependency: 'Purple' | 'Red' | 'None';
+  /** Primary damage type for team balance checks */
+  primaryDamageType: 'Physical' | 'Magic';
+}
+
+export interface SynergyDatabase {
+  schema_version: string;
+  combos: Record<string, { partnerId: number; strength: number }[]>;
 }
 
 export interface HeroDatabase {

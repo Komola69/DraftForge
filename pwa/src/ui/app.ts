@@ -4,12 +4,13 @@
  */
 
 import { DataLoader, DraftEngine, TeamBuilder, BanAdvisor, VisionEngine } from '../engine';
-import type { HeroDatabase, MatchupMatrix, BuildDatabase, ScoredHero, Hero } from '../engine';
+import type { HeroDatabase, MatchupMatrix, BuildDatabase, SynergyDatabase, ScoredHero, Hero } from '../engine';
 import { store } from './state';
 import { Capacitor } from '@capacitor/core';
 
 import heroData from '../../../data/processed/v1_heroes.json';
 import buildData from '../../../data/processed/v1_builds.json';
+import synergyData from '../../../data/processed/v1_synergies.json';
 import portraitMap from '../../../data/processed/v1_portraits.json';
 import v1MatchupData from '../../../data/processed/v1_matchups.json';
 
@@ -78,7 +79,7 @@ export function getRoleColor(role: string): string {
 export async function initApp(): Promise<void> {
   const app = document.getElementById('app')!;
   
-  // 1. Immediate loading state to prevent black screen
+  // 1. Immediate loading state
   app.innerHTML = `
     <div style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-muted);">
       <div style="width:40px; height:40px; border:3px solid rgba(99, 102, 241, 0.2); border-top-color:var(--accent); border-radius:50%; animation:spin 1s linear infinite;"></div>
@@ -89,28 +90,43 @@ export async function initApp(): Promise<void> {
 
   const timestamp = new Date().getTime();
   let dynamicMatchupData;
+  let supportedSchemas = ['1.0.0'];
+
+  // Point 1 Fix: Fetch dynamic system config
+  try {
+    const configRes = await fetch(`/data/raw/config.json?bust=${timestamp}`);
+    if (configRes.ok) {
+       const config = await configRes.json();
+       supportedSchemas = config.supported_schemas;
+       console.log('[DraftForge] Config loaded:', config);
+    }
+  } catch (e) {
+    console.warn('[DraftForge] Config unavailable, using core defaults.');
+  }
   
-  // 2. Robust data loading with SPA-safe fallback
+  // 2. Data loading with Point 6 Sync Validation
   try {
     const res = await fetch(`/data/processed/v2_schema.json?bust=${timestamp}`);
     const contentType = res.headers.get('content-type') || '';
     
     if (!res.ok || contentType.includes('text/html')) {
-      throw new Error('v2_schema.json missing or invalid (got HTML)');
+      throw new Error('v2_schema.json missing (fallback to v1)');
     }
     
     dynamicMatchupData = normalizeDynamicMatchups(await res.json());
+    console.log('[DraftForge] V2 High-Intelligence Matrix active.');
   } catch (e) {
-    console.warn('[DraftForge] Using local v1 static fallback:', e);
+    console.log('[DraftForge] V1 Base Matrix active.');
     dynamicMatchupData = v1MatchupData;
   }
 
   // 3. Component initialization
-  loader = new DataLoader();
+  loader = new DataLoader(supportedSchemas);
   loader.load(
     heroData as unknown as HeroDatabase,
     dynamicMatchupData as unknown as MatchupMatrix,
-    buildData as unknown as BuildDatabase
+    buildData as unknown as BuildDatabase,
+    synergyData as unknown as SynergyDatabase
   );
 
   engine = new DraftEngine(loader);
@@ -118,7 +134,7 @@ export async function initApp(): Promise<void> {
   banAdvisor = new BanAdvisor(loader);
   vision = new VisionEngine(loader);
   
-  // 4. Async vision init (don't block the UI render)
+  // 4. Async vision init
   vision.init().catch(e => console.error('[VisionEngine] Failed to init:', e));
 
   // 5. Render Main UI
@@ -138,6 +154,7 @@ export async function initApp(): Promise<void> {
     </header>
 
     <div class="draft-bar" id="draft-bar" style="display:none">
+      <div class="draft-bar__phase-indicator" id="draft-phase-indicator">Phase: Ban 1</div>
       <div class="draft-bar__section">
         <span class="draft-bar__label">BANS</span>
         <div class="draft-bar__slots" id="ban-slots"></div>
@@ -151,7 +168,10 @@ export async function initApp(): Promise<void> {
         <button class="tap-btn tap-btn--ban" data-action="ban">🚫 Ban</button>
         <button class="tap-btn tap-btn--ally" data-action="ally_pick">🤝 Ally</button>
       </div>
-      <button class="draft-reset-btn" id="draft-reset">Reset Draft</button>
+      <div style="display: flex; gap: 8px;">
+        <button class="draft-reset-btn" id="draft-undo" style="background: var(--bg-card); display: none;">Undo</button>
+        <button class="draft-reset-btn" id="draft-reset">Reset Draft</button>
+      </div>
     </div>
 
     <div class="enemy-bar" id="enemy-bar">
@@ -254,8 +274,11 @@ function initDraftBar(): void {
   const allySlots = document.getElementById('ally-slots')!;
   const tapActions = document.getElementById('tap-actions')!;
   const resetBtn = document.getElementById('draft-reset')!;
+  const undoBtn = document.getElementById('draft-undo')!;
+  const phaseIndicator = document.getElementById('draft-phase-indicator')!;
 
   resetBtn.addEventListener('click', () => store.resetDraft());
+  undoBtn.addEventListener('click', () => store.undoLastAction());
 
   tapActions.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest('.tap-btn') as HTMLElement | null;
@@ -324,11 +347,29 @@ function initDraftBar(): void {
     });
   }
 
+  function renderPhase(): void {
+    const { draftPhase } = store.get();
+    const phaseNames: Record<string, string> = {
+      'ban1': 'Phase: Ban 1',
+      'pick1': 'Phase: Pick 1',
+      'ban2': 'Phase: Ban 2',
+      'pick2': 'Phase: Pick 2',
+      'done': 'Draft Complete'
+    };
+    phaseIndicator.textContent = phaseNames[draftPhase] || 'Draft';
+  }
+
   store.on('bannedIds', renderBans);
   store.on('allyPickIds', renderAlly);
   store.on('tapAction', renderTapActions);
+  store.on('draftPhase', renderPhase);
+  store.on('history', () => {
+    const { history } = store.get();
+    undoBtn.style.display = history.length > 0 ? 'block' : 'none';
+  });
   renderBans();
   renderAlly();
+  renderPhase();
 }
 
 // ============================================================
@@ -425,10 +466,11 @@ function initHeroGrid(): void {
   const allHeroes = loader.getAllHeroes().sort((a, b) => a.name.localeCompare(b.name));
 
   function render(): void {
-    const { enemyIds, searchQuery, roleFilter, bannedIds, allyPickIds } = store.get();
+    const { enemyIds, searchQuery, roleFilter, bannedIds, allyPickIds, priorityHeroIds } = store.get();
     const enemySet = new Set(enemyIds);
     const banSet = new Set(bannedIds);
     const allySet = new Set(allyPickIds);
+    const prioritySet = new Set(priorityHeroIds);
 
     let filtered = allHeroes;
     if (searchQuery) filtered = filtered.filter(h => h.name.toLowerCase().includes(searchQuery));
@@ -439,16 +481,20 @@ function initHeroGrid(): void {
       const isEnemy = enemySet.has(hero.id);
       const isBanned = banSet.has(hero.id);
       const isAlly = allySet.has(hero.id);
+      const isPriority = prioritySet.has(hero.id);
 
       let cls = 'hero-card';
       if (isBanned) cls += ' hero-card--banned';
       else if (isEnemy) cls += ' hero-card--enemy';
       else if (isAlly) cls += ' hero-card--ally';
+      if (isPriority) cls += ' hero-card--priority';
 
       html += `
-        <div class="${cls}" data-hero-id="${hero.id}" id="hero-card-${hero.id}">
+        <div class="${cls}" data-hero-id="${hero.id}" id="hero-card-${hero.id}" title="Right-click to mark as team priority">
           ${renderAvatar(hero, 48)}
           <span class="hero-card__name">${hero.name}</span>
+          <span class="hero-card__tier tier--${hero.tier.toLowerCase()}">${hero.tier}</span>
+          ${isPriority ? '<span class="hero-card__priority-star">⭐</span>' : ''}
         </div>`;
     }
 
@@ -474,11 +520,20 @@ function initHeroGrid(): void {
     }
   });
 
+  grid.addEventListener('contextmenu', (e) => {
+    const card = (e.target as HTMLElement).closest('.hero-card') as HTMLElement | null;
+    if (!card) return;
+    e.preventDefault();
+    const heroId = parseInt(card.dataset.heroId!);
+    store.togglePriorityHero(heroId);
+  });
+
   store.on('enemyIds', render);
   store.on('searchQuery', render);
   store.on('roleFilter', render);
   store.on('bannedIds', render);
   store.on('allyPickIds', render);
+  store.on('priorityHeroIds', render);
   render();
 }
 
@@ -501,7 +556,7 @@ function initResultsPanel(): void {
   tabBans.addEventListener('click', () => store.set('resultsTab', 'bans'));
 
   function renderResults(): void {
-    const { enemyIds, resultsTab, expandedResultId, bannedIds, allyPickIds } = store.get();
+    const { enemyIds, resultsTab, expandedResultId, bannedIds, allyPickIds, priorityHeroIds } = store.get();
 
     const hasEnemies = enemyIds.length > 0;
     const hasDraftAction = bannedIds.length > 0 || allyPickIds.length > 0;
@@ -516,7 +571,7 @@ function initResultsPanel(): void {
 
     // Ban suggestions work even without enemies
     if (resultsTab === 'bans') {
-      renderBanSuggestions(list, badge, allyPickIds, enemyIds, bannedIds);
+      renderBanSuggestions(list, badge, allyPickIds, enemyIds, bannedIds, priorityHeroIds);
       return;
     }
 
@@ -586,6 +641,14 @@ function initResultsPanel(): void {
                 <div class="build-items">
                   ${result.build.core.map(item => `<span class="build-item">${item}</span>`).join('')}
                 </div>
+                ${result.build.situational && Object.keys(result.build.situational).length > 0 ? `
+                  <div class="build-label" style="margin-top: 6px;">Situational</div>
+                  <div class="build-items">
+                    ${Object.entries(result.build.situational).map(([sit, items]) => 
+                      `<span class="build-item" title="${sit.replace('vs_', 'Vs ')}: ${items.join(', ')}">${items[0]}${items.length > 1 ? '+' : ''}</span>`
+                    ).join('')}
+                  </div>
+                ` : ''}
               </div>
             ` : ''}
           </div>
@@ -614,6 +677,7 @@ function initResultsPanel(): void {
   store.on('bannedIds', renderResults);
   store.on('allyPickIds', renderResults);
   store.on('activeTeamSet', renderResults);
+  store.on('history', renderResults);
 }
 
 // ============================================================
@@ -729,18 +793,7 @@ function initVisionScanner(): void {
 
     const img = new Image();
     img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 16;
-      canvas.height = 16;
-      const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
-      
-      // Draw center of the uploaded image
-      const size = Math.min(img.width, img.height);
-      const sx = (img.width - size) / 2;
-      const sy = (img.height - size) / 2;
-      ctx.drawImage(img, sx, sy, size, size, 0, 0, 16, 16);
-
-      const heroId = vision.identifyHero(canvas);
+      const heroId = vision.identifyHero(img);
       
       if (heroId) {
         const hero = loader.getHero(heroId);
@@ -763,10 +816,11 @@ function renderBanSuggestions(
   badge: HTMLElement,
   allyPickIds: number[] = [],
   enemyPickIds: number[] = [],
-  existingBanIds: number[] = []
+  existingBanIds: number[] = [],
+  priorityHeroIds: number[] = []
 ): void {
   const suggestions = banAdvisor.getSuggestedBans(
-    allyPickIds ?? [], enemyPickIds ?? [], existingBanIds ?? [], 6
+    allyPickIds ?? [], enemyPickIds ?? [], existingBanIds ?? [], priorityHeroIds ?? [], 6
   );
 
   const phase = suggestions[0]?.phase === 'protect' ? 'Protective' : 'Meta';
@@ -822,4 +876,3 @@ function renderBanSuggestions(
     });
   });
 }
-

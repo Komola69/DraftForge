@@ -35,38 +35,6 @@ const TIER_RANK: Record<string, number> = {
   'S': 0, 'A': 1, 'B': 2, 'C': 3, 'D': 4,
 };
 
-/**
- * Known pro-meta combo table for Draft Denial scoring.
- * Maps hero names to their known synergy partners and combo strength (1-10).
- * Used to detect enemy intentions and recommend "steal" picks.
- *
- * These are hardcoded because getSynergyScore() is still a stub.
- * When the Go pipeline produces real synergy data, this table becomes
- * the fallback/override layer for curated combos the scraper might miss.
- */
-const KNOWN_COMBOS: Record<string, { partner: string; strength: number }[]> = {
-  'carmilla':    [{ partner: 'cecilion', strength: 9 }],
-  'cecilion':    [{ partner: 'carmilla', strength: 9 }],
-  'angela':      [{ partner: 'roger', strength: 7 }, { partner: 'ling', strength: 7 }, { partner: 'chou', strength: 6 }],
-  'roger':       [{ partner: 'angela', strength: 7 }],
-  'ling':        [{ partner: 'angela', strength: 7 }],
-  'atlas':       [{ partner: 'diggie', strength: 8 }, { partner: 'aurora', strength: 7 }],
-  'diggie':      [{ partner: 'atlas', strength: 8 }],
-  'aurora':      [{ partner: 'atlas', strength: 7 }, { partner: 'tigreal', strength: 7 }],
-  'tigreal':     [{ partner: 'aurora', strength: 7 }, { partner: 'odette', strength: 8 }],
-  'odette':      [{ partner: 'tigreal', strength: 8 }, { partner: 'johnson', strength: 8 }],
-  'johnson':     [{ partner: 'odette', strength: 8 }],
-  'rafaela':     [{ partner: 'karrie', strength: 6 }],
-  'karrie':      [{ partner: 'rafaela', strength: 6 }],
-  'mathilda':    [{ partner: 'fanny', strength: 6 }],
-  'fanny':       [{ partner: 'mathilda', strength: 6 }],
-  'franco':      [{ partner: 'aldous', strength: 6 }],
-  'aldous':      [{ partner: 'franco', strength: 6 }],
-  'khufra':      [{ partner: 'selena', strength: 6 }],
-  'selena':      [{ partner: 'khufra', strength: 6 }],
-};
-
-/** Weight applied to denial score when boosting candidates */
 const DENIAL_WEIGHT = 2.5;
 
 export function calculateHeroScore(
@@ -96,7 +64,7 @@ export function calculateHeroScore(
 
   // Add synergy scores from allies
   for (const allyId of allyIds) {
-    const synScore = (data as any).getSynergyScore ? (data as any).getSynergyScore(hero.id, allyId) : 0; 
+    const synScore = data.getSynergyScore(hero.id, allyId);
     if (synScore > 0) {
       rawScore += (synScore * 0.5);
     }
@@ -136,26 +104,13 @@ export function calculateHeroScore(
   // ============================================================
   // Draft Denial: Flex-Stealing enemy combo partners
   // ============================================================
-  // If the enemy has locked a hero that has a known combo partner,
-  // and THIS candidate IS that combo partner, boost them.
-  // Rationale: Stealing Cecilion when the enemy picked Carmilla
-  // breaks their win condition and adds value to our draft.
   if (enemyIds.length > 0) {
-    const candidateName = hero.name.toLowerCase();
     let denialScore = 0;
 
     for (const enemyId of enemyIds) {
-      const enemy = data.getHero(enemyId);
-      if (!enemy) continue;
-
-      const enemyName = enemy.name.toLowerCase();
-      const combos = KNOWN_COMBOS[enemyName];
-      if (!combos) continue;
-
-      for (const combo of combos) {
-        if (combo.partner === candidateName) {
-          denialScore += combo.strength;
-        }
+      const synScore = data.getSynergyScore(hero.id, enemyId);
+      if (synScore > 0) {
+        denialScore += synScore;
       }
     }
 
@@ -238,7 +193,15 @@ export class DraftEngine {
         resolve: () => { this.workerReady = true; },
         reject: () => { this.workerReady = false; }
       });
-      this.worker.postMessage({ type: 'init', id: initId, payload: { heroes, matchups } });
+      this.worker.postMessage({ 
+        type: 'init', 
+        id: initId, 
+        payload: { 
+          heroes, 
+          matchups,
+          synergies: (this.data as any).synergies 
+        } 
+      });
     } catch (e) {
       console.warn('[DraftEngine] Web Workers unavailable, using main thread:', e);
       this.worker = null;
@@ -341,22 +304,7 @@ export class DraftEngine {
     for (const hero of candidates) {
       if (enemySet.has(hero.id)) continue;
 
-      const breakdown: MatchupBreakdown[] = [];
-      let rawScore = 0;
-
-      for (const enemyId of enemyIds) {
-        const score = this.data.getMatchupScore(hero.id, enemyId);
-        rawScore += score;
-        const enemy = this.data.getHero(enemyId);
-        breakdown.push({
-          enemy_id: enemyId,
-          enemy_name: enemy?.name ?? `Unknown(${enemyId})`,
-          score,
-        });
-      }
-
-      const tierWeight = TIER_WEIGHT[hero.tier] ?? 1.0;
-      const weightedScore = rawScore * tierWeight;
+      const { rawScore, weightedScore, breakdown } = calculateHeroScore(this.data, hero, enemyIds);
 
       results.push({
         hero,

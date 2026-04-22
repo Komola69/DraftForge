@@ -1,0 +1,20 @@
+{
+  "tiers": {
+    "chip": "S", "chou": "S", "fredrinn": "S", "valentina": "S", "novaria": "S", "zetian": "S", "kalea": "S", "joy": "S", "nolan": "S", "ling": "S", "fanny": "S", "khufra": "S", "gusion": "S", "kagura": "S", "atlas": "S",
+    "lancelot": "A", "benedetta": "A", "hayabusa": "A", "franco": "A", "mathilda": "A", "selena": "A", "lunox": "A", "esmeralda": "A", "phoveus": "A", "baxia": "A", "edith": "A", "julian": "A", "arlott": "A", "aamon": "A", "beatrix": "A", "brody": "A", "granger": "A", "karrie": "A", "claude": "A", "yi sun-shin": "A", "wanwan": "A", "harith": "A", "silvanna": "A", "kaja": "A", "barats": "A", "hilda": "A", "paquito": "A", "lapu-lapu": "A", "martis": "A", "masha": "A", "thamuz": "A", "x.borg": "A", "yu zhong": "A", "dyrroth": "A", "leomord": "A", "guinevere": "A", "gloo": "A", "jawhead": "A", "terizla": "A", "alpha": "A", "badang": "A", "cecilion": "A", "carmilla": "A", "diggie": "A", "angela": "A",
+    "alucard": "B", "argus": "B", "balmond": "B", "roger": "B", "freya": "B", "zilong": "B", "sun": "B", "cici": "B", "khaleed": "B", "yin": "B", "saber": "B", "karina": "B", "aulus": "B", "natalia": "B", "hanzo": "B", "helcurt": "B", "aldous": "B", "lesley": "B", "moskov": "B", "bruno": "B", "clint": "B", "hanabi": "B", "irithel": "B", "miya": "B", "layla": "B", "popol and kupa": "B", "kimmy": "B", "natan": "B", "melissa": "B", "ixia": "B", "lukas": "B", "suyou": "B", "aurora": "B", "cyclops": "B", "eudora": "B", "gord": "B", "kadita": "B", "lylia": "B", "odette": "B", "pharsa": "B", "vale": "B", "vexana": "B", "xavier": "B", "yve": "B", "zhask": "B", "alice": "B", "bane": "B", "hylos": "B", "luo yi": "B", "valir": "B", "estes": "B", "floryn": "B", "rafaela": "B", "nana": "B", "faramis": "B", "chang'e": "B", "obsidia": "B", "zhuxin": "B",
+    "minsitthar": "C", "belerick": "C", "gatotkaca": "C", "minotaur": "C", "ruby": "C", "tigreal": "C", "akai": "C", "johnson": "C", "lolita": "C", "grock": "C", "uranus": "C", "marcel": "C", "sora": "C"
+  },
+  "buff_dependencies": {
+    "fanny": "Purple", "ling": "Purple", "hayabusa": "Purple", "alucard": "Purple",
+    "karrie": "Red", "kimmy": "Red", "clint": "Red", "brody": "Red", "beatrix": "Red", "natan": "Red", "ixia": "Red", "granger": "Red", "claude": "Red", "miya": "Red", "hanabi": "Red"
+  },
+  "gold_reliance": {
+    "aldous": 9, "cecilion": 9, "claude": 9, "miya": 9,
+    "karrie": 8, "kimmy": 8, "granger": 8, "brody": 8, "beatrix": 8, "natan": 8, "ixia": 8, "lukas": 8,
+    "tigreal": 3, "franco": 3, "angela": 3, "estes": 3, "floryn": 3, "rafaela": 3, "diggie": 3, "atlas": 3, "khufra": 3, "johnson": 3, "lolita": 3, "hylos": 3, "baxia": 3, "belerick": 3, "grock": 3, "uranus": 3, "chip": 3
+  },
+  "damage_types": {
+    "guinevere": "Magic", "gusion": "Magic", "silvanna": "Magic", "kimmy": "Magic", "natan": "Magic", "aamon": "Magic", "karina": "Magic", "joy": "Magic", "mathilda": "Magic", "carmilla": "Magic", "kaja": "Magic", "esmeralda": "Magic", "alice": "Magic", "bane": "Magic", "gatotkaca": "Magic", "gloo": "Magic", "johnson": "Magic", "edith": "Magic", "pharsa": "Magic", "harith": "Magic", "lunox": "Magic", "kagura": "Magic", "valentina": "Magic", "yve": "Magic", "xavier": "Magic", "zetian": "Magic", "odette": "Magic", "aurora": "Magic", "luno": "Magic", "chang'e": "Magic", "cyclops": "Magic", "eudora": "Magic", "gord": "Magic", "kadita": "Magic", "lylia": "Magic", "vale": "Magic", "vexana": "Magic", "zhask": "Magic", "luo yi": "Magic", "valir": "Magic", "nana": "Magic", "faramis": "Magic", "zhuxin": "Magic"
+  }
+}

@@ -23,7 +23,7 @@ const TIER_WEIGHT: Record<string, number> = {
   'S': 1.30, 'A': 1.10, 'B': 1.00, 'C': 0.85, 'D': 0.70,
 };
 
-const PHASE2_ALLY_LOCK_COUNT = 3;
+const PHASE2_ALLY_LOCK_COUNT = 1;
 const TARGETED_THREAT_SCALE = 12;
 
 /** Threshold: a hero is "countered" if someone scores >= this against them */
@@ -85,9 +85,10 @@ export class BanAdvisor {
   getMetaBans(
     enemyPickIds: number[] = [],
     alreadyUnavailable: number[] = [],
+    priorityHeroIds: number[] = [],
     limit: number = 5
   ): BanSuggestion[] {
-    const unavailable = new Set(alreadyUnavailable);
+    const unavailable = new Set([...alreadyUnavailable, ...priorityHeroIds]);
     const allHeroes = this.data.getAllHeroes().filter(h => !unavailable.has(h.id));
     const enemyHeroes = enemyPickIds
       .map(id => this.data.getHero(id))
@@ -135,30 +136,32 @@ export class BanAdvisor {
   }
 
   /**
-   * Phase 2 — Protective bans (after ally picks are known).
+   * Phase 2 — Protective bans (after ally picks OR priority heroes are known).
    * Suggests banning heroes that threaten your team the most.
    *
-   * threat(candidate, ally) = how well candidate performs vs ally
-   * Total = sum across all allies + tier bonus
+   * threat(candidate, target) = how well candidate performs vs target
+   * Total = sum across all targets + tier bonus
    */
   getProtectiveBans(
     allyPickIds: number[] = [],
     enemyPickIds: number[] = [],
     alreadyUnavailable: number[] = [],
+    priorityHeroIds: number[] = [],
     limit: number = 5
   ): BanSuggestion[] {
-    if (allyPickIds.length === 0) {
-      return this.getMetaBans(alreadyUnavailable, limit);
+    if (allyPickIds.length === 0 && priorityHeroIds.length === 0) {
+      return this.getMetaBans(enemyPickIds, alreadyUnavailable, priorityHeroIds, limit);
     }
 
-    const unavailable = new Set(alreadyUnavailable);
+    const unavailable = new Set([...alreadyUnavailable]);
     const allHeroes = this.data.getAllHeroes().filter(h => !unavailable.has(h.id));
-    const isTargetedPhase = allyPickIds.length >= PHASE2_ALLY_LOCK_COUNT;
-
-    // Get ally hero names for display
-    const allyHeroes = allyPickIds
+    
+    // We protect both locked allies and heroes our team WANTS to play (priority)
+    const targets = [...new Set([...allyPickIds, ...priorityHeroIds])]
       .map(id => this.data.getHero(id))
       .filter((h): h is Hero => h !== undefined);
+
+    const isTargetedPhase = targets.length >= PHASE2_ALLY_LOCK_COUNT;
 
     const enemyHeroes = enemyPickIds
       .map(id => this.data.getHero(id))
@@ -167,19 +170,19 @@ export class BanAdvisor {
     const scored: BanSuggestion[] = allHeroes.map(candidate => {
       const tierW = TIER_WEIGHT[candidate.tier] ?? 1.0;
 
-      // Calculate how much this candidate threatens each ally
+      // Calculate how much this candidate threatens each target
       const threats: { allyName: string; threat: number }[] = [];
       let totalThreat = 0;
 
-      for (const ally of allyHeroes) {
-        const threat = this.getThreatAgainstAlly(candidate.id, ally.id);
+      for (const target of targets) {
+        const threat = this.getThreatAgainstAlly(candidate.id, target.id);
         if (threat > 0) {
-          threats.push({ allyName: ally.name, threat });
+          threats.push({ allyName: target.name, threat });
           totalThreat += threat;
         }
       }
 
-      // Phase-2 targeted boost: amplify candidates that hard-counter current locked allies.
+      // Phase-2 targeted boost: amplify candidates that hard-counter current/priority allies.
       const targetedThreatModifier = isTargetedPhase
         ? 1 + (totalThreat / TARGETED_THREAT_SCALE)
         : 1;
@@ -208,15 +211,18 @@ export class BanAdvisor {
       if (enemySynergy > 0 && enemySynergy > totalThreat) {
         reason = `Draft denial: strong combo potential with enemy picks`;
       } else if (threats.length > 0) {
-        const threatStrs = threats
-          .sort((a, b) => b.threat - a.threat)
+        const sortedThreats = threats.sort((a, b) => b.threat - a.threat);
+        const topThreat = sortedThreats[0];
+        
+        // Differentiate between locked allies and priority heroes in the text
+        const isPriority = priorityHeroIds.includes(this.data.getHeroByName(topThreat.allyName)?.id || -1);
+        const prefix = isPriority ? "Priority protection" : "Phase 2 targeted ban";
+        
+        const threatStrs = sortedThreats
           .slice(0, 3)
           .map(t => `${t.allyName} (+${t.threat.toFixed(1)})`);
-        if (isTargetedPhase) {
-          reason = `Phase 2 targeted ban: hard-counters your ${threatStrs.join(', ')}`;
-        } else {
-          reason = `Threatens your ${threatStrs.join(', ')}`;
-        }
+          
+        reason = `${prefix}: hard-counters your ${threatStrs.join(', ')}`;
       } else {
         reason = isTargetedPhase
           ? `Protective phase: no direct hard-counter found, prioritize flexible denial`
@@ -239,21 +245,23 @@ export class BanAdvisor {
 
   /**
    * Smart bans — automatically picks the right phase.
-   * If allies are picked → protective bans.
+   * If allies are picked OR priority heroes set → protective bans.
    * Otherwise → meta bans.
    */
   getSuggestedBans(
     allyPickIds: number[] = [],
     enemyPickIds: number[] = [],
     existingBanIds: number[] = [],
+    priorityHeroIds: number[] = [],
     limit: number = 5
   ): BanSuggestion[] {
     const unavailable = [...allyPickIds, ...enemyPickIds, ...existingBanIds];
 
-    if (allyPickIds.length >= PHASE2_ALLY_LOCK_COUNT) {
-      return this.getProtectiveBans(allyPickIds, enemyPickIds, unavailable, limit);
+    // Trigger protective logic if we have locked picks OR if the user marked heroes they want to play
+    if (allyPickIds.length >= PHASE2_ALLY_LOCK_COUNT || priorityHeroIds.length > 0) {
+      return this.getProtectiveBans(allyPickIds, enemyPickIds, unavailable, priorityHeroIds, limit);
     }
 
-    return this.getMetaBans(enemyPickIds, unavailable, limit);
+    return this.getMetaBans(enemyPickIds, unavailable, priorityHeroIds, limit);
   }
 }

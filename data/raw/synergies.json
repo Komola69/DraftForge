@@ -1,0 +1,23 @@
+{
+  "combos": {
+    "carmilla":    [{ "partner": "cecilion", "strength": 9 }],
+    "cecilion":    [{ "partner": "carmilla", "strength": 9 }],
+    "angela":      [{ "partner": "roger", "strength": 7 }, { "partner": "ling", "strength": 7 }, { "partner": "chou", "strength": 6 }],
+    "roger":       [{ "partner": "angela", "strength": 7 }],
+    "ling":        [{ "partner": "angela", "strength": 7 }],
+    "atlas":       [{ "partner": "diggie", "strength": 8 }, { "partner": "aurora", "strength": 7 }],
+    "diggie":      [{ "partner": "atlas", "strength": 8 }],
+    "aurora":      [{ "partner": "atlas", "strength": 7 }, { "partner": "tigreal", "strength": 7 }],
+    "tigreal":     [{ "partner": "aurora", "strength": 7 }, { "partner": "odette", "strength": 8 }],
+    "odette":      [{ "partner": "tigreal", "strength": 8 }, { "partner": "johnson", "strength": 8 }],
+    "johnson":     [{ "partner": "odette", "strength": 8 }],
+    "rafaela":     [{ "partner": "karrie", "strength": 6 }],
+    "karrie":      [{ "partner": "rafaela", "strength": 6 }],
+    "mathilda":    [{ "partner": "fanny", "strength": 6 }],
+    "fanny":       [{ "partner": "mathilda", "strength": 6 }],
+    "franco":      [{ "partner": "aldous", "strength": 6 }],
+    "aldous":      [{ "partner": "franco", "strength": 6 }],
+    "khufra":      [{ "partner": "selena", "strength": 6 }],
+    "selena":      [{ "partner": "khufra", "strength": 6 }]
+  }
+}

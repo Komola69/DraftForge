@@ -237,9 +237,8 @@ export class TeamBuilder {
           if (depth === 0 && result.length === 5) {
             let magicCount = 0;
             let physCount = 0;
-            const magicNonMages = ['Guinevere', 'Gusion', 'Silvanna', 'Kimmy', 'Natan', 'Aamon', 'Karina', 'Joy', 'Mathilda', 'Carmilla', 'Kaja', 'Esmeralda', 'Alice', 'Bane', 'Gatotkaca', 'Gloo', 'Johnson', 'Edith', 'Pharsa', 'Harith', 'Lunox', 'Kagura', 'Valentina', 'Yve', 'Xavier'];
             for (const slot of result) {
-               if (slot.hero.roles.includes('Mage') || magicNonMages.includes(slot.hero.name)) {
+               if (slot.hero.primaryDamageType === 'Magic') {
                  magicCount++;
                } else {
                  physCount++;

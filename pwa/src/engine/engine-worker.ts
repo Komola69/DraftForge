@@ -1,8 +1,8 @@
 /**
  * DraftForge Engine Worker
- * 
- * Offloads heavy combinatorics (counter-pick scoring, team building) 
- * off the main UI thread to prevent WebKit stuttering during 
+ *
+ * Offloads heavy combinatorics (counter-pick scoring, team building)
+ * off the main UI thread to prevent WebKit stuttering during
  * gameplay or overlay animations.
  *
  * Communication protocol:
@@ -49,28 +49,6 @@ const TIER_RANK: Record<string, number> = {
   'S': 0, 'A': 1, 'B': 2, 'C': 3, 'D': 4,
 };
 
-const KNOWN_COMBOS: Record<string, { partner: string; strength: number }[]> = {
-  'carmilla':    [{ partner: 'cecilion', strength: 9 }],
-  'cecilion':    [{ partner: 'carmilla', strength: 9 }],
-  'angela':      [{ partner: 'roger', strength: 7 }, { partner: 'ling', strength: 7 }, { partner: 'chou', strength: 6 }],
-  'roger':       [{ partner: 'angela', strength: 7 }],
-  'ling':        [{ partner: 'angela', strength: 7 }],
-  'atlas':       [{ partner: 'diggie', strength: 8 }, { partner: 'aurora', strength: 7 }],
-  'diggie':      [{ partner: 'atlas', strength: 8 }],
-  'aurora':      [{ partner: 'atlas', strength: 7 }, { partner: 'tigreal', strength: 7 }],
-  'tigreal':     [{ partner: 'aurora', strength: 7 }, { partner: 'odette', strength: 8 }],
-  'odette':      [{ partner: 'tigreal', strength: 8 }, { partner: 'johnson', strength: 8 }],
-  'johnson':     [{ partner: 'odette', strength: 8 }],
-  'rafaela':     [{ partner: 'karrie', strength: 6 }],
-  'karrie':      [{ partner: 'rafaela', strength: 6 }],
-  'mathilda':    [{ partner: 'fanny', strength: 6 }],
-  'fanny':       [{ partner: 'mathilda', strength: 6 }],
-  'franco':      [{ partner: 'aldous', strength: 6 }],
-  'aldous':      [{ partner: 'franco', strength: 6 }],
-  'khufra':      [{ partner: 'selena', strength: 6 }],
-  'selena':      [{ partner: 'khufra', strength: 6 }],
-};
-
 const DENIAL_WEIGHT = 2.5;
 
 // ============================================================
@@ -79,16 +57,27 @@ const DENIAL_WEIGHT = 2.5;
 let heroes: HeroData[] = [];
 let heroMap: Map<number, HeroData> = new Map();
 let matchups: Record<string, Record<string, number>> = {};
+let synergies: Record<string, { partnerId: number; strength: number }[]> = {};
 let initialized = false;
 
 function getMatchupScore(heroId: number, enemyId: number): number {
   return matchups[String(heroId)]?.[String(enemyId)] ?? 0;
 }
 
+function getSynergyScore(heroId: number, partnerId: number): number {
+  const heroSyns = synergies[String(heroId)] || [];
+  const match = heroSyns.find(s => s.partnerId === partnerId);
+  if (match) return match.strength;
+
+  const partnerSyns = synergies[String(partnerId)] || [];
+  const reverseMatch = partnerSyns.find(s => s.partnerId === heroId);
+  return reverseMatch ? reverseMatch.strength : 0;
+}
+
 function scoreHero(
   hero: HeroData,
   enemyIds: number[],
-  _allyIds: number[] = []
+  allyIds: number[] = []
 ): { rawScore: number; weightedScore: number; minScore: number; breakdown: MatchupBreakdown[] } {
   const breakdown: MatchupBreakdown[] = [];
   let rawScore = 0;
@@ -107,48 +96,47 @@ function scoreHero(
     });
   }
 
+  // Synergy with allies
+  for (const allyId of allyIds) {
+    const synScore = getSynergyScore(hero.id, allyId);
+    if (synScore > 0) {
+      rawScore += (synScore * 0.5);
+    }
+  }
+
   const tierWeight = TIER_WEIGHT[hero.tier] ?? 1.0;
   let weightedScore = rawScore * tierWeight;
 
-  // Esmeralda-Aldous Rule
+  // The Esmeralda-Aldous Rule: Exponential Penalty for Hard Counters
   if (minScore <= -3) {
     weightedScore -= (minScore * minScore);
   }
 
-  // Blind-Pick Vulnerability
+  // Blind-Pick Vulnerability (Turn-Order Ignorance)
   if (enemyIds.length <= 1) {
     let counterCount = 0;
     for (const h of heroes) {
       if (h.id === hero.id) continue;
-      if (getMatchupScore(h.id, hero.id) >= 3.0) counterCount++;
+      if (getMatchupScore(h.id, hero.id) >= 3.0) {
+        counterCount++;
+      }
     }
-    weightedScore -= counterCount * 1.5;
-
+    const safetyPenalty = counterCount * 1.5;
+    weightedScore -= safetyPenalty;
+    
     if (enemyIds.length === 0) {
-      const safeWr = (typeof hero.base_wr === 'number' && !isNaN(hero.base_wr)) ? hero.base_wr : 50;
-      weightedScore += (safeWr - 50);
+       const safeWr = (typeof hero.base_wr === 'number' && !isNaN(hero.base_wr)) ? hero.base_wr : 50;
+       weightedScore += (safeWr - 50);
     }
   }
 
   // Draft Denial
   if (enemyIds.length > 0) {
-    const candidateName = hero.name.toLowerCase();
     let denialScore = 0;
-
     for (const enemyId of enemyIds) {
-      const enemy = heroMap.get(enemyId);
-      if (!enemy) continue;
-
-      const combos = KNOWN_COMBOS[enemy.name.toLowerCase()];
-      if (combos) {
-        for (const combo of combos) {
-          if (combo.partner === candidateName) {
-            denialScore += combo.strength;
-          }
-        }
-      }
+      const synScore = getSynergyScore(hero.id, enemyId);
+      if (synScore > 0) denialScore += synScore;
     }
-
     if (denialScore > 0) {
       weightedScore += denialScore * DENIAL_WEIGHT;
     }
@@ -162,86 +150,85 @@ function scoreHero(
   };
 }
 
-function passesFilter(hero: HeroData, filter?: { roles?: string[]; lanes?: string[]; min_tier?: string }): boolean {
-  if (!filter) return true;
-  if (filter.roles && filter.roles.length > 0) {
-    if (!hero.roles.some(r => filter.roles!.includes(r))) return false;
-  }
-  if (filter.lanes && filter.lanes.length > 0) {
-    if (!hero.lanes.some(l => filter.lanes!.includes(l))) return false;
-  }
-  if (filter.min_tier) {
-    const minRank = TIER_RANK[filter.min_tier] ?? 4;
-    const heroRank = TIER_RANK[hero.tier] ?? 4;
-    if (heroRank > minRank) return false;
-  }
-  return true;
-}
+// ============================================================
+// Message Routing
+// ============================================================
 
-// ============================================================
-// Message Handler
-// ============================================================
 self.onmessage = (e: MessageEvent) => {
   const { type, id, payload } = e.data;
 
-  switch (type) {
-    case 'init': {
-      heroes = payload.heroes;
-      matchups = payload.matchups;
-      heroMap = new Map(heroes.map(h => [h.id, h]));
-      initialized = true;
-      (self as any).postMessage({ type: 'ready', id });
-      break;
-    }
+  if (type === 'init') {
+    heroes = payload.heroes;
+    matchups = payload.matchups;
+    synergies = payload.synergies || {};
+    heroMap.clear();
+    heroes.forEach(h => heroMap.set(h.id, h));
+    initialized = true;
+    self.postMessage({ type: 'ready', id });
+    return;
+  }
 
-    case 'counterPicks': {
-      if (!initialized) {
-        (self as any).postMessage({ type: 'error', id, error: 'Worker not initialized' });
-        return;
-      }
+  if (!initialized) {
+    self.postMessage({ type: 'error', id, error: 'Worker not initialized' });
+    return;
+  }
 
-      const { enemyIds, allyIds = [], filter, limit = 10 } = payload;
-      const enemySet = new Set(enemyIds);
-      const results: ScoredHeroResult[] = [];
+  if (type === 'counterPicks') {
+    const { enemyIds, allyIds, filter, limit } = payload;
+    const enemySet = new Set(enemyIds);
+    const results: ScoredHeroResult[] = [];
 
-      for (const hero of heroes) {
-        if (enemySet.has(hero.id)) continue;
-        if (!passesFilter(hero, filter)) continue;
+    for (const hero of heroes) {
+      if (enemySet.has(hero.id)) continue;
 
-        const { rawScore, weightedScore, breakdown } = scoreHero(hero, enemyIds, allyIds);
-        results.push({ hero, raw_score: rawScore, weighted_score: weightedScore, breakdown });
-      }
-
-      results.sort((a, b) => b.weighted_score - a.weighted_score);
-      (self as any).postMessage({ type: 'result', id, data: results.slice(0, limit) });
-      break;
-    }
-
-    case 'weakPicks': {
-      if (!initialized) {
-        (self as any).postMessage({ type: 'error', id, error: 'Worker not initialized' });
-        return;
-      }
-
-      const { enemyIds, limit = 5 } = payload;
-      const enemySet = new Set(enemyIds as number[]);
-      const results: ScoredHeroResult[] = [];
-
-      for (const hero of heroes) {
-        if (enemySet.has(hero.id)) continue;
-        const breakdown: MatchupBreakdown[] = [];
-        let rawScore = 0;
-        for (const eid of enemyIds as number[]) {
-          const score = getMatchupScore(hero.id, eid);
-          rawScore += score;
-          breakdown.push({ enemy_id: eid, enemy_name: heroMap.get(eid)?.name ?? `Unknown(${eid})`, score });
+      // Simple filters (role, lane, tier)
+      if (filter) {
+        if (filter.roles && filter.roles.length > 0) {
+          if (!hero.roles.some(r => filter.roles.includes(r))) continue;
         }
-        results.push({ hero, raw_score: rawScore, weighted_score: rawScore, breakdown });
+        if (filter.lanes && filter.lanes.length > 0) {
+          if (!hero.lanes.some(l => filter.lanes.includes(l))) continue;
+        }
+        if (filter.min_tier) {
+          const minRank = TIER_RANK[filter.min_tier] ?? 4;
+          const heroRank = TIER_RANK[hero.tier] ?? 4;
+          if (heroRank > minRank) continue;
+        }
       }
 
-      results.sort((a, b) => a.weighted_score - b.weighted_score);
-      (self as any).postMessage({ type: 'result', id, data: results.slice(0, limit) });
-      break;
+      const { rawScore, weightedScore, breakdown } = scoreHero(hero, enemyIds, allyIds);
+
+      results.push({
+        hero,
+        raw_score: rawScore,
+        weighted_score: weightedScore,
+        breakdown,
+      });
     }
+
+    results.sort((a, b) => b.weighted_score - a.weighted_score);
+    self.postMessage({ type: 'result', id, data: results.slice(0, limit) });
+  }
+
+  if (type === 'weakPicks') {
+    const { enemyIds, limit } = payload;
+    const enemySet = new Set(enemyIds);
+    const results: ScoredHeroResult[] = [];
+
+    for (const hero of heroes) {
+      if (enemySet.has(hero.id)) continue;
+
+      const { rawScore, weightedScore, breakdown } = scoreHero(hero, enemyIds);
+
+      results.push({
+        hero,
+        raw_score: rawScore,
+        weighted_score: weightedScore,
+        breakdown,
+      });
+    }
+
+    results.sort((a, b) => a.weighted_score - b.weighted_score);
+    self.postMessage({ type: 'result', id, data: results.slice(0, limit) });
   }
 };

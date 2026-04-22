@@ -15,7 +15,7 @@ export class VisionEngine {
   private loader: DataLoader;
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
-  private templates: Map<number, bigint> = new Map();
+  private templates: Map<number, bigint[]> = new Map();
   private loaded = false;
 
   constructor(loader: DataLoader) {
@@ -27,43 +27,74 @@ export class VisionEngine {
   }
 
   /**
-   * Initializes the engine by loading all 131 hero portraits into hidden canvases
-   * and extracting their 16x16 grayscale signatures.
+   * Initializes the engine by loading all hero portraits and skins into hidden canvases
+   * and extracting their 8x8 grayscale signatures.
    */
   async init(): Promise<void> {
     if (this.loaded) return;
     const heroes = this.loader.getAllHeroes();
     
-    const promises = heroes.map(hero => {
+    // Load base portraits
+    const basePromises = heroes.map(hero => {
       return new Promise<void>((resolve) => {
         const path = (portraitMap as Record<string, string>)[hero.name.toLowerCase()];
         if (!path) { resolve(); return; }
-
-        const img = new Image();
-        img.crossOrigin = 'Anonymous';
-        img.onload = () => {
-          // Safe Zone: Top-Center 40% (sx=15%, sy=5%, sw=70%, sh=40%)
-          const sx = img.width * 0.15;
-          const sy = img.height * 0.05;
-          const sw = img.width * 0.70;
-          const sh = img.height * 0.40;
-
-          // Draw cropped Safe Zone down to 8x8 canvas
-          this.ctx.drawImage(img, sx, sy, sw, sh, 0, 0, HASH_SIZE, HASH_SIZE);
-          const imageData = this.ctx.getImageData(0, 0, HASH_SIZE, HASH_SIZE);
-          const grayscale = this.toGrayscale(imageData.data);
-          const hash = this.calculateDHash(grayscale);
-          this.templates.set(hero.id, hash);
-          resolve();
-        };
-        img.onerror = () => resolve();
-        img.src = path;
+        this.addSignature(hero.id, path).finally(() => resolve());
       });
     });
 
-    await Promise.all(promises);
+    await Promise.all(basePromises);
+
+    // Try to load skin portraits if available
+    try {
+      const skinsRes = await fetch('/data/processed/v1_skin_portraits.json');
+      if (skinsRes.ok) {
+        const skinMap = await skinsRes.json();
+        const skinPromises: Promise<void>[] = [];
+        
+        for (const hero of heroes) {
+          const skinPaths = skinMap[hero.name.toLowerCase()];
+          if (skinPaths && Array.isArray(skinPaths)) {
+            skinPaths.forEach(path => {
+              skinPromises.push(this.addSignature(hero.id, path));
+            });
+          }
+        }
+        await Promise.all(skinPromises);
+      }
+    } catch (e) {
+      console.warn('[VisionEngine] No additional skins loaded.');
+    }
+
     this.loaded = true;
-    console.log(`[VisionEngine] Loaded ${this.templates.size} hero signatures for OCR.`);
+    const totalSigs = Array.from(this.templates.values()).reduce((sum, sigs) => sum + sigs.length, 0);
+    console.log(`[VisionEngine] Loaded ${totalSigs} signatures for ${this.templates.size} heroes.`);
+  }
+
+  private async addSignature(heroId: number, path: string): Promise<void> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        const sx = img.width * 0.15;
+        const sy = img.height * 0.05;
+        const sw = img.width * 0.70;
+        const sh = img.height * 0.40;
+
+        this.ctx.drawImage(img, sx, sy, sw, sh, 0, 0, HASH_SIZE, HASH_SIZE);
+        const imageData = this.ctx.getImageData(0, 0, HASH_SIZE, HASH_SIZE);
+        const grayscale = this.toGrayscale(imageData.data);
+        const hash = this.calculateDHash(grayscale);
+        
+        if (!this.templates.has(heroId)) {
+          this.templates.set(heroId, []);
+        }
+        this.templates.get(heroId)!.push(hash);
+        resolve();
+      };
+      img.onerror = () => resolve();
+      img.src = path;
+    });
   }
 
   /**
@@ -72,7 +103,6 @@ export class VisionEngine {
   identifyHero(image: HTMLImageElement | HTMLCanvasElement): number | null {
     if (!this.loaded || this.templates.size === 0) return null;
 
-    // Safe Zone: Top-Center 40%
     const sx = image.width * 0.15;
     const sy = image.height * 0.05;
     const sw = image.width * 0.70;
@@ -86,16 +116,16 @@ export class VisionEngine {
     let bestMatchId: number | null = null;
     let lowestDistance = Infinity;
 
-    // Compare against all loaded templates
-    for (const [heroId, templateHash] of this.templates.entries()) {
-      const distance = this.getHammingDistance(targetHash, templateHash);
-      if (distance < lowestDistance) {
-        lowestDistance = distance;
-        bestMatchId = heroId;
+    for (const [heroId, signatureHashes] of this.templates.entries()) {
+      for (const templateHash of signatureHashes) {
+        const distance = this.getHammingDistance(targetHash, templateHash);
+        if (distance < lowestDistance) {
+          lowestDistance = distance;
+          bestMatchId = heroId;
+        }
       }
     }
 
-    // Threshold: <= 8 bits difference out of 64
     if (lowestDistance > 8) {
       return null;
     }

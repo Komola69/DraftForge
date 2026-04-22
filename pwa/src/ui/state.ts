@@ -47,6 +47,10 @@ export interface AppState {
   allyPickIds: number[];
   /** Which team set is being viewed (0-indexed) */
   activeTeamSet: number;
+  /** Team's comfort/priority hero IDs */
+  priorityHeroIds: number[];
+  /** Undo history stack */
+  history: string[];
 }
 
 type StateKey = keyof AppState;
@@ -65,7 +69,9 @@ const initialState: AppState = {
   tapAction: 'enemy_pick',
   bannedIds: [],
   allyPickIds: [],
+  priorityHeroIds: [],
   activeTeamSet: 0,
+  history: [],
 };
 
 class StateManager {
@@ -83,10 +89,50 @@ class StateManager {
     return this.state;
   }
 
-  set<K extends StateKey>(key: K, value: AppState[K]): void {
+  set<K extends StateKey>(key: K, value: AppState[K], skipHistory = false): void {
     if (this.state[key] === value) return;
+
+    // Save history for relevant drafting actions
+    const historyKeys: StateKey[] = ['enemyIds', 'bannedIds', 'allyPickIds', 'draftPhase'];
+    if (!skipHistory && historyKeys.includes(key)) {
+      this.saveHistory();
+    }
+
     this.state = { ...this.state, [key]: value };
     this.notify(key);
+  }
+
+  private saveHistory(): void {
+    const snapshot = JSON.stringify({
+      enemyIds: this.state.enemyIds,
+      bannedIds: this.state.bannedIds,
+      allyPickIds: this.state.allyPickIds,
+      priorityHeroIds: this.state.priorityHeroIds,
+      draftPhase: this.state.draftPhase,
+      tapAction: this.state.tapAction,
+      resultsTab: this.state.resultsTab
+    });
+    
+    const newHistory = [...this.state.history, snapshot];
+    if (newHistory.length > 20) newHistory.shift();
+    this.state.history = newHistory;
+  }
+
+  undoLastAction(): void {
+    if (this.state.history.length === 0) return;
+    
+    const history = [...this.state.history];
+    const snapshot = JSON.parse(history.pop()!);
+    
+    this.state = { 
+      ...this.state, 
+      ...snapshot,
+      history
+    };
+
+    // Notify all changed keys
+    Object.keys(snapshot).forEach(key => this.notify(key as StateKey));
+    this.notify('history');
   }
 
   on(key: StateKey, listener: Listener): () => void {
@@ -160,29 +206,34 @@ class StateManager {
       return;
     }
     this.set('enemyIds', current);
+    this.updateDraftPhase();
   }
 
   /** Remove a specific enemy */
   removeEnemy(heroId: number): void {
     this.set('enemyIds', this.state.enemyIds.filter(id => id !== heroId));
+    this.updateDraftPhase();
   }
 
   /** Clear all enemies */
   clearEnemies(): void {
     this.set('enemyIds', []);
     this.set('expandedResultId', null);
+    this.updateDraftPhase();
   }
 
   /** Add a hero as banned */
   addBan(heroId: number): void {
     if (this.state.bannedIds.includes(heroId)) return;
-    if (this.state.bannedIds.length >= 8) return; // Max 8 bans in ranked
+    if (this.state.bannedIds.length >= 10) return; // Max 10 bans in ranked
     this.set('bannedIds', [...this.state.bannedIds, heroId]);
+    this.updateDraftPhase();
   }
 
   /** Remove a ban */
   removeBan(heroId: number): void {
     this.set('bannedIds', this.state.bannedIds.filter(id => id !== heroId));
+    this.updateDraftPhase();
   }
 
   /** Add ally pick */
@@ -190,11 +241,58 @@ class StateManager {
     if (this.state.allyPickIds.includes(heroId)) return;
     if (this.state.allyPickIds.length >= 5) return;
     this.set('allyPickIds', [...this.state.allyPickIds, heroId]);
+    this.updateDraftPhase();
   }
 
   /** Remove ally pick */
   removeAllyPick(heroId: number): void {
     this.set('allyPickIds', this.state.allyPickIds.filter(id => id !== heroId));
+    this.updateDraftPhase();
+  }
+
+  /** Toggle hero priority status */
+  togglePriorityHero(heroId: number): void {
+    const current = [...this.state.priorityHeroIds];
+    const idx = current.indexOf(heroId);
+    if (idx >= 0) {
+      current.splice(idx, 1);
+    } else {
+      current.push(heroId);
+    }
+    this.set('priorityHeroIds', current);
+  }
+
+  /** Calculate current draft phase based on bans/picks */
+  private updateDraftPhase(): void {
+    const { bannedIds, allyPickIds, enemyIds } = this.state;
+    const totalPicks = allyPickIds.length + enemyIds.length;
+    const totalBans = bannedIds.length;
+
+    let phase: DraftPhase = 'ban1';
+
+    if (totalBans < 6) {
+      phase = 'ban1';
+    } else if (totalPicks < 6) {
+      phase = 'pick1';
+    } else if (totalBans < 10) {
+      phase = 'ban2';
+    } else if (totalPicks < 10) {
+      phase = 'pick2';
+    } else {
+      phase = 'done';
+    }
+
+    if (phase !== this.state.draftPhase) {
+      this.set('draftPhase', phase);
+      
+      // Auto-switch tap action depending on phase to save clicks
+      if (phase === 'ban1' || phase === 'ban2') {
+        this.set('tapAction', 'ban');
+        this.set('resultsTab', 'bans');
+      } else if (phase === 'pick1' || phase === 'pick2') {
+        // We do not auto-switch back to enemy pick, as the user could be picking ally
+      }
+    }
   }
 
   /** Handle hero tap in draft mode based on current tap action */

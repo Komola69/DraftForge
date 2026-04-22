@@ -8,9 +8,8 @@
  * - No network calls here. Data source is always local files/bundled assets.
  */
 
-import type { Hero, HeroDatabase, MatchupMatrix, BuildDatabase, BuildEntry } from './types';
+import type { Hero, HeroDatabase, MatchupMatrix, BuildDatabase, BuildEntry, SynergyDatabase } from './types';
 
-const SUPPORTED_SCHEMAS = ['1.0.0', '2.0.0'];
 const DEFAULT_GOLD_RELIANCE = 5;
 
 function normalizeGoldReliance(value: unknown): number {
@@ -22,14 +21,27 @@ function normalizeBuffDependency(value: unknown): Hero['buffDependency'] {
   return value === 'Purple' || value === 'Red' || value === 'None' ? value : 'None';
 }
 
+function normalizeDamageType(value: unknown): Hero['primaryDamageType'] {
+  return value === 'Magic' ? 'Magic' : 'Physical';
+}
+
 export class DataLoader {
   private heroes: Map<number, Hero> = new Map();
   private heroByName: Map<string, Hero> = new Map();
   private matchups: Record<string, Record<string, number>> = {};
   private builds: Record<string, BuildEntry> = {};
+  private synergies: Record<string, { partnerId: number; strength: number }[]> = {};
   private _loaded = false;
   private _gameVersion = '';
   private onLoadCallbacks: Array<() => void> = [];
+  private supportedSchemas: string[];
+
+  /**
+   * @param supportedSchemas - Address Point 1: Decouple schemas from source code.
+   */
+  constructor(supportedSchemas: string[] = ['1.0.0', '2.0.0']) {
+    this.supportedSchemas = supportedSchemas;
+  }
 
   onLoad(callback: () => void) {
     if (this._loaded) {
@@ -44,20 +56,25 @@ export class DataLoader {
   get heroCount(): number { return this.heroes.size; }
 
   /**
-   * Load all three data files. Call once on app startup.
+   * Load all data files. Call once on app startup.
    * Throws on schema mismatch or malformed data.
    */
-  load(heroData: HeroDatabase, matchupData: MatchupMatrix, buildData: BuildDatabase): void {
+  load(
+    heroData: HeroDatabase,
+    matchupData: MatchupMatrix,
+    buildData: BuildDatabase,
+    synergyData?: SynergyDatabase
+  ): void {
     // ============================================================
     // Phase 1: Schema version validation
     // ============================================================
     this.validateSchema('heroes', heroData.schema_version);
     this.validateSchema('matchups', matchupData.schema_version);
     this.validateSchema('builds', buildData.schema_version);
+    if (synergyData) this.validateSchema('synergies', synergyData.schema_version);
 
     // ============================================================
     // Phase 2: Runtime structural validation (Zero-Trust)
-    // Prevents malformed/empty/partial JSON from crashing the engine
     // ============================================================
     this.validateHeroStructure(heroData);
     this.validateMatchupStructure(matchupData);
@@ -73,6 +90,7 @@ export class DataLoader {
         ...rawHero,
         goldReliance: normalizeGoldReliance((rawHero as Partial<Hero>).goldReliance),
         buffDependency: normalizeBuffDependency((rawHero as Partial<Hero>).buffDependency),
+        primaryDamageType: normalizeDamageType((rawHero as Partial<Hero>).primaryDamageType),
       };
 
       this.heroes.set(hero.id, hero);
@@ -82,6 +100,7 @@ export class DataLoader {
     // Store matchups and builds directly — already keyed by ID
     this.matchups = matchupData.matchups;
     this.builds = buildData.builds;
+    this.synergies = synergyData?.combos || {};
 
     this._gameVersion = heroData.game_version;
     this._loaded = true;
@@ -118,16 +137,31 @@ export class DataLoader {
     return this.builds[String(heroId)] ?? null;
   }
 
-  private validateSchema(dataName: string, version: string): void {
-    if (!version || !SUPPORTED_SCHEMAS.includes(version)) {
-      throw new Error(`Fatal: Schema mismatch for ${dataName}. Expected one of ${SUPPORTED_SCHEMAS.join(', ')}, got ${version}`);
-    }
+  /** Get synergies for a hero. */
+  getSynergies(heroId: number): { partnerId: number; strength: number }[] {
+    return this.synergies[String(heroId)] || [];
   }
 
   /**
-   * Runtime structural validation: Verify hero JSON matches the Hero interface.
-   * Catches malformed admin dashboard pushes, empty arrays, and partial transitions.
+   * Calculate synergy score between two heroes.
    */
+  getSynergyScore(heroId: number, partnerId: number): number {
+    const heroSyns = this.getSynergies(heroId);
+    const match = heroSyns.find(s => s.partnerId === partnerId);
+    if (match) return match.strength;
+
+    // Check reverse direction
+    const partnerSyns = this.getSynergies(partnerId);
+    const reverseMatch = partnerSyns.find(s => s.partnerId === heroId);
+    return reverseMatch ? reverseMatch.strength : 0;
+  }
+
+  private validateSchema(dataName: string, version: string): void {
+    if (!version || !this.supportedSchemas.includes(version)) {
+      throw new Error(`Fatal: Schema mismatch for ${dataName}. Expected one of ${this.supportedSchemas.join(', ')}, got ${version}`);
+    }
+  }
+
   private validateHeroStructure(data: HeroDatabase): void {
     if (!data || typeof data !== 'object') {
       throw new Error('DataLoader: heroData is null or not an object');
@@ -142,7 +176,6 @@ export class DataLoader {
       throw new Error('DataLoader: heroData.game_version is missing or invalid');
     }
 
-    // Spot-check first hero for required fields
     const sample = data.heroes[0];
     if (typeof sample.id !== 'number' || typeof sample.name !== 'string') {
       throw new Error(`DataLoader: Hero at index 0 is malformed (id=${sample.id}, name=${sample.name})`);
@@ -155,9 +188,6 @@ export class DataLoader {
     }
   }
 
-  /**
-   * Runtime structural validation: Verify matchup JSON is a valid nested object.
-   */
   private validateMatchupStructure(data: MatchupMatrix): void {
     if (!data || typeof data !== 'object') {
       throw new Error('DataLoader: matchupData is null or not an object');
@@ -165,21 +195,16 @@ export class DataLoader {
     if (!data.matchups || typeof data.matchups !== 'object') {
       throw new Error('DataLoader: matchupData.matchups is missing or not an object');
     }
-    // Verify at least one hero has matchup data
     const keys = Object.keys(data.matchups);
     if (keys.length === 0) {
       throw new Error('DataLoader: matchupData.matchups is empty — no hero matchup data found');
     }
-    // Spot-check: first entry should be an object of number values
     const firstEntry = data.matchups[keys[0]];
     if (typeof firstEntry !== 'object' || firstEntry === null) {
       throw new Error(`DataLoader: matchup entry for hero ${keys[0]} is not a valid object`);
     }
   }
 
-  /**
-   * Runtime structural validation: Verify build JSON has expected shape.
-   */
   private validateBuildStructure(data: BuildDatabase): void {
     if (!data || typeof data !== 'object') {
       throw new Error('DataLoader: buildData is null or not an object');
@@ -187,7 +212,6 @@ export class DataLoader {
     if (!data.builds || typeof data.builds !== 'object') {
       throw new Error('DataLoader: buildData.builds is missing or not an object');
     }
-    // Builds can legitimately be empty for new heroes, so we only validate shape if entries exist
     const keys = Object.keys(data.builds);
     if (keys.length > 0) {
       const sample = data.builds[keys[0]];

@@ -7,6 +7,7 @@ export type {
   HeroDatabase,
   MatchupMatrix,
   BuildDatabase,
+  SynergyDatabase,
   BuildEntry,
   ScoredHero,
   MatchupBreakdown,

@@ -1,0 +1,143 @@
+{
+  "schema_version": "1.0.0",
+  "combos": {
+    "6": [
+      {
+        "partnerId": 36,
+        "strength": 7
+      },
+      {
+        "partnerId": 46,
+        "strength": 8
+      }
+    ],
+    "10": [
+      {
+        "partnerId": 64,
+        "strength": 6
+      }
+    ],
+    "14": [
+      {
+        "partnerId": 40,
+        "strength": 6
+      }
+    ],
+    "17": [
+      {
+        "partnerId": 102,
+        "strength": 6
+      }
+    ],
+    "32": [
+      {
+        "partnerId": 46,
+        "strength": 8
+      }
+    ],
+    "36": [
+      {
+        "partnerId": 93,
+        "strength": 7
+      },
+      {
+        "partnerId": 6,
+        "strength": 7
+      }
+    ],
+    "39": [
+      {
+        "partnerId": 55,
+        "strength": 7
+      }
+    ],
+    "40": [
+      {
+        "partnerId": 14,
+        "strength": 6
+      }
+    ],
+    "46": [
+      {
+        "partnerId": 6,
+        "strength": 8
+      },
+      {
+        "partnerId": 32,
+        "strength": 8
+      }
+    ],
+    "48": [
+      {
+        "partnerId": 93,
+        "strength": 8
+      }
+    ],
+    "55": [
+      {
+        "partnerId": 39,
+        "strength": 7
+      },
+      {
+        "partnerId": 84,
+        "strength": 7
+      },
+      {
+        "partnerId": 26,
+        "strength": 6
+      }
+    ],
+    "63": [
+      {
+        "partnerId": 78,
+        "strength": 6
+      }
+    ],
+    "64": [
+      {
+        "partnerId": 10,
+        "strength": 6
+      }
+    ],
+    "78": [
+      {
+        "partnerId": 63,
+        "strength": 6
+      }
+    ],
+    "84": [
+      {
+        "partnerId": 55,
+        "strength": 7
+      }
+    ],
+    "91": [
+      {
+        "partnerId": 92,
+        "strength": 9
+      }
+    ],
+    "92": [
+      {
+        "partnerId": 91,
+        "strength": 9
+      }
+    ],
+    "93": [
+      {
+        "partnerId": 48,
+        "strength": 8
+      },
+      {
+        "partnerId": 36,
+        "strength": 7
+      }
+    ],
+    "102": [
+      {
+        "partnerId": 17,
+        "strength": 6
+      }
+    ]
+  }
+}

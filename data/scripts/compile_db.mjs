@@ -5,24 +5,8 @@ const DIR_RAW = path.resolve('./data/raw');
 const DIR_PROCESSED = path.resolve('./data/processed');
 
 const rawMeta = JSON.parse(fs.readFileSync(path.join(DIR_RAW, 'hero-meta-final.json'), 'utf8'));
-
-const PURPLE_DEPENDENT_HEROES = new Set(['fanny', 'ling', 'hayabusa', 'alucard']);
-const RED_DEPENDENT_HEROES = new Set(['karrie', 'kimmy', 'clint', 'brody', 'beatrix', 'natan', 'ixia', 'granger', 'claude', 'miya', 'hanabi']);
-
-const VERY_HIGH_GOLD_HEROES = new Set(['aldous', 'cecilion', 'claude', 'miya']);
-const HIGH_GOLD_HEROES = new Set(['karrie', 'kimmy', 'granger', 'brody', 'beatrix', 'natan', 'ixia', 'lukas']);
-const LOW_GOLD_HEROES = new Set(['tigreal', 'franco', 'angela', 'estes', 'floryn', 'rafaela', 'diggie', 'atlas', 'khufra', 'johnson', 'lolita', 'hylos', 'baxia', 'belerick', 'grock', 'uranus', 'chip']);
-
-const HERO_TIERS = {
-  // S-Tier
-  'chip': 'S', 'chou': 'S', 'fredrinn': 'S', 'valentina': 'S', 'novaria': 'S', 'zetian': 'S', 'kalea': 'S', 'joy': 'S', 'nolan': 'S', 'ling': 'S', 'fanny': 'S', 'khufra': 'S', 'gusion': 'S', 'kagura': 'S', 'atlas': 'S',
-  // A-Tier
-  'lancelot': 'A', 'benedetta': 'A', 'hayabusa': 'A', 'franco': 'A', 'mathilda': 'A', 'selena': 'A', 'lunox': 'A', 'esmeralda': 'A', 'phoveus': 'A', 'baxia': 'A', 'edith': 'A', 'julian': 'A', 'arlott': 'A', 'aamon': 'A', 'beatrix': 'A', 'brody': 'A', 'granger': 'A', 'karrie': 'A', 'claude': 'A', 'yi sun-shin': 'A', 'wanwan': 'A', 'harith': 'A', 'silvanna': 'A', 'kaja': 'A', 'barats': 'A', 'hilda': 'A', 'paquito': 'A', 'lapu-lapu': 'A', 'martis': 'A', 'masha': 'A', 'thamuz': 'A', 'x.borg': 'A', 'yu zhong': 'A', 'dyrroth': 'A', 'leomord': 'A', 'guinevere': 'A', 'gloo': 'A', 'jawhead': 'A', 'terizla': 'A', 'alpha': 'A', 'badang': 'A', 'cecilion': 'A', 'carmilla': 'A', 'diggie': 'A', 'angela': 'A',
-  // B-Tier
-  'alucard': 'B', 'argus': 'B', 'balmond': 'B', 'roger': 'B', 'freya': 'B', 'zilong': 'B', 'sun': 'B', 'cici': 'B', 'khaleed': 'B', 'yin': 'B', 'saber': 'B', 'karina': 'B', 'aulus': 'B', 'natalia': 'B', 'hanzo': 'B', 'helcurt': 'B', 'aldous': 'B', 'lesley': 'B', 'moskov': 'B', 'bruno': 'B', 'clint': 'B', 'hanabi': 'B', 'irithel': 'B', 'miya': 'B', 'layla': 'B', 'popol and kupa': 'B', 'kimmy': 'B', 'natan': 'B', 'melissa': 'B', 'ixia': 'B', 'lukas': 'B', 'suyou': 'B', 'aurora': 'B', 'cyclops': 'B', 'eudora': 'B', 'gord': 'B', 'kadita': 'B', 'lylia': 'B', 'odette': 'B', 'pharsa': 'B', 'vale': 'B', 'vexana': 'B', 'xavier': 'B', 'yve': 'B', 'zhask': 'B', 'alice': 'B', 'bane': 'B', 'hylos': 'B', 'luo yi': 'B', 'valir': 'B', 'estes': 'B', 'floryn': 'B', 'rafaela': 'B', 'nana': 'B', 'faramis': 'B', 'chang\'e': 'B', 'obsidia': 'B', 'zhuxin': 'B',
-  // C-Tier
-  'minsitthar': 'C', 'belerick': 'C', 'gatotkaca': 'C', 'minotaur': 'C', 'ruby': 'C', 'tigreal': 'C', 'akai': 'C', 'johnson': 'C', 'lolita': 'C', 'grock': 'C', 'uranus': 'C', 'marcel': 'C', 'sora': 'C'
-};
+const metaOverrides = JSON.parse(fs.readFileSync(path.join(DIR_RAW, 'meta_overrides.json'), 'utf8'));
+const synergiesData = JSON.parse(fs.readFileSync(path.join(DIR_RAW, 'synergies.json'), 'utf8'));
 
 function inferGoldReliance(rawHero, roles) {
   const explicit = Number(rawHero.goldReliance);
@@ -31,9 +15,17 @@ function inferGoldReliance(rawHero, roles) {
   }
 
   const key = String(rawHero.hero_name || '').toLowerCase();
-  if (VERY_HIGH_GOLD_HEROES.has(key)) return 9;
-  if (HIGH_GOLD_HEROES.has(key)) return 8;
-  if (LOW_GOLD_HEROES.has(key)) return 3;
+  
+  const VERY_HIGH_GOLD = ['aldous', 'cecilion', 'claude', 'miya'];
+  if (VERY_HIGH_GOLD.includes(key)) return 9;
+  
+  const HIGH_GOLD = ['karrie', 'kimmy', 'granger', 'brody', 'beatrix', 'natan', 'ixia', 'lukas'];
+  if (HIGH_GOLD.includes(key)) return 8;
+
+  const LOW_GOLD = ['tigreal', 'franco', 'angela', 'estes', 'floryn', 'rafaela', 'diggie', 'atlas', 'khufra', 'johnson', 'lolita', 'hylos', 'baxia', 'belerick', 'grock', 'uranus', 'chip'];
+  if (LOW_GOLD.includes(key)) return 3;
+
+  if (metaOverrides.gold_reliance[key]) return metaOverrides.gold_reliance[key];
   
   if (roles.includes('marksman')) return 7;
   if (roles.includes('assassin')) return 6;
@@ -49,13 +41,26 @@ function inferBuffDependency(rawHero) {
   }
 
   const key = String(rawHero.hero_name || '').toLowerCase();
-  if (PURPLE_DEPENDENT_HEROES.has(key)) return 'Purple';
-  if (RED_DEPENDENT_HEROES.has(key)) return 'Red';
+  
+  const PURPLE_DEPENDENT = ['fanny', 'ling', 'hayabusa', 'alucard'];
+  if (PURPLE_DEPENDENT.includes(key)) return 'Purple';
+
+  const RED_DEPENDENT = ['karrie', 'kimmy', 'clint', 'brody', 'beatrix', 'natan', 'ixia', 'granger', 'claude', 'miya', 'hanabi'];
+  if (RED_DEPENDENT.includes(key)) return 'Red';
+
+  if (metaOverrides.buff_dependencies[key]) return metaOverrides.buff_dependencies[key];
   return 'None';
 }
 
 function inferTier(heroName) {
-  return HERO_TIERS[heroName.toLowerCase()] || 'B';
+  return metaOverrides.tiers[heroName.toLowerCase()] || 'B';
+}
+
+function inferDamageType(heroName, roles) {
+  const key = heroName.toLowerCase();
+  if (metaOverrides.damage_types[key]) return metaOverrides.damage_types[key];
+  if (roles.includes('mage')) return 'Magic';
+  return 'Physical';
 }
 
 // We will build a completely new Hero DB and Matchup DB
@@ -110,7 +115,8 @@ for (const rawHero of rawMeta.data) {
     tier: inferTier(name),
     base_wr: 50.0, // Default WR
     goldReliance: inferGoldReliance(rawHero, roles),
-    buffDependency: inferBuffDependency(rawHero)
+    buffDependency: inferBuffDependency(rawHero),
+    primaryDamageType: inferDamageType(name, roles)
   });
   
   nameToId.set(name.toLowerCase(), id);
@@ -119,6 +125,8 @@ for (const rawHero of rawMeta.data) {
 
 // 2. Build Intelligent Matchups
 // We loop again now that we have all IDs
+const STRENGTH_COUNTER = 7.0; // Point 5 Fix: Define mathematical weight
+
 for (const rawHero of rawMeta.data) {
   if (rawHero.hero_name === "None") continue;
   
@@ -130,27 +138,30 @@ for (const rawHero of rawMeta.data) {
     for (const c of rawHero.counters) {
       const counterId = nameToId.get(c.heroname.toLowerCase());
       if (counterId) {
-        matchups[counterId][targetId] = 7; // Counter wins vs Target (+7)
-        matchups[targetId][counterId] = -7; // Target loses vs Counter (-7)
-      }
-    }
-  }
-  
-  // Synergies array: These heroes work WELL WITH the target
-  if (Array.isArray(rawHero.synergies)) {
-    for (const s of rawHero.synergies) {
-      const synergyId = nameToId.get(s.heroname.toLowerCase());
-      if (synergyId) {
-        // Synergy is represented as a different structure usually, 
-        // but wait! DraftForge engine uses negative scores for enemies.
-        // We can create an entirely new matrix for "synergies" if we want,
-        // but let's stick to matchups for now. We can store synergy as a meta field later.
+        matchups[counterId][targetId] = STRENGTH_COUNTER; // Counter wins vs Target
+        matchups[targetId][counterId] = -STRENGTH_COUNTER; // Target loses vs Counter
       }
     }
   }
 }
 
-// 3. Write output
+// 3. Process Synergies (Combos)
+const synergyOutput = {
+  schema_version: "1.0.0",
+  combos: {}
+};
+
+for (const [heroName, combos] of Object.entries(synergiesData.combos)) {
+  const heroId = nameToId.get(heroName.toLowerCase());
+  if (heroId) {
+    synergyOutput.combos[heroId] = combos.map(c => {
+      const partnerId = nameToId.get(c.partner.toLowerCase());
+      return { partnerId, strength: c.strength };
+    }).filter(c => c.partnerId !== undefined);
+  }
+}
+
+// 4. Write output
 const heroesOutput = {
   schema_version: "1.0.0",
   game_version: "1.8.44",
@@ -171,6 +182,7 @@ const matchupsOutput = {
 // Replace v1 files to instantly apply
 fs.writeFileSync(path.join(DIR_PROCESSED, 'v1_heroes.json'), JSON.stringify(heroesOutput, null, 2));
 fs.writeFileSync(path.join(DIR_PROCESSED, 'v1_matchups.json'), JSON.stringify(matchupsOutput, null, 2));
+fs.writeFileSync(path.join(DIR_PROCESSED, 'v1_synergies.json'), JSON.stringify(synergyOutput, null, 2));
 
 console.log(`[SUCCESS] Compiled ${heroesList.length} heroes from raw metadata!`);
-console.log(`[SUCCESS] Built complete matchup matrix.`);
+console.log(`[SUCCESS] Built complete matchup matrix and synergies.`);
