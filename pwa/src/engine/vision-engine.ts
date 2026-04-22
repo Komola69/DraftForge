@@ -1,7 +1,7 @@
 /**
  * VisionEngine: Experimental Computer Vision for MLBB Draft Auto-Pilot.
- * Uses Canvas-based image processing and Mean Squared Error (MSE) on downscaled
- * grayscale images to match screenshots of heroes to our portrait database.
+ * Uses Canvas-based image processing and Difference Hash (dHash)
+ * to match screenshots of heroes to our portrait database.
  */
 
 import portraitMap from '../../../data/processed/v1_portraits.json';
@@ -13,22 +13,16 @@ const PIXEL_COUNT = HASH_SIZE * HASH_SIZE;
 
 export class VisionEngine {
   private loader: DataLoader;
-  private canvas: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D;
   private templates: Map<number, bigint[]> = new Map();
   private loaded = false;
 
   constructor(loader: DataLoader) {
     this.loader = loader;
-    this.canvas = document.createElement('canvas');
-    this.canvas.width = HASH_SIZE;
-    this.canvas.height = HASH_SIZE;
-    this.ctx = this.canvas.getContext('2d', { willReadFrequently: true })!;
   }
 
   /**
-   * Initializes the engine by loading all hero portraits and skins into hidden canvases
-   * and extracting their 8x8 grayscale signatures.
+   * Initializes the engine by loading all hero portraits and skins
+   * and extracting their signatures.
    */
   async init(): Promise<void> {
     if (this.loaded) return;
@@ -71,25 +65,51 @@ export class VisionEngine {
     console.log(`[VisionEngine] Loaded ${totalSigs} signatures for ${this.templates.size} heroes.`);
   }
 
+  /**
+   * Processes an image into a 64-bit dHash.
+   * Uses a fresh canvas each time to prevent race conditions and size mismatches.
+   */
+  private generateHash(image: HTMLImageElement | HTMLCanvasElement): bigint | null {
+    if (!image.width || !image.height) return null;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = HASH_SIZE;
+    canvas.height = HASH_SIZE;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return null;
+
+    // Smart Crop:
+    // If the image is already small (< 300px), assume it is a pre-cropped portrait.
+    // If it is large, assume it is a full screenshot and crop the top-middle hero area.
+    const isPortrait = image.width < 300 && image.height < 300;
+    
+    let sx = 0, sy = 0, sw = image.width, sh = image.height;
+    
+    if (!isPortrait) {
+      sx = image.width * 0.15;
+      sy = image.height * 0.05;
+      sw = image.width * 0.70;
+      sh = image.height * 0.40;
+    }
+
+    ctx.drawImage(image, sx, sy, sw, sh, 0, 0, HASH_SIZE, HASH_SIZE);
+    const imageData = ctx.getImageData(0, 0, HASH_SIZE, HASH_SIZE);
+    const grayscale = this.toGrayscale(imageData.data);
+    return this.calculateDHash(grayscale);
+  }
+
   private async addSignature(heroId: number, path: string): Promise<void> {
     return new Promise((resolve) => {
       const img = new Image();
       img.crossOrigin = 'Anonymous';
       img.onload = () => {
-        const sx = img.width * 0.15;
-        const sy = img.height * 0.05;
-        const sw = img.width * 0.70;
-        const sh = img.height * 0.40;
-
-        this.ctx.drawImage(img, sx, sy, sw, sh, 0, 0, HASH_SIZE, HASH_SIZE);
-        const imageData = this.ctx.getImageData(0, 0, HASH_SIZE, HASH_SIZE);
-        const grayscale = this.toGrayscale(imageData.data);
-        const hash = this.calculateDHash(grayscale);
-        
-        if (!this.templates.has(heroId)) {
-          this.templates.set(heroId, []);
+        const hash = this.generateHash(img);
+        if (hash !== null) {
+          if (!this.templates.has(heroId)) {
+            this.templates.set(heroId, []);
+          }
+          this.templates.get(heroId)!.push(hash);
         }
-        this.templates.get(heroId)!.push(hash);
         resolve();
       };
       img.onerror = () => resolve();
@@ -103,15 +123,8 @@ export class VisionEngine {
   identifyHero(image: HTMLImageElement | HTMLCanvasElement): number | null {
     if (!this.loaded || this.templates.size === 0) return null;
 
-    const sx = image.width * 0.15;
-    const sy = image.height * 0.05;
-    const sw = image.width * 0.70;
-    const sh = image.height * 0.40;
-
-    this.ctx.drawImage(image, sx, sy, sw, sh, 0, 0, HASH_SIZE, HASH_SIZE);
-    const imageData = this.ctx.getImageData(0, 0, HASH_SIZE, HASH_SIZE);
-    const targetGrayscale = this.toGrayscale(imageData.data);
-    const targetHash = this.calculateDHash(targetGrayscale);
+    const targetHash = this.generateHash(image);
+    if (targetHash === null) return null;
 
     let bestMatchId: number | null = null;
     let lowestDistance = Infinity;
@@ -126,7 +139,8 @@ export class VisionEngine {
       }
     }
 
-    if (lowestDistance > 8) {
+    // Hamming distance threshold: < 10 bits difference (out of 64) is a strong match.
+    if (lowestDistance > 10) {
       return null;
     }
 

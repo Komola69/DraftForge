@@ -270,6 +270,12 @@ class StateManager {
 
     let phase: DraftPhase = 'ban1';
 
+    // MLBB Ranked Draft Logic:
+    // Phase 1 Bans: 3 per team (total 6)
+    // Phase 1 Picks: 3 per team (total 6)
+    // Phase 2 Bans: 2 per team (total 4) -> Total 10 bans
+    // Phase 2 Picks: 2 per team (total 4) -> Total 10 picks
+    
     if (totalBans < 6) {
       phase = 'ban1';
     } else if (totalPicks < 6) {
@@ -290,7 +296,10 @@ class StateManager {
         this.set('tapAction', 'ban');
         this.set('resultsTab', 'bans');
       } else if (phase === 'pick1' || phase === 'pick2') {
-        // We do not auto-switch back to enemy pick, as the user could be picking ally
+        // Stay on whatever the user is doing, but suggest team if ally picking
+        if (this.state.tapAction === 'ally_pick') {
+          this.set('resultsTab', 'team');
+        }
       }
     }
   }

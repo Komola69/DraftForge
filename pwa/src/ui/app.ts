@@ -77,6 +77,10 @@ export function getRoleColor(role: string): string {
 }
 
 export async function initApp(): Promise<void> {
+  // Fix Cat 5: Dispose existing resources to prevent memory leaks in overlay
+  if (engine) engine.dispose();
+  store.dispose();
+
   const app = document.getElementById('app')!;
   
   // 1. Immediate loading state
@@ -104,9 +108,16 @@ export async function initApp(): Promise<void> {
     console.warn('[DraftForge] Config unavailable, using core defaults.');
   }
   
-  // 2. Data loading with Point 6 Sync Validation
+  // 2. Data loading with Point 6 Sync Validation & Cat 5 Fetch Timeout
   try {
-    const res = await fetch(`/data/processed/v2_schema.json?bust=${timestamp}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3-second timeout
+
+    const res = await fetch(`/data/processed/v2_schema.json?bust=${timestamp}`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    
     const contentType = res.headers.get('content-type') || '';
     
     if (!res.ok || contentType.includes('text/html')) {
@@ -116,7 +127,10 @@ export async function initApp(): Promise<void> {
     dynamicMatchupData = normalizeDynamicMatchups(await res.json());
     console.log('[DraftForge] V2 High-Intelligence Matrix active.');
   } catch (e) {
-    console.log('[DraftForge] V1 Base Matrix active.');
+    const msg = e instanceof Error && e.name === 'AbortError' 
+      ? 'v2_schema.json fetch timed out' 
+      : 'V1 Base Matrix active (v2 fallback)';
+    console.log(`[DraftForge] ${msg}`);
     dynamicMatchupData = v1MatchupData;
   }
 
@@ -155,14 +169,22 @@ export async function initApp(): Promise<void> {
 
     <div class="draft-bar" id="draft-bar" style="display:none">
       <div class="draft-bar__phase-indicator" id="draft-phase-indicator">Phase: Ban 1</div>
+      
       <div class="draft-bar__section">
-        <span class="draft-bar__label">BANS</span>
-        <div class="draft-bar__slots" id="ban-slots"></div>
+        <span class="draft-bar__label">OUR BANS</span>
+        <div class="draft-bar__slots" id="ally-ban-slots"></div>
       </div>
+      
       <div class="draft-bar__section">
-        <span class="draft-bar__label">ALLY</span>
+        <span class="draft-bar__label">ENEMY BANS</span>
+        <div class="draft-bar__slots" id="enemy-ban-slots"></div>
+      </div>
+
+      <div class="draft-bar__section">
+        <span class="draft-bar__label">OUR PICKS</span>
         <div class="draft-bar__slots" id="ally-slots"></div>
       </div>
+
       <div class="tap-actions" id="tap-actions">
         <button class="tap-btn tap-btn--active" data-action="enemy_pick">🎯 Enemy</button>
         <button class="tap-btn tap-btn--ban" data-action="ban">🚫 Ban</button>
@@ -175,7 +197,7 @@ export async function initApp(): Promise<void> {
     </div>
 
     <div class="enemy-bar" id="enemy-bar">
-      <span class="enemy-bar__label">Enemy<br/>Team</span>
+      <span class="enemy-bar__label">Enemy Picks</span>
       <div class="enemy-bar__slots" id="enemy-slots"></div>
       <button class="enemy-bar__clear" id="clear-btn" disabled>Clear</button>
     </div>
@@ -270,7 +292,8 @@ function initDraftToggle(): void {
 // Draft Bar (Bans + Ally Picks + Tap Actions)
 // ============================================================
 function initDraftBar(): void {
-  const banSlots = document.getElementById('ban-slots')!;
+  const allyBanSlots = document.getElementById('ally-ban-slots')!;
+  const enemyBanSlots = document.getElementById('enemy-ban-slots')!;
   const allySlots = document.getElementById('ally-slots')!;
   const tapActions = document.getElementById('tap-actions')!;
   const resetBtn = document.getElementById('draft-reset')!;
@@ -295,23 +318,38 @@ function initDraftBar(): void {
 
   function renderBans(): void {
     const { bannedIds } = store.get();
-    let html = '';
-    for (let i = 0; i < 6; i++) {
-      if (i < bannedIds.length) {
-        const hero = loader.getHero(bannedIds[i])!;
-        html += `<div class="mini-slot mini-slot--ban" title="${hero.name}">
-          ${renderAvatar(hero, 28)}
-          <button class="mini-slot__x" data-unban-id="${hero.id}">✕</button>
-        </div>`;
-      } else {
-        html += `<div class="mini-slot mini-slot--empty">🚫</div>`;
+    
+    // MLBB 10-Ban Layout (5 slots per team)
+    const renderSlotList = (ids: number[]) => {
+      let html = '';
+      for (let i = 0; i < 5; i++) {
+        if (i < ids.length) {
+          const hero = loader.getHero(ids[i])!;
+          html += `<div class="mini-slot mini-slot--ban" title="${hero.name}">
+            ${renderAvatar(hero, 28)}
+            <button class="mini-slot__x" data-unban-id="${hero.id}">✕</button>
+          </div>`;
+        } else {
+          html += `<div class="mini-slot mini-slot--empty">🚫</div>`;
+        }
       }
-    }
-    banSlots.innerHTML = html;
-    banSlots.querySelectorAll<HTMLButtonElement>('.mini-slot__x').forEach(btn => {
+      return html;
+    };
+
+    // Distribute bans: standard draft order often interleaves, 
+    // but for simplicity we split the list in 2.
+    const allyBans = bannedIds.filter((_, i) => i % 2 === 0);
+    const enemyBans = bannedIds.filter((_, i) => i % 2 !== 0);
+
+    allyBanSlots.innerHTML = renderSlotList(allyBans);
+    enemyBanSlots.innerHTML = renderSlotList(enemyBans);
+
+    // Re-wire unban buttons
+    document.querySelectorAll<HTMLButtonElement>('.mini-slot__x').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        store.removeBan(parseInt(btn.dataset.unbanId!));
+        const unbanId = btn.dataset.unbanId;
+        if (unbanId) store.removeBan(parseInt(unbanId));
       });
     });
   }
@@ -350,13 +388,14 @@ function initDraftBar(): void {
   function renderPhase(): void {
     const { draftPhase } = store.get();
     const phaseNames: Record<string, string> = {
-      'ban1': 'Phase: Ban 1',
-      'pick1': 'Phase: Pick 1',
-      'ban2': 'Phase: Ban 2',
-      'pick2': 'Phase: Pick 2',
+      'ban1': 'Phase 1: First 6 Bans',
+      'pick1': 'Phase 1: First 6 Picks',
+      'ban2': 'Phase 2: Final 4 Bans',
+      'pick2': 'Phase 2: Final 4 Picks',
       'done': 'Draft Complete'
     };
     phaseIndicator.textContent = phaseNames[draftPhase] || 'Draft';
+    phaseIndicator.className = `draft-bar__phase-indicator phase--${draftPhase}`;
   }
 
   store.on('bannedIds', renderBans);
