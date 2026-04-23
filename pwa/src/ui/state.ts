@@ -19,6 +19,8 @@ export type DraftPhase =
 /** What tapping a hero does in draft mode */
 export type TapAction = 'enemy_pick' | 'ally_pick' | 'ban';
 
+export type RankTier = 'EPIC' | 'MYTHIC';
+
 export interface AppState {
   // ===== Quick Mode =====
   /** IDs of selected enemy heroes (max 5) */
@@ -37,8 +39,14 @@ export interface AppState {
   // ===== Draft Mode =====
   /** Whether draft mode is active */
   draftActive: boolean;
+  /** User's current rank tier for draft rules */
+  rankTier: RankTier;
   /** Current draft phase */
   draftPhase: DraftPhase;
+  /** Our side in the draft */
+  draftTeamSide: 'blue' | 'red';
+  /** Which side has the first pick */
+  firstPickSide: 'blue' | 'red';
   /** What tapping a hero does */
   tapAction: TapAction;
   /** Banned hero IDs */
@@ -65,7 +73,10 @@ const initialState: AppState = {
   expandedResultId: null,
 
   draftActive: false,
+  rankTier: 'MYTHIC',
   draftPhase: 'ban1',
+  draftTeamSide: 'blue',
+  firstPickSide: 'blue',
   tapAction: 'enemy_pick',
   bannedIds: [],
   allyPickIds: [],
@@ -130,7 +141,6 @@ class StateManager {
       history
     };
 
-    // Notify all changed keys
     Object.keys(snapshot).forEach(key => this.notify(key as StateKey));
     this.notify('history');
   }
@@ -158,13 +168,7 @@ class StateManager {
     return unsub;
   }
 
-  /**
-   * Teardown: Unsubscribe ALL active listeners.
-   * Call this when the floating overlay is dismissed/destroyed to prevent
-   * orphaned listeners from leaking memory on the Android WebView thread.
-   */
   unsubscribeAll(): void {
-    // Snapshot to avoid mutation during iteration
     const handles = [...this.subscriptionRegistry];
     for (const unsub of handles) {
       unsub();
@@ -174,27 +178,28 @@ class StateManager {
     this.globalListeners.clear();
   }
 
-  /**
-   * Full disposal: unsubscribe all listeners AND reset state.
-   * Use when the overlay WebView is being fully destroyed.
-   */
   dispose(): void {
     this.unsubscribeAll();
     this.state = { ...initialState };
   }
 
-  /** Current subscription count (for diagnostics) */
-  get subscriptionCount(): number {
-    return this.subscriptionRegistry.size;
+  notify(key: StateKey): void {
+    const keyListeners = this.listeners.get(key);
+    if (keyListeners) {
+      for (const listener of keyListeners) {
+        listener(this.state, key);
+      }
+    }
+    for (const listener of this.globalListeners) {
+      listener(this.state, key);
+    }
   }
 
-  /** All unavailable hero IDs (enemies + bans + ally picks) */
   getUnavailableIds(): number[] {
     const { enemyIds, bannedIds, allyPickIds } = this.state;
     return [...enemyIds, ...bannedIds, ...allyPickIds];
   }
 
-  /** Toggle enemy hero selection */
   toggleEnemy(heroId: number): void {
     const current = [...this.state.enemyIds];
     const idx = current.indexOf(heroId);
@@ -209,34 +214,29 @@ class StateManager {
     this.updateDraftPhase();
   }
 
-  /** Remove a specific enemy */
   removeEnemy(heroId: number): void {
     this.set('enemyIds', this.state.enemyIds.filter(id => id !== heroId));
     this.updateDraftPhase();
   }
 
-  /** Clear all enemies */
   clearEnemies(): void {
     this.set('enemyIds', []);
     this.set('expandedResultId', null);
     this.updateDraftPhase();
   }
 
-  /** Add a hero as banned */
   addBan(heroId: number): void {
     if (this.state.bannedIds.includes(heroId)) return;
-    if (this.state.bannedIds.length >= 10) return; // Max 10 bans in ranked
+    if (this.state.bannedIds.length >= 10) return;
     this.set('bannedIds', [...this.state.bannedIds, heroId]);
     this.updateDraftPhase();
   }
 
-  /** Remove a ban */
   removeBan(heroId: number): void {
     this.set('bannedIds', this.state.bannedIds.filter(id => id !== heroId));
     this.updateDraftPhase();
   }
 
-  /** Add ally pick */
   addAllyPick(heroId: number): void {
     if (this.state.allyPickIds.includes(heroId)) return;
     if (this.state.allyPickIds.length >= 5) return;
@@ -244,13 +244,11 @@ class StateManager {
     this.updateDraftPhase();
   }
 
-  /** Remove ally pick */
   removeAllyPick(heroId: number): void {
     this.set('allyPickIds', this.state.allyPickIds.filter(id => id !== heroId));
     this.updateDraftPhase();
   }
 
-  /** Toggle hero priority status */
   togglePriorityHero(heroId: number): void {
     const current = [...this.state.priorityHeroIds];
     const idx = current.indexOf(heroId);
@@ -262,96 +260,90 @@ class StateManager {
     this.set('priorityHeroIds', current);
   }
 
-  /** Calculate current draft phase based on bans/picks */
+  setRankTier(tier: RankTier): void {
+    this.set('rankTier', tier);
+    this.resetDraft();
+  }
+
+  toggleDraftSide(): void {
+    this.set('draftTeamSide', this.state.draftTeamSide === 'blue' ? 'red' : 'blue');
+    this.updateDraftPhase();
+  }
+
+  toggleFirstPick(): void {
+    this.set('firstPickSide', this.state.firstPickSide === 'blue' ? 'red' : 'blue');
+    this.updateDraftPhase();
+  }
+
   private updateDraftPhase(): void {
-    const { bannedIds, allyPickIds, enemyIds } = this.state;
+    const { bannedIds, allyPickIds, enemyIds, draftTeamSide, firstPickSide, rankTier } = this.state;
     const totalPicks = allyPickIds.length + enemyIds.length;
     const totalBans = bannedIds.length;
 
     let phase: DraftPhase = 'ban1';
 
-    // MLBB Ranked Draft Logic:
-    // Phase 1 Bans: 3 per team (total 6)
-    // Phase 1 Picks: 3 per team (total 6)
-    // Phase 2 Bans: 2 per team (total 4) -> Total 10 bans
-    // Phase 2 Picks: 2 per team (total 4) -> Total 10 picks
-    
-    if (totalBans < 6) {
-      phase = 'ban1';
-    } else if (totalPicks < 6) {
-      phase = 'pick1';
-    } else if (totalBans < 10) {
-      phase = 'ban2';
-    } else if (totalPicks < 10) {
-      phase = 'pick2';
+    if (rankTier === 'EPIC') {
+        if (totalBans < 6) phase = 'ban1';
+        else if (totalPicks < 10) phase = 'pick1';
+        else phase = 'done';
     } else {
-      phase = 'done';
+        if (totalBans < 6) phase = 'ban1';
+        else if (totalPicks < 6) phase = 'pick1';
+        else if (totalBans < 10) phase = 'ban2';
+        else if (totalPicks < 10) phase = 'pick2';
+        else phase = 'done';
     }
 
     if (phase !== this.state.draftPhase) {
       this.set('draftPhase', phase);
-      
-      // Auto-switch tap action depending on phase to save clicks
-      if (phase === 'ban1' || phase === 'ban2') {
-        this.set('tapAction', 'ban');
-        this.set('resultsTab', 'bans');
-      } else if (phase === 'pick1' || phase === 'pick2') {
-        // Stay on whatever the user is doing, but suggest team if ally picking
-        if (this.state.tapAction === 'ally_pick') {
-          this.set('resultsTab', 'team');
-        }
-      }
+    }
+
+    // Only auto-switch tabs/actions if Draft Mode is ACTIVE
+    if (!this.state.draftActive) return;
+
+    if (phase === 'ban1' || phase === 'ban2') {
+      this.set('tapAction', 'ban');
+      this.set('resultsTab', 'bans');
+    } else if (phase === 'pick1' || phase === 'pick2') {
+      const isBlueFirst = firstPickSide === 'blue';
+      const isOurTurn = this.checkIsOurTurn(totalPicks, isBlueFirst, draftTeamSide);
+      this.set('tapAction', isOurTurn ? 'ally_pick' : 'enemy_pick');
+      if (isOurTurn) this.set('resultsTab', 'counters');
     }
   }
 
-  /** Handle hero tap in draft mode based on current tap action */
+  private checkIsOurTurn(totalPicks: number, isBlueFirst: boolean, ourSide: 'blue' | 'red'): boolean {
+    const blueTurns = [0, 3, 4, 7, 8];
+    const turnOwnerSide = blueTurns.includes(totalPicks) ? 'blue' : 'red';
+    let actualTurnOwner = turnOwnerSide;
+    if (!isBlueFirst) {
+      actualTurnOwner = turnOwnerSide === 'blue' ? 'red' : 'blue';
+    }
+    return actualTurnOwner === ourSide;
+  }
+
   draftTap(heroId: number): void {
     const unavailable = this.getUnavailableIds();
     if (unavailable.includes(heroId)) return;
-
     switch (this.state.tapAction) {
-      case 'enemy_pick':
-        this.toggleEnemy(heroId);
-        break;
-      case 'ban':
-        this.addBan(heroId);
-        break;
-      case 'ally_pick':
-        this.addAllyPick(heroId);
-        break;
+      case 'enemy_pick': this.toggleEnemy(heroId); break;
+      case 'ban': this.addBan(heroId); break;
+      case 'ally_pick': this.addAllyPick(heroId); break;
     }
   }
 
-  /** Reset draft (bans + ally picks), keep enemies if specified */
   resetDraft(keepEnemies = false): void {
     this.set('bannedIds', []);
     this.set('allyPickIds', []);
     this.set('draftPhase', 'ban1');
     this.set('activeTeamSet', 0);
-    if (!keepEnemies) {
-      this.set('enemyIds', []);
-    }
+    if (!keepEnemies) this.set('enemyIds', []);
     this.set('expandedResultId', null);
   }
 
-  /** Full reset */
   reset(): void {
     this.state = { ...initialState };
-    for (const key of Object.keys(initialState) as StateKey[]) {
-      this.notify(key);
-    }
-  }
-
-  private notify(key: StateKey): void {
-    const keyListeners = this.listeners.get(key);
-    if (keyListeners) {
-      for (const listener of keyListeners) {
-        listener(this.state, key);
-      }
-    }
-    for (const listener of this.globalListeners) {
-      listener(this.state, key);
-    }
+    for (const key of Object.keys(initialState) as StateKey[]) this.notify(key);
   }
 }
 

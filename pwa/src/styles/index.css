@@ -291,11 +291,6 @@ body {
   flex-direction: column;
   overflow: hidden;
   min-width: 0;
-  transition: flex var(--duration-slow) var(--ease-out);
-}
-
-.hero-panel--shrunk {
-  flex: 0.55;
 }
 
 /* Search + Filters */
@@ -796,7 +791,7 @@ body {
     flex-direction: column;
   }
 
-  .hero-panel--shrunk {
+  .hero-panel {
     flex: 1;
   }
 
@@ -1507,4 +1502,55 @@ body {
 .ban-card__btn:hover {
   background: var(--danger);
   color: white;
+}
+
+/* ========================================
+   Priority Toggle & Stars
+   ======================================== */
+.priority-toggle {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all var(--duration-fast) var(--ease-spring);
+  z-index: 10;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.hero-card:hover .priority-toggle,
+.priority-toggle--active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.priority-toggle--active {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.hero-card__priority-star {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 10px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,1));
+  z-index: 2;
+  animation: starPulse 2s infinite ease-in-out;
+}
+
+@keyframes starPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
 }

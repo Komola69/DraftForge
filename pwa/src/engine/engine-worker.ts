@@ -20,6 +20,7 @@ class WorkerDataLoader {
 
   getAllHeroes(): Hero[] { return this.heroes; }
   getHero(id: number): Hero | undefined { return this.heroes.find(h => h.id === id); }
+  getBuild(_id: number): null { return null; }
   
   getMatchupScore(heroId: number, enemyId: number): number {
     return this.matchups[String(heroId)]?.[String(enemyId)] ?? 0;
@@ -55,7 +56,7 @@ self.onmessage = (e: MessageEvent) => {
   }
 
   if (type === 'counterPicks') {
-    const { enemyIds, filter, limit } = payload;
+    const { enemyIds, allyIds, filter, limit, turnIndex } = payload;
     const enemySet = new Set(enemyIds);
     const results = [];
 
@@ -76,12 +77,13 @@ self.onmessage = (e: MessageEvent) => {
         }
       }
 
-      const scoreResult = calculateHeroScore(data as any, hero, enemyIds);
+      const scoreResult = calculateHeroScore(data as any, hero, enemyIds, allyIds, turnIndex);
 
       results.push({
         hero,
         raw_score: scoreResult.rawScore,
         weighted_score: scoreResult.weightedScore,
+        confidence: scoreResult.confidence,
         breakdown: scoreResult.breakdown,
       });
     }
@@ -91,19 +93,20 @@ self.onmessage = (e: MessageEvent) => {
   }
 
   if (type === 'weakPicks') {
-    const { enemyIds, limit } = payload;
+    const { enemyIds, allyIds, limit, turnIndex } = payload;
     const enemySet = new Set(enemyIds);
     const results = [];
 
     for (const hero of data.heroes) {
       if (enemySet.has(hero.id)) continue;
 
-      const scoreResult = calculateHeroScore(data as any, hero, enemyIds);
+      const scoreResult = calculateHeroScore(data as any, hero, enemyIds, allyIds, turnIndex);
 
       results.push({
         hero,
         raw_score: scoreResult.rawScore,
         weighted_score: scoreResult.weightedScore,
+        confidence: scoreResult.confidence,
         breakdown: scoreResult.breakdown,
       });
     }

@@ -78,6 +78,8 @@ export interface ScoredHero {
   raw_score: number;
   /** Score after tier weighting */
   weighted_score: number;
+  /** Reliability of the score (HIGH | MEDIUM | LOW) based on data density */
+  confidence: 'HIGH' | 'MEDIUM' | 'LOW';
   /** Individual breakdown: how this hero performs vs each enemy */
   breakdown: MatchupBreakdown[];
   /** Suggested items if available */

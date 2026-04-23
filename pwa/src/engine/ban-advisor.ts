@@ -253,12 +253,16 @@ export class BanAdvisor {
     enemyPickIds: number[] = [],
     existingBanIds: number[] = [],
     priorityHeroIds: number[] = [],
+    rankTier: 'EPIC' | 'MYTHIC' = 'MYTHIC',
     limit: number = 5
   ): BanSuggestion[] {
     const unavailable = [...allyPickIds, ...enemyPickIds, ...existingBanIds];
 
-    // Trigger protective logic if we have locked picks OR if the user marked heroes they want to play
-    if (allyPickIds.length >= PHASE2_ALLY_LOCK_COUNT || priorityHeroIds.length > 0) {
+    // EPIC MODE: Be more aggressive with protection
+    // MYTHIC MODE: Follow Phase 2 logic (3 allies picked) or Priority
+    const triggerThreshold = rankTier === 'EPIC' ? 1 : 3;
+
+    if (allyPickIds.length >= triggerThreshold || priorityHeroIds.length > 0) {
       return this.getProtectiveBans(allyPickIds, enemyPickIds, unavailable, priorityHeroIds, limit);
     }
 

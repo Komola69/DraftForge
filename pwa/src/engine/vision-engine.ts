@@ -7,28 +7,24 @@
 import portraitMap from '../../../data/processed/v1_portraits.json';
 import { DataLoader } from './data-loader';
 
-// dHash uses an 8x8 grid = 64 pixels (fits in a 64-bit BigInt)
-const HASH_SIZE = 8;
+// dHash uses a 16x16 grid = 256 pixels
+const HASH_SIZE = 16;
 const PIXEL_COUNT = HASH_SIZE * HASH_SIZE;
 
 export class VisionEngine {
   private loader: DataLoader;
-  private templates: Map<number, bigint[]> = new Map();
+  /** Cache: heroId → array of 256-bit signatures (as 4x 64-bit BigInts) */
+  private templates: Map<number, BigInt64Array[]> = new Map();
   private loaded = false;
 
   constructor(loader: DataLoader) {
     this.loader = loader;
   }
 
-  /**
-   * Initializes the engine by loading all hero portraits and skins
-   * and extracting their signatures.
-   */
   async init(): Promise<void> {
     if (this.loaded) return;
     const heroes = this.loader.getAllHeroes();
     
-    // Load base portraits
     const basePromises = heroes.map(hero => {
       return new Promise<void>((resolve) => {
         const path = (portraitMap as Record<string, string>)[hero.name.toLowerCase()];
@@ -38,38 +34,12 @@ export class VisionEngine {
     });
 
     await Promise.all(basePromises);
-
-    // Try to load skin portraits if available
-    try {
-      const skinsRes = await fetch('/data/processed/v1_skin_portraits.json');
-      if (skinsRes.ok) {
-        const skinMap = await skinsRes.json();
-        const skinPromises: Promise<void>[] = [];
-        
-        for (const hero of heroes) {
-          const skinPaths = skinMap[hero.name.toLowerCase()];
-          if (skinPaths && Array.isArray(skinPaths)) {
-            skinPaths.forEach(path => {
-              skinPromises.push(this.addSignature(hero.id, path));
-            });
-          }
-        }
-        await Promise.all(skinPromises);
-      }
-    } catch (e) {
-      console.warn('[VisionEngine] No additional skins loaded.');
-    }
-
     this.loaded = true;
     const totalSigs = Array.from(this.templates.values()).reduce((sum, sigs) => sum + sigs.length, 0);
-    console.log(`[VisionEngine] Loaded ${totalSigs} signatures for ${this.templates.size} heroes.`);
+    console.log(`[VisionEngine] 16x16 High-Res dHash Active. Loaded ${totalSigs} signatures.`);
   }
 
-  /**
-   * Processes an image into a 64-bit dHash.
-   * Uses a fresh canvas each time to prevent race conditions and size mismatches.
-   */
-  private generateHash(image: HTMLImageElement | HTMLCanvasElement): bigint | null {
+  private generateHash(image: HTMLImageElement | HTMLCanvasElement): BigInt64Array | null {
     if (!image.width || !image.height) return null;
 
     const canvas = document.createElement('canvas');
@@ -78,11 +48,7 @@ export class VisionEngine {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return null;
 
-    // Smart Crop:
-    // If the image is already small (< 300px), assume it is a pre-cropped portrait.
-    // If it is large, assume it is a full screenshot and crop the top-middle hero area.
     const isPortrait = image.width < 300 && image.height < 300;
-    
     let sx = 0, sy = 0, sw = image.width, sh = image.height;
     
     if (!isPortrait) {
@@ -95,7 +61,22 @@ export class VisionEngine {
     ctx.drawImage(image, sx, sy, sw, sh, 0, 0, HASH_SIZE, HASH_SIZE);
     const imageData = ctx.getImageData(0, 0, HASH_SIZE, HASH_SIZE);
     const grayscale = this.toGrayscale(imageData.data);
-    return this.calculateDHash(grayscale);
+    
+    // 256 bits = 4 * 64 bits
+    const hash = new BigInt64Array(4);
+    for (let chunk = 0; chunk < 4; chunk++) {
+        let chunkHash = 0n;
+        for (let j = 0; j < 64; j++) {
+            const idx = (chunk * 64) + j;
+            const current = grayscale[idx];
+            const next = (idx === PIXEL_COUNT - 1) ? grayscale[0] : grayscale[idx + 1];
+            if (current > next) {
+                chunkHash |= (1n << BigInt(j));
+            }
+        }
+        hash[chunk] = chunkHash;
+    }
+    return hash;
   }
 
   private async addSignature(heroId: number, path: string): Promise<void> {
@@ -117,9 +98,6 @@ export class VisionEngine {
     });
   }
 
-  /**
-   * Identifies a hero from an HTMLImageElement or Canvas crop.
-   */
   identifyHero(image: HTMLImageElement | HTMLCanvasElement): number | null {
     if (!this.loaded || this.templates.size === 0) return null;
 
@@ -131,61 +109,44 @@ export class VisionEngine {
 
     for (const [heroId, signatureHashes] of this.templates.entries()) {
       for (const templateHash of signatureHashes) {
-        const distance = this.getHammingDistance(targetHash, templateHash);
-        if (distance < lowestDistance) {
-          lowestDistance = distance;
+        let totalDistance = 0;
+        for (let i = 0; i < 4; i++) {
+            totalDistance += this.getHammingDistance(targetHash[i], templateHash[i]);
+        }
+        if (totalDistance < lowestDistance) {
+          lowestDistance = totalDistance;
           bestMatchId = heroId;
         }
       }
     }
 
-    // Hamming distance threshold: < 10 bits difference (out of 64) is a strong match.
-    if (lowestDistance > 10) {
+    // Threshold for 256 bits: < 40 bits difference (~15%) is a match
+    if (lowestDistance > 40) {
       return null;
     }
 
     return bestMatchId;
   }
 
-  /**
-   * Converts RGBA pixel data to a flat array of grayscale values.
-   */
   private toGrayscale(pixels: Uint8ClampedArray): Uint8ClampedArray {
     const grayscale = new Uint8ClampedArray(PIXEL_COUNT);
     for (let i = 0; i < PIXEL_COUNT; i++) {
       const r = pixels[i * 4];
       const g = pixels[i * 4 + 1];
       const b = pixels[i * 4 + 2];
-      // Standard luminance formula
       grayscale[i] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
     }
     return grayscale;
   }
 
-  /**
-   * Generates a 64-bit Difference Hash (dHash) from grayscale pixels.
-   */
-  private calculateDHash(pixels: Uint8ClampedArray): bigint {
-    let hash = 0n;
-    for (let i = 0; i < 64; i++) {
-      const current = pixels[i];
-      const next = (i === 63) ? pixels[0] : pixels[i + 1];
-      if (current > next) {
-        hash |= (1n << BigInt(i));
-      }
-    }
-    return hash;
-  }
-
-  /**
-   * Calculates Hamming Distance (number of differing bits) between two BigInts.
-   */
-  private getHammingDistance(hash1: bigint, hash2: bigint): number {
-    let xor = hash1 ^ hash2;
+  private getHammingDistance(h1: bigint, h2: bigint): number {
+    let xor = h1 ^ h2;
+    if (xor < 0n) xor = -xor; // Handle negative bit patterns if any
     let distance = 0;
-    while (xor > 0n) {
-      distance += Number(xor & 1n);
-      xor >>= 1n;
+    let x = xor;
+    while (x > 0n) {
+      distance += Number(x & 1n);
+      x >>= 1n;
     }
     return distance;
   }
