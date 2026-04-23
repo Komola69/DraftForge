@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import random
 from pathlib import Path
 from typing import Any
 
@@ -68,25 +69,48 @@ async def _collect_single(page, hero_name: str, hero_id: int) -> dict[str, Any] 
 
     if cache_path.exists():
         raw_html = cache_path.read_text(encoding="utf-8", errors="ignore")
-        stats_html, skills_html, bio_html = _extract_sections(raw_html)
-        logger.info("Loaded cached HTML for {}", hero_name)
-        return {
-            "hero_id": hero_id,
-            "hero_name": hero_name,
-            "source_url": f"https://mobile-legends.fandom.com/wiki/{_hero_to_slug(hero_name)}",
-            "raw_html": raw_html,
-            "stats_html": stats_html,
-            "skills_html": skills_html,
-            "bio_html": bio_html,
-        }
+        if "<title>Just a moment...</title>" not in raw_html:
+            stats_html, skills_html, bio_html = _extract_sections(raw_html)
+            logger.info("Loaded cached HTML for {}", hero_name)
+            return {
+                "hero_id": hero_id,
+                "hero_name": hero_name,
+                "source_url": f"https://mobile-legends.fandom.com/wiki/{_hero_to_slug(hero_name)}",
+                "raw_html": raw_html,
+                "stats_html": stats_html,
+                "skills_html": skills_html,
+                "bio_html": bio_html,
+            }
+        else:
+            logger.info("Cached HTML for {} is a block page. Re-scraping...", hero_name)
 
     source_url = f"https://mobile-legends.fandom.com/wiki/{_hero_to_slug(hero_name)}"
     try:
+        # Randomized delay: stay human
+        await asyncio.sleep(random.uniform(SCRAPE_DELAY_SECONDS, SCRAPE_DELAY_SECONDS + 3))
+        
         await page.goto(source_url, wait_until="domcontentloaded", timeout=REQUEST_TIMEOUT_SECONDS * 1000)
+        
+        # Human jitter
+        await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 4)")
+        await asyncio.sleep(random.uniform(1, 2))
+        
         raw_html = await page.content()
+        
+        if "<title>Just a moment...</title>" in raw_html:
+            logger.error("Blocked by Cloudflare for {}", hero_name)
+            return {
+                "hero_id": hero_id,
+                "hero_name": hero_name,
+                "raw_html": raw_html,
+                "stats_html": "",
+                "skills_html": "",
+                "bio_html": "",
+            }
+
         cache_path.write_text(raw_html, encoding="utf-8")
         stats_html, skills_html, bio_html = _extract_sections(raw_html)
-        logger.info("Collected raw HTML for {}", hero_name)
+        logger.info("Successfully collected raw HTML for {}", hero_name)
         return {
             "hero_id": hero_id,
             "hero_name": hero_name,
@@ -106,34 +130,42 @@ async def collect_hero_stats() -> dict[str, dict[str, Any]]:
     failed: list[tuple[int, str]] = []
 
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(headless=HEADLESS_BROWSER)
-        context = await browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+        # Using a persistent user data directory to maintain session/reputation
+        user_data_dir = Path("./hero_scrape_context")
+        user_data_dir.mkdir(exist_ok=True)
+
+        context = await playwright.chromium.launch_persistent_context(
+            str(user_data_dir.absolute()),
+            headless=HEADLESS_BROWSER,
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+            viewport={"width": 1920, "height": 1080},
+            extra_http_headers={
+                "Accept-Language": "en-US,en;q=0.9",
+            }
         )
-        page = await context.new_page()
+        
+        page = context.pages[0] if context.pages else await context.new_page()
+        await page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
 
         for hero_id, hero_name in enumerate(HERO_NAMES, start=1):
             payload = await _collect_single(page, hero_name, hero_id)
-            if payload:
+            if payload and payload.get("stats_html"):
                 results[hero_name] = payload
             else:
+                # If we hit a block, wait longer and maybe stop the loop to prevent IP ban
+                if payload and "<title>Just a moment...</title>" in payload.get("raw_html", ""):
+                    logger.warning("Stopping scrape loop to avoid IP ban. Blocked at {}", hero_name)
+                    break
                 failed.append((hero_id, hero_name))
-            await asyncio.sleep(SCRAPE_DELAY_SECONDS)
 
+        # Limited retry for non-block failures
         if failed:
-            logger.warning("Retrying {} failed heroes", len(failed))
-            retry_failed: list[tuple[int, str]] = []
-            for hero_id, hero_name in failed:
+            logger.info("Retrying {} minor failures...", len(failed))
+            for hero_id, hero_name in failed[:5]: # Only retry a few to keep it safe
                 payload = await _collect_single(page, hero_name, hero_id)
                 if payload:
                     results[hero_name] = payload
-                else:
-                    retry_failed.append((hero_id, hero_name))
-                await asyncio.sleep(SCRAPE_DELAY_SECONDS)
-            if retry_failed:
-                logger.error("Collector failed after retry for {} heroes", len(retry_failed))
 
         await context.close()
-        await browser.close()
 
     return results

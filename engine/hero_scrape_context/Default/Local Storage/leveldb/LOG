@@ -1,0 +1,5 @@
+2026/04/23-23:40:38.272 1954 Creating DB D:\mlbb_draft\engine\hero_scrape_context\Default\Local Storage\leveldb since it was missing.
+2026/04/23-23:40:38.286 1954 Reusing MANIFEST D:\mlbb_draft\engine\hero_scrape_context\Default\Local Storage\leveldb/MANIFEST-000001
+2026/04/23-23:40:56.581 1954 Level-0 table #5: started
+2026/04/23-23:40:56.601 1954 Level-0 table #5: 1026237 bytes OK
+2026/04/23-23:40:56.602 1954 Delete type=0 #3

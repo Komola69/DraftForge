@@ -76,8 +76,14 @@ class HeroStatsValidator:
         has_validation_failure = bool(report["missing_fields"] or report["invalid_types"] or report["invalid_values"])
         has_warning = bool(report["warnings"])
 
-        if has_validation_failure or has_warning:
+        is_valid = not (report["missing_fields"] or report["invalid_types"])
+        # Critical stats check: if HP or Attack is 0, it's a failure (likely scrape block)
+        if base_hp == 0 or phys_attack == 0:
+            is_valid = False
+            report["invalid_values"].append("Critical numerical stats are zero")
+
+        if not is_valid or has_warning:
             hero["data_confidence"] = "LOW"
             logger.warning("Validation issues for {}: {}", hero.get("name", "unknown"), report)
 
-        return hero, report
+        return hero, report, is_valid
